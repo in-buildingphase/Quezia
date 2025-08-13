@@ -26,7 +26,7 @@ export default function Navbar() {
         </Link>
 
         {/* Right: Links + Buttons */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {/* Nav Links */}
           {[
             { name: "Home", href: "#solutions" },
