@@ -13,19 +13,11 @@ const Badge = ({ children, className }) => (
 )
 
 // Firebase-style placeholder Button
-const Button = ({ asChild, children, className }) => {
-  const Comp = asChild ? Link : "button"
-  return (
-    <Comp
-      href="#"
-      className={`inline-flex items-center justify-center px-6 py-2 font-medium rounded-md ${className}`}
-    >
-      {children}
-    </Comp>
-  )
-}
 
-export const Hero = () => {
+
+
+
+export default function Hero(){
   useEffect(() => {
   const textarea = document.getElementById("chatInput")
   if (!textarea) return
@@ -41,7 +33,7 @@ export const Hero = () => {
 }, [])
 
   return (
-    <section className="w-full min-h-screen bg-[#121212] text-[#E0E0E0]">
+    <section>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-8 py-20">
           {/* Heading + Badge */}
@@ -67,15 +59,6 @@ export const Hero = () => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col items-center space-y-4 md:flex-row md:justify-center md:space-x-4 md:space-y-0">
-              <Button
-                asChild
-                className="rounded-full border border-[#FFB74D] text-[#FFB74D] hover:bg-[#FFB74D]/10 transition"
-              >
-                <span className="inline-block w-5 h-5 me-2 bg-[#FFCC80] rounded" />
-                Create Account
-              </Button>
-            </div>
           </div>
 
           {/* Unified Chat Interface */}
