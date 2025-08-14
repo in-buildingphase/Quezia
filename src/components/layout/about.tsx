@@ -61,7 +61,7 @@ export default function About() {
 
             {/* CTA Button */}
             <div className="pt-4">
-              <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FF8F00] to-[#FFA000] hover:from-[#FFA000] hover:to-[#FFB300] text-white font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg">
+              <button className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF8F00] text-black font-medium rounded-lg transition-all transform hover:scale-105 shadow-lg">
                 Start Learning Today
                 <CheckCircle className="w-4 h-4" />
               </button>
