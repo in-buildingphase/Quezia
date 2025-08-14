@@ -4,7 +4,14 @@ import Link from "next/link"
 import { useState } from "react"
 
 // Reusable Button
-const Button = ({ asChild, children, className, href = "#" }) => {
+interface ButtonProps {
+  asChild?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  href?: string;
+}
+
+const Button = ({ asChild, children, className, href = "#" }: ButtonProps) => {
   const Comp = asChild ? Link : "button"
   return (
     <Comp
@@ -17,7 +24,11 @@ const Button = ({ asChild, children, className, href = "#" }) => {
 }
 
 // Hamburger Menu Icon
-const HamburgerIcon = ({ isOpen }) => (
+interface HamburgerIconProps {
+  isOpen: boolean;
+}
+
+const HamburgerIcon = ({ isOpen }: HamburgerIconProps) => (
   <div className="flex flex-col justify-center items-center w-6 h-6">
     <span
       className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
