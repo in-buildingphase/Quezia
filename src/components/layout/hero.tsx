@@ -25,13 +25,15 @@ export default function Hero(){
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-8 py-20">
           {/* Heading + Badge */}
-          <div className="space-y-8 text-center">
-            <AnimatedGradientBadge speed={1.5}>
-            <span className="mr-2">New</span>
-            <span>Top your exams now!</span>
-          </AnimatedGradientBadge>
+          <div className="space-y-8 text-center animate-slide-up-delay-200">
+            <div className="animate-slide-up-delay-100">
+              <AnimatedGradientBadge speed={1.5}>
+                <span className="mr-2">New</span>
+                <span>Top your exams now!</span>
+              </AnimatedGradientBadge>
+            </div>
 
-            <div className="mx-auto max-w-screen-md text-center font-bold text-4xl md:text-6xl">
+            <div className="mx-auto max-w-screen-md text-center font-bold text-4xl md:text-6xl animate-slide-up-delay-300">
               <h1>
                 Get Exam Ready with 
                 <GoldenText className="relative z-10">Quezia</GoldenText>
@@ -42,7 +44,7 @@ export default function Hero(){
           </div>
 
           {/* Unified Chat Interface */}
-          <div className="group relative w-full max-w-4xl mt-10 z-20">
+          <div className="group relative w-full max-w-4xl mt-10 z-20 animate-slide-up-delay-500">
             {/* Warm orange glow */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
             

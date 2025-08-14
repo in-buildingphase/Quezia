@@ -62,7 +62,7 @@ export default function Navbar() {
   const closeMenu = () => setIsMenuOpen(false)
 
   return (
-    <nav className="w-full px-4 sm:w-[90%] lg:w-3/4 mx-auto mt-4 sm:mt-6 relative z-30">
+    <nav className="w-full px-4 sm:w-[90%] lg:w-3/4 mx-auto mt-4 sm:mt-6 relative z-30 animate-slide-down">
       <div className="flex items-center justify-between rounded-full border border-[#333] px-4 sm:px-6 lg:px-8 py-3 bg-[#1A1A1A]/80 backdrop-blur-md shadow-lg relative z-31">
         
         {/* Left: Logo */}
