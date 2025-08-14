@@ -15,24 +15,22 @@ export function useGridMousePosition(gridRef: RefObject<HTMLElement | null>) {
     if (!gridElement) return;
 
     const updateGridRect = () => {
-      setGridRect(gridElement.getBoundingClientRect());
+      const rect = gridElement.getBoundingClientRect();
+      setGridRect(rect);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       setGlobalMousePos({ x: e.clientX, y: e.clientY });
       
-      if (!gridRect) updateGridRect();
+      const currentGridRect = gridElement.getBoundingClientRect();
+      const padding = 100;
+      const isNearGrid = 
+        e.clientX >= currentGridRect.left - padding &&
+        e.clientX <= currentGridRect.right + padding &&
+        e.clientY >= currentGridRect.top - padding &&
+        e.clientY <= currentGridRect.bottom + padding;
       
-      if (gridRect) {
-        const padding = 100;
-        const isNearGrid = 
-          e.clientX >= gridRect.left - padding &&
-          e.clientX <= gridRect.right + padding &&
-          e.clientY >= gridRect.top - padding &&
-          e.clientY <= gridRect.bottom + padding;
-        
-        setIsActive(isNearGrid);
-      }
+      setIsActive(isNearGrid);
     };
 
     updateGridRect();
@@ -43,7 +41,7 @@ export function useGridMousePosition(gridRef: RefObject<HTMLElement | null>) {
       document.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', updateGridRect);
     };
-  }, [gridRect]);
+  }, [gridRef]); // Added gridRef to dependency array
 
   return { globalMousePos, gridRect, isActive };
 }

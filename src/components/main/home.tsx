@@ -3,6 +3,7 @@ import Navbar from "../layout/navbar";
 import Cards from "../ui/cards";
 import Verticaldock from "../ui/verticaldock";
 import About from "../layout/about";
+import Footer from "../layout/footer";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Hero />
       <About />
       <Cards />
+      <Footer />
     </main>
   );
 }
