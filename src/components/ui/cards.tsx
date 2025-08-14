@@ -93,7 +93,7 @@ export default function PricingCards() {
                   <div className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-[#FF8F00] mt-0.5 flex-shrink-0" />
                     <span className="text-[#E0E0E0] text-sm leading-relaxed">
-                      3 AI-generated practice tests per day (100 credits)
+                      Unlimited AI-generated practice tests
                     </span>
                   </div>
                   
