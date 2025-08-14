@@ -21,7 +21,7 @@ export default function Hero(){
 }, [])
 
   return (
-    <section>
+    <section id="hero" className="pt-24 sm:pt-28 lg:pt-32">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-8 py-20">
           {/* Heading + Badge */}
