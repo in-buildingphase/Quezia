@@ -70,14 +70,15 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
     <div className="aspect-square p-1 rounded-xl relative group">
       {/* Border glow */}
       <div 
-        className="absolute inset-0 rounded-xl transition-opacity duration-300 ease-out"
+        className="absolute inset-0 rounded-xl transition-opacity duration-200 ease-out"
         style={{
-          opacity: intensity * 0.8,
-          background: `radial-gradient(circle 100px at ${localX}px ${localY}px, 
+          opacity: intensity * 1.2, // Increased opacity for more prominent effect
+          background: `radial-gradient(circle 150px at ${localX}px ${localY}px, 
             rgba(255, 143, 0, 1), 
-            rgba(255, 143, 0, 0.6) 40%, 
-            rgba(255, 143, 0, 0.2) 60%, 
-            transparent 30%)`,
+            rgba(255, 143, 0, 0.8) 30%, 
+            rgba(255, 143, 0, 0.4) 50%, 
+            rgba(255, 143, 0, 0.1) 70%,
+            transparent 85%)`,
         }}
       />
       
@@ -85,23 +86,20 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
       <div
         ref={cardRef}
         data-card
-        className="aspect-square p-6 rounded-xl bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] border transition-all duration-300 ease-out group flex flex-col justify-center relative overflow-hidden backdrop-blur-sm"
+        className="aspect-square p-6 rounded-xl bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] border-0 transition-all duration-200 ease-out group flex flex-col justify-center relative overflow-hidden backdrop-blur-sm"
         style={{
-          borderColor: isActive ? `rgba(255, 143, 0, ${Math.min(0.8, intensity * 1.5)})` : '#333',
-          boxShadow: isActive 
-            ? `0 8px 32px rgba(0, 0, 0, 0.4), 0 0 ${30 * intensity}px rgba(255, 143, 0, ${intensity * 0.5}), inset 0 1px 0 rgba(255, 255, 255, 0.1)` 
-            : '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)', // Removed exterior glow
         }}
       >
         {/* Interior glow */}
         <div
-          className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300 ease-out"
+          className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-200 ease-out"
           style={{
-            opacity: intensity * 0.6,
-            background: `radial-gradient(circle 120px at ${localX}px ${localY}px, 
-              rgba(255, 143, 0, 0.3), 
-              rgba(255, 143, 0, 0.1) 60%, 
-              transparent 80%)`,
+            opacity: intensity * 0.8,
+            background: `radial-gradient(circle 100px at ${localX}px ${localY}px, 
+              rgba(255, 143, 0, 0.25), 
+              rgba(255, 143, 0, 0.12) 50%, 
+              transparent 75%)`,
           }}
         />
         
