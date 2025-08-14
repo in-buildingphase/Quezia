@@ -1,7 +1,6 @@
 "use client"
 import { useEffect } from "react"
-import { ArrowRight, Send, Paperclip, Sparkles } from "lucide-react"
-import Link from "next/link"
+import { Paperclip, Sparkles } from "lucide-react"
 
 import { GoldenText } from "../ui/goldentext";
 import { AnimatedGradientBadge } from "../ui/animatedgradienttext";
@@ -35,7 +34,7 @@ export default function Hero(){
             <div className="mx-auto max-w-screen-md text-center font-bold text-4xl md:text-6xl">
               <h1>
                 Get Exam Ready with 
-                <GoldenText>Quezia</GoldenText>
+                <GoldenText className="relative z-10">Quezia</GoldenText>
               </h1>
             </div>
 
@@ -43,13 +42,13 @@ export default function Hero(){
           </div>
 
           {/* Unified Chat Interface */}
-          <div className="group relative w-full max-w-4xl mt-10">
+          <div className="group relative w-full max-w-4xl mt-10 z-20">
             {/* Warm orange glow */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
             
             {/* Single unified chat container */}
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#FF8F00]/0 to-[#FFD54F]/0 focus-within:from-[#FF8F00] focus-within:to-[#FFD54F] transition-all duration-300">
-              <div className="flex flex-col h-full rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent">
+            <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#FF8F00]/0 to-[#FFD54F]/0 focus-within:from-[#FF8F00] focus-within:to-[#FFD54F] transition-all duration-300 z-21">
+              <div className="flex flex-col h-full rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent relative z-22">
                 
                 
                 <div className="flex-shrink-0 p-6 pt-4 mt-auto">
