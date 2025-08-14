@@ -46,23 +46,36 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
   let localX = 0;
   let localY = 0;
 
-  if (isGridActive && cardRect && gridRect) {
+  if (isGridActive && cardRect && gridRect && globalMousePos) {
     // Calculate distance from mouse to card center
     const cardCenterX = cardRect.left + cardRect.width / 2;
     const cardCenterY = cardRect.top + cardRect.height / 2;
+    
+    // Ensure we have valid numbers
+    const mouseX = typeof globalMousePos.x === 'number' && !isNaN(globalMousePos.x) ? globalMousePos.x : 0;
+    const mouseY = typeof globalMousePos.y === 'number' && !isNaN(globalMousePos.y) ? globalMousePos.y : 0;
+    
     const distance = Math.sqrt(
-      Math.pow(globalMousePos.x - cardCenterX, 2) + 
-      Math.pow(globalMousePos.y - cardCenterY, 2)
+      Math.pow(mouseX - cardCenterX, 2) + 
+      Math.pow(mouseY - cardCenterY, 2)
     );
 
-    // Calculate intensity (closer = stronger)
+    // Calculate intensity (closer = stronger) with safety checks
     const maxDistance = 250;
-    intensity = Math.max(0, Math.pow(1 - distance / maxDistance, 1.5));
+    const rawIntensity = 1 - distance / maxDistance;
+    intensity = isNaN(rawIntensity) ? 0 : Math.max(0, Math.pow(rawIntensity, 1.5));
 
-    // Calculate local position within the card
-    localX = Math.max(0, Math.min(cardRect.width, globalMousePos.x - cardRect.left));
-    localY = Math.max(0, Math.min(cardRect.height, globalMousePos.y - cardRect.top));
+    // Calculate local position within the card with safety checks
+    localX = Math.max(0, Math.min(cardRect.width, mouseX - cardRect.left));
+    localY = Math.max(0, Math.min(cardRect.height, mouseY - cardRect.top));
+    
+    // Ensure local coordinates are valid numbers
+    localX = isNaN(localX) ? 0 : localX;
+    localY = isNaN(localY) ? 0 : localY;
   }
+
+  // Ensure intensity is always a valid number
+  intensity = isNaN(intensity) ? 0 : intensity;
 
   const isActive = intensity > 0.05;
 
@@ -72,7 +85,7 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
       <div 
         className="absolute inset-0 rounded-xl transition-opacity duration-200 ease-out"
         style={{
-          opacity: intensity * 1.2, // Increased opacity for more prominent effect
+          opacity: Math.max(0, Math.min(1, intensity * 1.2)), // Clamp opacity between 0 and 1
           background: `radial-gradient(circle 150px at ${localX}px ${localY}px, 
             rgba(255, 143, 0, 1), 
             rgba(255, 143, 0, 0.8) 30%, 
@@ -95,7 +108,7 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
         <div
           className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-200 ease-out"
           style={{
-            opacity: intensity * 0.8,
+            opacity: Math.max(0, Math.min(1, intensity * 0.8)), // Clamp opacity between 0 and 1
             background: `radial-gradient(circle 100px at ${localX}px ${localY}px, 
               rgba(255, 143, 0, 0.25), 
               rgba(255, 143, 0, 0.12) 50%, 
