@@ -31,7 +31,7 @@ export const GoldenText = memo(
         
         {/* Visible animated gradient */}
         <span
-          className="relative animate-aurora bg-[length:200%_auto] bg-clip-text text-transparent"
+          className="relative animate-aurora bg-[length:200%_auto] bg-clip-text text-transparent z-[inherit]"
           style={gradientStyle}
           aria-hidden="true"
         >
