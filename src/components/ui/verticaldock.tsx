@@ -54,11 +54,10 @@ const VerticalDockIcon = ({
   const distanceCalc = useTransform(mouseY ?? defaultMouseY, (val: number) => {
     if (val === Infinity) return distance;
     const relativeMouseY = val - containerTop;
+    const bounds = ref.current?.getBoundingClientRect();
     const iconCenterY =
       centerY ??
-      ref.current?.getBoundingClientRect().top -
-        containerTop +
-        DEFAULT_SIZE / 2;
+      (bounds ? bounds.top - containerTop + DEFAULT_SIZE / 2 : null);
     if (!iconCenterY) return distance;
     return Math.abs(relativeMouseY - iconCenterY);
   });
