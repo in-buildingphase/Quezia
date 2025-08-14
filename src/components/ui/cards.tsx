@@ -2,14 +2,14 @@ import { Check, X, Sparkles, Trophy, BarChart3, Target } from "lucide-react"
 
 export default function PricingCards() {
   return (
-    <section className="min-h-screen py-20">
-      <div className="container mx-auto px-4">
+    <section className="min-h-screen py-20 relative z-10">
+      <div className="container mx-auto px-4 relative z-11">
         <div className="flex flex-col lg:flex-row gap-8 max-w-4xl mx-auto">
           
           {/* Freemium Card */}
-          <div className="flex-1">
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#333] to-[#444]">
-              <div className="h-full rounded-2xl bg-[#1A1A1A] border border-[#333] p-8">
+          <div className="flex-1 relative z-12">
+            <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#333] to-[#444] hover:-translate-y-4 hover:scale-103 transition-all duration-300 ease-in-out">
+              <div className="h-full rounded-2xl bg-[#1A1A1A] border border-[#333] p-8 relative z-13">
                 
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-white mb-2">Freemium</h3>
@@ -64,9 +64,9 @@ export default function PricingCards() {
           </div>
 
           {/* Premium Card */}
-          <div className="flex-1">
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-b from-[#FF8F00] to-[#444]">
-              <div className="h-full rounded-2xl bg-[#1A1A1A] p-8 relative overflow-hidden">
+          <div className="flex-1 relative z-12">
+            <div className="relative rounded-2xl p-[1px] bg-gradient-to-b from-[#FF8F00] to-[#444] hover:-translate-y-4 hover:scale-103 transition-all duration-300 ease-in-out">
+              <div className="h-full rounded-2xl bg-[#1A1A1A] p-8 relative overflow-hidden z-13">
                 
                 {/* Golden glow inside the card */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 h-24 w-[80%] rounded-full bg-[#FF8F00]/20 blur-2xl" />
