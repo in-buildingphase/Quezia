@@ -27,45 +27,26 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
 
   useEffect(() => {
     const updateCardRect = () => {
-      if (cardRef.current && document.visibilityState === 'visible') {
+      if (cardRef.current) {
         setCardRect(cardRef.current.getBoundingClientRect());
       }
     };
 
-    // Initial update with delay
-    const timeoutId = setTimeout(updateCardRect, 50);
-    
-    const resizeObserver = new ResizeObserver(() => {
-      // Throttle resize updates
-      setTimeout(updateCardRect, 16); // ~60fps
-    });
-    
+    updateCardRect();
+    const resizeObserver = new ResizeObserver(updateCardRect);
     if (cardRef.current) {
       resizeObserver.observe(cardRef.current);
     }
 
-    // Update on visibility change
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        setTimeout(updateCardRect, 100);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearTimeout(timeoutId);
-      resizeObserver.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
+    return () => resizeObserver.disconnect();
   }, []);
 
-  // Calculate glow properties with safety checks
+  // Calculate glow properties
   let intensity = 0;
   let localX = 0;
   let localY = 0;
 
-  if (isGridActive && cardRect && gridRect && globalMousePos.x !== 0 && globalMousePos.y !== 0) {
+  if (isGridActive && cardRect && gridRect) {
     // Calculate distance from mouse to card center
     const cardCenterX = cardRect.left + cardRect.width / 2;
     const cardCenterY = cardRect.top + cardRect.height / 2;
@@ -74,15 +55,13 @@ export function GlowCard({ iconName, title, description, globalMousePos, gridRec
       Math.pow(globalMousePos.y - cardCenterY, 2)
     );
 
-    // Calculate intensity with smooth falloff
+    // Calculate intensity (closer = stronger)
     const maxDistance = 250;
     intensity = Math.max(0, Math.pow(1 - distance / maxDistance, 1.5));
 
-    // Calculate local position within the card with bounds checking
-    if (intensity > 0) {
-      localX = Math.max(0, Math.min(cardRect.width, globalMousePos.x - cardRect.left));
-      localY = Math.max(0, Math.min(cardRect.height, globalMousePos.y - cardRect.top));
-    }
+    // Calculate local position within the card
+    localX = Math.max(0, Math.min(cardRect.width, globalMousePos.x - cardRect.left));
+    localY = Math.max(0, Math.min(cardRect.height, globalMousePos.y - cardRect.top));
   }
 
   const isActive = intensity > 0.05;
