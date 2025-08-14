@@ -28,9 +28,9 @@ export default function Hero(){
           {/* Heading + Badge */}
           <div className="space-y-8 text-center">
             <AnimatedGradientBadge speed={1.5}>
-              <span className="mr-2">New</span>
-              <span>Top your exams now!</span>
-            </AnimatedGradientBadge>
+            <span className="mr-2">New</span>
+            <span>Top your exams now!</span>
+          </AnimatedGradientBadge>
 
             <div className="mx-auto max-w-screen-md text-center font-bold text-4xl md:text-6xl">
               <h1>
