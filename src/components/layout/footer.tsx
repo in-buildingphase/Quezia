@@ -5,7 +5,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-b from-[#0A0A0A] to-black border-t border-[#333] relative overflow-hidden">
+    <footer id="contact" className="bg-gradient-to-b from-[#0A0A0A] to-black border-t border-[#333] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-1/3 w-96 h-96 bg-[#FF8F00]/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/3 w-72 h-72 bg-[#FFD54F]/3 rounded-full blur-3xl" />
