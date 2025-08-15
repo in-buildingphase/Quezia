@@ -1,4 +1,4 @@
-import { useState, useEffect, RefObject, useCallback } from 'react';
+import { useState, useEffect, RefObject, useRef, useCallback } from "react";
 
 interface MousePosition {
   x: number;
@@ -11,122 +11,141 @@ export function useGridMousePosition(gridRef: RefObject<HTMLElement | null>) {
   const [isActive, setIsActive] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Reset function to clear positioning when mouse leaves
-  const resetPosition = useCallback(() => {
-    setGlobalMousePos({ x: 0, y: 0 });
-    setIsActive(false);
-  }, []);
+  const gridRectRef = useRef<DOMRect | null>(null);
+  const lastPointerRef = useRef<PointerEvent | null>(null);
+  let rafId: number | null = null;
+  let debounceTimer: number | undefined;
+  let scrollPending = false;
 
-  // Update grid rectangle function
-  const updateGridRect = useCallback(() => {
+  const setRectNow = () => {
     const gridElement = gridRef.current;
     if (!gridElement) return;
-    
     const rect = gridElement.getBoundingClientRect();
+    gridRectRef.current = rect;
     setGridRect(rect);
-  }, [gridRef]);
+    if (!isInitialized) setIsInitialized(true);
+  };
+
+  const scheduleUpdateGridRect = (delay = 50) => {
+    if (debounceTimer !== undefined) window.clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(() => {
+      setRectNow();
+      debounceTimer = undefined;
+    }, delay);
+  };
+
+  const handlePointerMove = (e: PointerEvent) => {
+    lastPointerRef.current = e;
+
+    if (rafId !== null) return;
+    rafId = window.requestAnimationFrame(() => {
+      rafId = null;
+      const gridElement = gridRef.current;
+      if (!gridElement || !lastPointerRef.current) return;
+
+      const currentRect =
+        scrollPending || !gridRectRef.current
+          ? gridElement.getBoundingClientRect()
+          : gridRectRef.current;
+
+      scrollPending = false;
+      gridRectRef.current = currentRect;
+      setGridRect(currentRect);
+      if (!isInitialized) setIsInitialized(true);
+
+      const { clientX, clientY } = lastPointerRef.current;
+      const padding = 100;
+      const isNearGrid =
+        clientX >= currentRect.left - padding &&
+        clientX <= currentRect.right + padding &&
+        clientY >= currentRect.top - padding &&
+        clientY <= currentRect.bottom + padding;
+
+      if (isNearGrid) {
+        setGlobalMousePos({ x: clientX, y: clientY });
+        setIsActive(true);
+      } else {
+        setIsActive(false);
+      }
+    });
+  };
+
+  const handlePointerEnter = (e: PointerEvent) => {
+    setRectNow();
+    setGlobalMousePos({ x: e.clientX, y: e.clientY });
+    setIsActive(true);
+  };
+
+  const handlePointerLeave = () => {
+    setIsActive(false);
+  };
+
+  const handleScroll = () => {
+    scrollPending = true;
+    scheduleUpdateGridRect(40);
+  };
+
+  const handleResize = () => {
+    scheduleUpdateGridRect(30);
+  };
+
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      setIsActive(false);
+    } else {
+      scheduleUpdateGridRect(30);
+    }
+  };
+
+  // Catch case where pointer is already over grid on mount
+  useEffect(() => {
+    const once = (e: MouseEvent) => {
+      handlePointerMove(e as unknown as PointerEvent);
+      document.removeEventListener("mousemove", once);
+    };
+    document.addEventListener("mousemove", once, { passive: true });
+    return () => document.removeEventListener("mousemove", once);
+  }, []);
 
   useEffect(() => {
     const gridElement = gridRef.current;
     if (!gridElement) return;
 
-    // Initialize grid rect on mount and when window loads
-    const initializeGridRect = () => {
-      updateGridRect();
-      setIsInitialized(true);
-    };
+    window.requestAnimationFrame(() => setRectNow());
 
-    // Handle mouse movement
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!gridElement) return;
-      
-      // Always update grid rect on mouse move to ensure accuracy
-      const currentGridRect = gridElement.getBoundingClientRect();
-      setGridRect(currentGridRect);
-      
-      const padding = 100;
-      const isNearGrid = 
-        e.clientX >= currentGridRect.left - padding &&
-        e.clientX <= currentGridRect.right + padding &&
-        e.clientY >= currentGridRect.top - padding &&
-        e.clientY <= currentGridRect.bottom + padding;
-      
-      if (isNearGrid) {
-        setGlobalMousePos({ x: e.clientX, y: e.clientY });
-        setIsActive(true);
-      } else {
-        // Reset when mouse is far from grid
-        resetPosition();
-      }
-    };
+    document.addEventListener("pointermove", handlePointerMove, { passive: true });
+    gridElement.addEventListener("pointerenter", handlePointerEnter);
+    gridElement.addEventListener("pointerleave", handlePointerLeave);
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("scroll", handleScroll, { passive: true, capture: true });
+    window.addEventListener("focus", () => scheduleUpdateGridRect(20));
+    window.addEventListener("blur", () => setIsActive(false));
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // Handle mouse enter on grid element
-    const handleMouseEnter = (e: MouseEvent) => {
-      updateGridRect();
-      setGlobalMousePos({ x: e.clientX, y: e.clientY });
-      setIsActive(true);
-    };
-
-    // Handle mouse leave from grid element
-    const handleMouseLeave = () => {
-      resetPosition();
-    };
-
-    // Handle window resize
-    const handleResize = () => {
-      updateGridRect();
-      // Reset position on resize to avoid offset issues
-      resetPosition();
-    };
-
-    // Handle window focus/blur to reset state
-    const handleFocus = () => {
-      updateGridRect();
-    };
-
-    const handleBlur = () => {
-      resetPosition();
-    };
-
-    // Initialize
-    initializeGridRect();
-
-    // Add event listeners
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    gridElement.addEventListener('mouseenter', handleMouseEnter);
-    gridElement.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('load', initializeGridRect);
-
-    // Handle visibility change (when tab becomes active/inactive)
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        resetPosition();
-      } else {
-        updateGridRect();
-      }
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    const ro = new ResizeObserver(() => scheduleUpdateGridRect(30));
+    ro.observe(gridElement);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      gridElement.removeEventListener('mouseenter', handleMouseEnter);
-      gridElement.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('load', initializeGridRect);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (debounceTimer !== undefined) window.clearTimeout(debounceTimer);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      document.removeEventListener("pointermove", handlePointerMove);
+      gridElement.removeEventListener("pointerenter", handlePointerEnter);
+      gridElement.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("focus", () => scheduleUpdateGridRect(20));
+      window.removeEventListener("blur", () => setIsActive(false));
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      ro.disconnect();
     };
-  }, [gridRef, updateGridRect, resetPosition]);
+  }, [gridRef, isInitialized]);
 
-  return { 
-    globalMousePos, 
-    gridRect, 
+  return {
+    globalMousePos,
+    gridRect,
     isActive: isActive && isInitialized,
-    isInitialized 
+    isInitialized,
   };
 }
