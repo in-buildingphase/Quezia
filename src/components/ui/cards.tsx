@@ -171,7 +171,7 @@ export default function PricingCards() {
                   <span className="text-xl text-[#B0B0B0] ml-1">/year</span>
                 </div>
                 <p className="text-[#B0B0B0] text-base leading-relaxed">
-                  Comprehensive solution for serious exam candidates
+                  Comprehensive option for serious exam candidates
                 </p>
               </div>
 

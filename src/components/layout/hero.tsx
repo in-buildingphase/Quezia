@@ -1,11 +1,28 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Paperclip, Sparkles } from "lucide-react"
 
 import { GoldenText } from "../ui/goldentext";
 import { AnimatedGradientBadge } from "../ui/animatedgradienttext";
 
 export default function Hero(){
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+
+  const toggleFilter = (filter: string) => {
+    setSelectedFilters(prev => 
+      prev.includes(filter) 
+        ? prev.filter(f => f !== filter)
+        : [...prev, filter]
+    )
+  }
+
+  const filterOptions = [
+    { id: 'mathematics', label: 'Mathematics' },
+    { id: 'physics', label: 'Physics' },
+    { id: 'chemistry', label: 'Chemistry' },
+    { id: 'surprise', label: 'Surprise Test', icon: Sparkles }
+  ]
+
   useEffect(() => {
   const textarea = document.getElementById("chatInput")
   if (!textarea) return
@@ -70,19 +87,24 @@ export default function Hero(){
                         <button className="p-2 hover:bg-[#2A2A2A] rounded-lg transition">
                           <Paperclip className="w-4 h-4 text-[#888]" />
                         </button>
-                        <button className="px-2 py-1 bg-[#2A2A2A] hover:bg-[#333] text-[#888] text-xs rounded-md border border-[#444] transition">
-                          Mathematics
-                        </button>
-                        <button className="px-2 py-1 bg-[#2A2A2A] hover:bg-[#333] text-[#888] text-xs rounded-md border border-[#444] transition">
-                          Physics
-                        </button>
-                        <button className="px-2 py-1 bg-[#2A2A2A] hover:bg-[#333] text-[#888] text-xs rounded-md border border-[#444] transition">
-                          Chemistry
-                        </button>
-                        <button className="px-2 py-1 bg-[#2A2A2A] hover:bg-[#333] text-[#888] text-xs rounded-md border border-[#444] transition flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          <span>Surprise Test</span>
-                        </button>
+                        {filterOptions.map((option) => {
+                          const isSelected = selectedFilters.includes(option.id)
+                          const IconComponent = option.icon
+                          return (
+                            <button
+                              key={option.id}
+                              onClick={() => toggleFilter(option.id)}
+                              className={`px-2 py-1 text-xs rounded-md border transition-all duration-300 flex items-center gap-1 ${
+                                isSelected
+                                  ? 'bg-gradient-to-r from-[#FF8F00] to-[#FFA000] text-black border-[#FFB74D]'
+                                  : 'bg-[#2A2A2A] hover:bg-[#333] text-[#888] border-[#444] hover:border-[#555]'
+                              }`}
+                            >
+                              {IconComponent && <IconComponent className="w-3 h-3" />}
+                              <span>{option.label}</span>
+                            </button>
+                          )
+                        })}
                       </div>
 
                       {/* Right side: send button */}
