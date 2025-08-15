@@ -34,7 +34,7 @@ export default function About() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-black to-[#0A0A0A] relative overflow-hidden">
+    <section id="about" className="py-20 bg-gradient-to-b from-black to-[#0A0A0A] relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-1/4 w-72 h-72 bg-[#FF8F00]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FFD54F]/5 rounded-full blur-3xl" />
