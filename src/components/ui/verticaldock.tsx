@@ -1,14 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useRouter, usePathname } from 'next/navigation';
 import {
-  motion,
-  MotionValue,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import {
+  Home,
   FileText,
   BarChart3,
   History,
@@ -19,196 +14,210 @@ import {
   HelpCircle,
 } from "lucide-react";
 
-const DEFAULT_SIZE = 44;
-const DEFAULT_MAGNIFICATION = 68;
-const DEFAULT_DISTANCE = 100;
-
 interface VerticalDockIconProps {
-  size?: number;
-  magnification?: number;
-  distance?: number;
-  mouseY?: MotionValue<number>;
   className?: string;
   children?: React.ReactNode;
   onClick?: () => void;
   tooltip?: string;
-  centerY?: number;
-  containerTop?: number;
+  isSelected?: boolean;
 }
 
 const VerticalDockIcon = ({
-  size = DEFAULT_SIZE,
-  magnification = DEFAULT_MAGNIFICATION,
-  distance = DEFAULT_DISTANCE,
-  mouseY,
   className = "",
   children,
   onClick,
   tooltip,
-  centerY,
-  containerTop = 0,
+  isSelected = false,
 }: VerticalDockIconProps) => {
-  const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const defaultMouseY = useMotionValue(Infinity);
-
-  // Distance from mouse to icon center
-  const distanceCalc = useTransform(mouseY ?? defaultMouseY, (val: number) => {
-    if (val === Infinity) return distance;
-    const relativeMouseY = val - containerTop;
-    const bounds = ref.current?.getBoundingClientRect();
-    const iconCenterY =
-      centerY ??
-      (bounds ? bounds.top - containerTop + DEFAULT_SIZE / 2 : null);
-    if (!iconCenterY) return distance;
-    return Math.abs(relativeMouseY - iconCenterY);
-  });
-
-  // Animate size
-  const targetSize = useTransform(distanceCalc, (d) => {
-    const normalizedDistance = Math.min(d / distance, 1);
-    const scale = 1 - Math.pow(normalizedDistance, 0.8);
-    return size + (magnification - size) * scale;
-  });
-
-  const animatedSize = useSpring(targetSize, {
-    mass: 0.15,
-    stiffness: 90,
-    damping: 18,
-  });
-
-  // Gap animation
-  const animatedMargin = useTransform(animatedSize, (val) => {
-    const extra = (val - size) * 0.15;
-    return 8 + extra;
-  });
 
   return (
-    <motion.div
-      ref={ref}
-      style={{
-        width: animatedSize,
-        height: animatedSize,
-        marginTop: animatedMargin,
-        marginBottom: animatedMargin,
-      }}
+    <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      whileHover={{
-        y: -2,
-        rotate: 0,
-        transition: { type: "spring", stiffness: 120, damping: 12 },
-      }}
-      className={`relative flex items-center justify-center cursor-pointer rounded-xl bg-[#2A2A2A] border border-[#444] hover:border-[#FF8F00]/50 hover:bg-[#333] ${className}`}
+      className={`relative flex items-center justify-center cursor-pointer rounded-xl w-12 h-12 ${
+        isSelected 
+          ? 'bg-gradient-to-br from-[#FF8F00] to-[#FFA000] border border-[#FF8F00]' 
+          : 'bg-[#2A2A2A] border border-[#444] hover:border-[#FF8F00]/50 hover:bg-[#333]'
+      } ${className}`}
       onClick={onClick}
       data-icon
     >
-      {/* Hover glow */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#FF8F00]/15 to-[#FFD54F]/8 "
-      />
+      {/* Hover glow - only for non-selected items */}
+      {!isSelected && (
+        <div
+          className={`absolute inset-0 rounded-xl bg-gradient-to-br from-[#FF8F00]/15 to-[#FFD54F]/8 transition-opacity duration-300 ${
+            hovered ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      )}
 
       {/* Icon */}
-      <div className="relative z-10 text-[#E0E0E0] transition-colors duration-300 hover:text-[#FF8F00]">
+      <div className={`relative z-10 transition-colors duration-300 ${
+        isSelected 
+          ? 'text-black' 
+          : 'text-[#E0E0E0] hover:text-[#FF8F00]'
+      }`}>
         {children}
       </div>
-
-      {/* Tooltip */}
-      {tooltip && (
-        <motion.div
-          initial={{ opacity: 0, x: 10, filter: "blur(2px)" }}
-          animate={{
-            opacity: hovered ? 1 : 0,
-            x: hovered ? 0 : 10,
-            filter: hovered ? "blur(0px)" : "blur(2px)",
-          }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="absolute right-full mr-3 px-3 py-1 bg-[#1A1A1A] text-[#E0E0E0] text-sm rounded-lg border border-[#444] whitespace-nowrap pointer-events-none shadow-lg z-52"
-        >
-          {tooltip}
-          {/* Arrow */}
-          <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-l-4 border-l-[#1A1A1A] border-t-4 border-t-transparent border-b-4 border-b-transparent" />
-        </motion.div>
-      )}
-    </motion.div>
+    </div>
   );
 };
 
 const VerticalDock = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mouseY = useMotionValue(Infinity);
-  const [iconCenters, setIconCenters] = useState<number[]>([]);
-  const [containerTop, setContainerTop] = useState(0);
+  const router = useRouter();
+  const pathname = usePathname();
+  
+  // Determine selected item based on current path
+  const getSelectedItem = () => {
+    if (pathname === '/dashboard' || pathname === '/dashboard/home') return 'Home';
+    if (pathname === '/dashboard/papers') return 'Papers';
+    if (pathname === '/dashboard/analytics') return 'Analytics';
+    if (pathname === '/dashboard/contests') return 'Contests';
+    if (pathname === '/dashboard/news') return 'News';
+    if (pathname === '/dashboard/history') return 'History';
+    if (pathname === '/dashboard/profile') return 'Profile';
+    if (pathname === '/dashboard/help') return 'Help';
+    return 'Home';
+  };
 
-  const dockItems = [
-    { icon: <FileText size={20} />, tooltip: "Past Papers", onClick: () => console.log("Past Papers") },
-    { icon: <BarChart3 size={20} />, tooltip: "Analytics", onClick: () => console.log("Analytics") },
-    { icon: <History size={20} />, tooltip: "History", onClick: () => console.log("History") },
-    { icon: <Trophy size={20} />, tooltip: "Leader board", onClick: () => console.log("Leader board") },
-    { icon: <Zap size={20} />, tooltip: "Contests", onClick: () => console.log("Contests") },
-    { icon: <Newspaper size={20} />, tooltip: "News", onClick: () => console.log("News") },
-    { icon: <User size={20} />, tooltip: "Profile", onClick: () => console.log("Profile") },
-    { icon: <HelpCircle size={20} />, tooltip: "Help", onClick: () => console.log("Help") },
+  const selectedItem = getSelectedItem();
+
+  const mainDockItems = [
+    { 
+      icon: <Home size={18} />, 
+      tooltip: "Home", 
+      id: "Home",
+      onClick: () => {
+        router.push('/dashboard/home');
+      }
+    },
+    { 
+      icon: <FileText size={18} />, 
+      tooltip: "Papers", 
+      id: "Papers",
+      onClick: () => {
+        router.push('/dashboard/papers');
+      }
+    },
+    { 
+      icon: <BarChart3 size={18} />, 
+      tooltip: "Analytics", 
+      id: "Analytics",
+      onClick: () => {
+        router.push('/dashboard/analytics');
+      }
+    },
+    { 
+      icon: <Trophy size={18} />, 
+      tooltip: "Contests", 
+      id: "Contests",
+      onClick: () => {
+        router.push('/dashboard/contests');
+      }
+    },
+    { 
+      icon: <Newspaper size={18} />, 
+      tooltip: "News", 
+      id: "News",
+      onClick: () => {
+        router.push('/dashboard/news');
+      }
+    },
+    { 
+      icon: <History size={18} />, 
+      tooltip: "History", 
+      id: "History",
+      onClick: () => {
+        router.push('/dashboard/history');
+      }
+    },
   ];
 
-  useEffect(() => {
-    const computeIconCenters = () => {
-      if (!containerRef.current) return;
-      const containerRect = containerRef.current.getBoundingClientRect();
-      setContainerTop(containerRect.top);
-      const icons = containerRef.current.querySelectorAll("[data-icon]");
-      const centers: number[] = [];
-      icons.forEach((icon) => {
-        const rect = icon.getBoundingClientRect();
-        const relativeCenter =
-          rect.top - containerRect.top + rect.height / 2;
-        centers.push(relativeCenter);
-      });
-      setIconCenters(centers);
-    };
-
-    computeIconCenters();
-    const resizeObserver = new ResizeObserver(computeIconCenters);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-    return () => resizeObserver.disconnect();
-  }, []);
+  const bottomDockItems = [
+    { 
+      icon: <User size={18} />, 
+      tooltip: "Profile", 
+      id: "Profile",
+      onClick: () => {
+        router.push('/dashboard/profile');
+      }
+    },
+    { 
+      icon: <HelpCircle size={18} />, 
+      tooltip: "Help", 
+      id: "Help",
+      onClick: () => {
+        router.push('/dashboard/help');
+      }
+    },
+  ];
 
   return (
-    <motion.div
-      ref={containerRef}
-      onMouseMove={(e) => mouseY.set(e.clientY)}
-      onMouseLeave={() => mouseY.set(Infinity)}
-      className="flex flex-col items-center justify-center min-h-screen w-20 p-4 rounded-r-2xl border-r border-t border-b border-[#333] backdrop-blur-md"
+    <div
+      className="fixed left-0 top-0 flex flex-col w-20 p-4 rounded-r-2xl border-r border-t border-b border-[#333] backdrop-blur-md z-20"
       style={{
         background: "linear-gradient(145deg, #1A1A1A 95%, #2A2A2A 90%)",
+        height: "100vh",
       }}
-      initial={{ opacity: 0, x: -40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
     >
-      <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full mb-4" />
-      {dockItems.map((item, index) => (
-        <VerticalDockIcon
-          key={index}
-          mouseY={mouseY}
-          onClick={item.onClick}
-          tooltip={item.tooltip}
-          size={DEFAULT_SIZE}
-          magnification={DEFAULT_MAGNIFICATION}
-          distance={DEFAULT_DISTANCE}
-          centerY={iconCenters[index]}
-          containerTop={containerTop}
-        >
-          {item.icon}
-        </VerticalDockIcon>
-      ))}
-      <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full mt-4" />
-    </motion.div>
+      {/* Top section with main items */}
+      <div className="flex flex-col items-center">
+        <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full mb-2" />
+        {mainDockItems.map((item, index) => (
+          <div key={index} className="flex flex-col items-center mb-2">
+            <div className={`rounded-lg p-2 transition-all duration-300 ${
+              selectedItem === item.id 
+                ? 'bg-gradient-to-br from-[#2A1F0A] to-[#3D2A0F] border border-[#FF8F00]/20' 
+                : 'bg-transparent'
+            }`}>
+              <VerticalDockIcon
+                onClick={item.onClick}
+                tooltip={item.tooltip}
+                isSelected={selectedItem === item.id}
+              >
+                {item.icon}
+              </VerticalDockIcon>
+              <div className={`text-xs font-medium text-center mt-1 ${
+                selectedItem === item.id ? 'text-[#FF8F00]' : 'text-white'
+              }`}>
+                {item.tooltip}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Spacer to push bottom items down */}
+      <div className="flex-1" />
+
+      {/* Bottom section with Profile and Help */}
+      <div className="flex flex-col items-center">
+        {bottomDockItems.map((item, index) => (
+          <div key={`bottom-${index}`} className="flex flex-col items-center mb-1">
+            <div className={`rounded-lg p-2 transition-all duration-300 ${
+              selectedItem === item.id 
+                ? 'bg-gradient-to-br from-[#2A1F0A] to-[#3D2A0F] border border-[#FF8F00]/20' 
+                : 'bg-transparent'
+            }`}>
+              <VerticalDockIcon
+                onClick={item.onClick}
+                tooltip={item.tooltip}
+                isSelected={selectedItem === item.id}
+              >
+                {item.icon}
+              </VerticalDockIcon>
+              <div className={`text-xs font-medium text-center mt-1 ${
+                selectedItem === item.id ? 'text-[#FF8F00]' : 'text-white'
+              }`}>
+                {item.tooltip}
+              </div>
+            </div>
+          </div>
+        ))}
+        <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full" />
+      </div>
+    </div>
   );
 };
 
