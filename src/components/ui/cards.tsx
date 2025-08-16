@@ -215,7 +215,7 @@ export default function PricingCards() {
           <div className="flex items-center justify-center gap-8 text-[#666] text-xs">
             <span>✓ No Hidden Fees</span>
             <span>✓ Cancel Anytime</span>
-            <span>✓ 30-Day Money Back</span>
+            <span>✓ Secure Payments</span>
           </div>
         </div>
       </div>
