@@ -9,11 +9,13 @@ import {
   useTransform,
 } from "motion/react";
 import {
-  Calculator,
-  TestTube,
-  Atom,
+  FileText,
+  BarChart3,
+  History,
   Trophy,
-  Settings,
+  Zap,
+  Newspaper,
+  User,
   HelpCircle,
 } from "lucide-react";
 
@@ -142,11 +144,13 @@ const VerticalDock = () => {
   const [containerTop, setContainerTop] = useState(0);
 
   const dockItems = [
-    { icon: <Calculator size={20} />, tooltip: "Mathematics", onClick: () => console.log("Math") },
-    { icon: <Atom size={20} />, tooltip: "Physics", onClick: () => console.log("Physics") },
-    { icon: <TestTube size={20} />, tooltip: "Chemistry", onClick: () => console.log("Chemistry") },
-    { icon: <Trophy size={20} />, tooltip: "Leaderboard", onClick: () => console.log("Goals") },
-    { icon: <Settings size={20} />, tooltip: "Settings", onClick: () => console.log("Settings") },
+    { icon: <FileText size={20} />, tooltip: "Past Papers", onClick: () => console.log("Past Papers") },
+    { icon: <BarChart3 size={20} />, tooltip: "Analytics", onClick: () => console.log("Analytics") },
+    { icon: <History size={20} />, tooltip: "History", onClick: () => console.log("History") },
+    { icon: <Trophy size={20} />, tooltip: "Leader board", onClick: () => console.log("Leader board") },
+    { icon: <Zap size={20} />, tooltip: "Contests", onClick: () => console.log("Contests") },
+    { icon: <Newspaper size={20} />, tooltip: "News", onClick: () => console.log("News") },
+    { icon: <User size={20} />, tooltip: "Profile", onClick: () => console.log("Profile") },
     { icon: <HelpCircle size={20} />, tooltip: "Help", onClick: () => console.log("Help") },
   ];
 
@@ -176,38 +180,34 @@ const VerticalDock = () => {
 
   return (
     <motion.div
-      className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden lg:block"
-      initial={{ opacity: 0, x: 40 }}
+      ref={containerRef}
+      onMouseMove={(e) => mouseY.set(e.clientY)}
+      onMouseLeave={() => mouseY.set(Infinity)}
+      className="flex flex-col items-center justify-center min-h-screen w-20 p-4 rounded-r-2xl border-r border-t border-b border-[#333] backdrop-blur-md"
+      style={{
+        background: "linear-gradient(145deg, #1A1A1A 95%, #2A2A2A 90%)",
+      }}
+      initial={{ opacity: 0, x: -40 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
     >
-      <motion.div
-        ref={containerRef}
-        onMouseMove={(e) => mouseY.set(e.clientY)}
-        onMouseLeave={() => mouseY.set(Infinity)}
-        className="relative flex flex-col items-center p-2 rounded-2xl border border-[#333] backdrop-blur-md z-51"
-        style={{
-          background: "linear-gradient(145deg, #1A1A1A 95%, #2A2A2A 90%)",
-        }}
-      >
-        <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full" />
-        {dockItems.map((item, index) => (
-          <VerticalDockIcon
-            key={index}
-            mouseY={mouseY}
-            onClick={item.onClick}
-            tooltip={item.tooltip}
-            size={DEFAULT_SIZE}
-            magnification={DEFAULT_MAGNIFICATION}
-            distance={DEFAULT_DISTANCE}
-            centerY={iconCenters[index]}
-            containerTop={containerTop}
-          >
-            {item.icon}
-          </VerticalDockIcon>
-        ))}
-        <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full" />
-      </motion.div>
+      <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full mb-4" />
+      {dockItems.map((item, index) => (
+        <VerticalDockIcon
+          key={index}
+          mouseY={mouseY}
+          onClick={item.onClick}
+          tooltip={item.tooltip}
+          size={DEFAULT_SIZE}
+          magnification={DEFAULT_MAGNIFICATION}
+          distance={DEFAULT_DISTANCE}
+          centerY={iconCenters[index]}
+          containerTop={containerTop}
+        >
+          {item.icon}
+        </VerticalDockIcon>
+      ))}
+      <div className="w-8 h-[2px] bg-gradient-to-r from-[#FF8F00] to-[#FFD54F] rounded-full mt-4" />
     </motion.div>
   );
 };
