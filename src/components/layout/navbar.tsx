@@ -31,19 +31,16 @@ interface HamburgerIconProps {
 const HamburgerIcon = ({ isOpen }: HamburgerIconProps) => (
   <div className="flex flex-col justify-center items-center w-6 h-6">
     <span
-      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-        isOpen ? "rotate-45 translate-y-1" : "-translate-y-0.5"
-      }`}
+      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? "rotate-45 translate-y-1" : "-translate-y-0.5"
+        }`}
     />
     <span
-      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${
-        isOpen ? "opacity-0" : "opacity-100"
-      }`}
+      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isOpen ? "opacity-0" : "opacity-100"
+        }`}
     />
     <span
-      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-        isOpen ? "-rotate-45 -translate-y-1" : "translate-y-0.5"
-      }`}
+      className={`bg-[#E0E0E0] block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? "-rotate-45 -translate-y-1" : "translate-y-0.5"
+        }`}
     />
   </div>
 )
@@ -66,17 +63,17 @@ export default function Navbar() {
     e.preventDefault()
     const targetId = href.replace('#', '')
     const targetElement = document.getElementById(targetId)
-    
+
     if (targetElement) {
       const navbarHeight = 100 // Account for fixed navbar height
       const elementPosition = targetElement.offsetTop - navbarHeight
-      
+
       window.scrollTo({
         top: elementPosition,
         behavior: 'smooth'
       })
     }
-    
+
     // Close mobile menu if open
     if (isMenuOpen) {
       closeMenu()
@@ -119,7 +116,7 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Button
                   asChild
-                  href="#"
+                  href="/sign-up"
                   className="border border-[#FFB74D]/50 text-[#FFB74D] hover:bg-[#FFB74D]/20 hover:border-[#FFB74D]"
                 >
                   <>
@@ -130,7 +127,7 @@ export default function Navbar() {
 
                 <Button
                   asChild
-                  href="#"
+                  href="/sign-in"
                   className="bg-gradient-to-r from-[#FF8F00] to-[#FFA000] text-black hover:from-[#FFA000] hover:to-[#FFB74D] shadow-lg"
                 >
                   Log In
@@ -170,7 +167,7 @@ export default function Navbar() {
               {/* Mobile Buttons */}
               <div className="space-y-3">
                 <Link
-                  href="#"
+                  href="/sign-up"
                   onClick={closeMenu}
                   className="flex items-center justify-center gap-2 w-full px-6 py-3 text-sm font-medium rounded-full border border-[#FFB74D]/50 text-[#FFB74D] hover:bg-[#FFB74D]/20 transition-all duration-300"
                 >
@@ -179,7 +176,7 @@ export default function Navbar() {
                 </Link>
 
                 <Link
-                  href="#"
+                  href="sign-in"
                   onClick={closeMenu}
                   className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium rounded-full bg-gradient-to-r from-[#FF8F00] to-[#FFA000] text-black hover:from-[#FFA000] hover:to-[#FFB74D] shadow-lg transition-all duration-300"
                 >
