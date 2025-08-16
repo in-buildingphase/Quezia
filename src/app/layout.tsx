@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProviderWrapper } from "@/components/providers/clerk-provider";
 import { ConvexProviderWrapper } from "@/components/providers/convex-provider";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
