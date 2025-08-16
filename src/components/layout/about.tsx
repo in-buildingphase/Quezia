@@ -1,10 +1,17 @@
 'use client';
 
 import { useRef } from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, BookOpen, Target, TrendingUp } from "lucide-react";
 import { GoldenText } from "../ui/goldentext";
 import { GlowCard } from "../ui/glow-card";
 import { useGridMousePosition } from "@/lib/use-grid-mouse-position";
+
+const iconMap = {
+  CheckCircle,
+  BookOpen,
+  Target,
+  TrendingUp,
+};
 
 export default function About() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -34,7 +41,7 @@ export default function About() {
   ];
 
   return (
-    <section id="about" className="py-20 pb-0 relative">
+    <section className="py-20 pb-0 relative">
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-[3fr_2fr] gap-8 lg:gap-12 items-center">
           
@@ -66,7 +73,8 @@ export default function About() {
 
           {/* Right Side - Features List */}
           <div className="flex justify-center lg:justify-start">
-            <div ref={gridRef} data-grid className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-xl">
+            {/* Desktop Layout - 2x2 Grid */}
+            <div ref={gridRef} data-grid className="hidden lg:grid grid-cols-2 gap-6 w-full max-w-xl">
               {features.map((feature, index) => (
                 <GlowCard
                   key={index}
@@ -79,6 +87,34 @@ export default function About() {
                   isGridActive={isActive}
                 />
               ))}
+            </div>
+            
+            {/* Mobile/Tablet Layout - Stacked Rectangular Cards */}
+            <div className="lg:hidden w-full space-y-4">
+              {features.map((feature, index) => {
+                const IconComponent = iconMap[feature.iconName as keyof typeof iconMap];
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#1A1A1A] to-[#0F0F0F] border border-[#333] transition-all duration-300 hover:border-[#FF8F00]/50"
+                  >
+                    {/* Icon */}
+                    <div className="flex-shrink-0 p-3 rounded-full bg-gradient-to-br from-[#FF8F00]/20 to-[#FF8F00]/10 border border-[#FF8F00]/30">
+                      <IconComponent className="w-5 h-5 text-[#FF8F00]" />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-semibold text-sm leading-tight mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-[#999] text-xs leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
