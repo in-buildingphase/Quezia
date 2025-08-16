@@ -127,83 +127,81 @@ export default function PricingCards() {
               <div className="space-y-1 mb-6 flex-grow">
                 <h4 className="text-xs uppercase tracking-wider text-[#888] font-semibold mb-6">ALL FEATURES</h4>
                 
-                <div className="space-y-4">
-                  {/* Desktop: Show all features, Mobile/Tablet: Show limited initially */}
-                  <div className="lg:hidden">
-                    {getVisibleFeatures(freeFeatures, showAllFree).map((feature, index) => {
-                      const IconComponent = feature.icon
-                      const isIncluded = feature.included
-                      
-                      return (
-                        <div key={index} className="flex items-start gap-4">
-                          <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                            isIncluded 
-                              ? 'bg-green-500/20' 
-                              : 'bg-red-500/20'
-                          }`}>
-                            {isIncluded ? (
-                              <IconComponent className="w-3 h-3 text-green-400" />
-                            ) : (
-                              <span className="text-red-400 text-sm font-bold">×</span>
-                            )}
-                          </div>
-                          <span className={`text-sm leading-relaxed ${
-                            isIncluded 
-                              ? 'text-[#E0E0E0]' 
-                              : 'text-[#888] line-through'
-                          }`}>
-                            {feature.text}
-                          </span>
-                        </div>
-                      )
-                    })}
+                {/* Mobile/Tablet: Collapsible features */}
+                <div className="lg:hidden space-y-4">
+                  {getVisibleFeatures(freeFeatures, showAllFree).map((feature, index) => {
+                    const IconComponent = feature.icon
+                    const isIncluded = feature.included
                     
-                    {/* Show More/Less Button for Mobile/Tablet */}
-                    {freeFeatures.length > 3 && (
-                      <button
-                        onClick={() => setShowAllFree(!showAllFree)}
-                        className="flex items-center gap-2 text-[#888] hover:text-white text-sm mt-4 transition-colors"
-                      >
-                        <span>{showAllFree ? 'Show Less' : 'Show More'}</span>
-                        {showAllFree ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Desktop: Show all features always */}
-                  <div className="hidden lg:block">
-                    {freeFeatures.map((feature, index) => {
-                      const IconComponent = feature.icon
-                      const isIncluded = feature.included
-                      
-                      return (
-                        <div key={index} className="flex items-start gap-4">
-                          <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                            isIncluded 
-                              ? 'bg-green-500/20' 
-                              : 'bg-red-500/20'
-                          }`}>
-                            {isIncluded ? (
-                              <IconComponent className="w-3 h-3 text-green-400" />
-                            ) : (
-                              <span className="text-red-400 text-sm font-bold">×</span>
-                            )}
-                          </div>
-                          <span className={`text-sm leading-relaxed ${
-                            isIncluded 
-                              ? 'text-[#E0E0E0]' 
-                              : 'text-[#888] line-through'
-                          }`}>
-                            {feature.text}
-                          </span>
+                    return (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
+                          isIncluded 
+                            ? 'bg-green-500/20' 
+                            : 'bg-red-500/20'
+                        }`}>
+                          {isIncluded ? (
+                            <IconComponent className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <span className="text-red-400 text-sm font-bold">×</span>
+                          )}
                         </div>
-                      )
-                    })}
-                  </div>
+                        <span className={`text-sm leading-relaxed ${
+                          isIncluded 
+                            ? 'text-[#E0E0E0]' 
+                            : 'text-[#888] line-through'
+                        }`}>
+                          {feature.text}
+                        </span>
+                      </div>
+                    )
+                  })}
+                  
+                  {/* Show More/Less Button for Mobile/Tablet */}
+                  {freeFeatures.length > 3 && (
+                    <button
+                      onClick={() => setShowAllFree(!showAllFree)}
+                      className="flex items-center gap-2 text-[#888] hover:text-white text-sm mt-4 transition-colors"
+                    >
+                      <span>{showAllFree ? 'Show Less' : 'Show More'}</span>
+                      {showAllFree ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Desktop: Show all features with original spacing */}
+                <div className="hidden lg:block space-y-6">
+                  {freeFeatures.map((feature, index) => {
+                    const IconComponent = feature.icon
+                    const isIncluded = feature.included
+                    
+                    return (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
+                          isIncluded 
+                            ? 'bg-green-500/20' 
+                            : 'bg-red-500/20'
+                        }`}>
+                          {isIncluded ? (
+                            <IconComponent className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <span className="text-red-400 text-sm font-bold">×</span>
+                          )}
+                        </div>
+                        <span className={`text-sm leading-relaxed ${
+                          isIncluded 
+                            ? 'text-[#E0E0E0]' 
+                            : 'text-[#888] line-through'
+                        }`}>
+                          {feature.text}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -249,57 +247,55 @@ export default function PricingCards() {
               <div className="relative space-y-1 mb-6 flex-grow">
                 <h4 className="text-xs uppercase tracking-wider text-[#FF8F00] font-semibold mb-6">ALL FEATURES</h4>
                 
-                <div className="space-y-4">
-                  {/* Desktop: Show all features, Mobile/Tablet: Show limited initially */}
-                  <div className="lg:hidden">
-                    {getVisibleFeatures(premiumFeatures, showAllPremium).map((feature, index) => {
-                      const IconComponent = feature.icon
-                      
-                      return (
-                        <div key={index} className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FF8F00]/20 flex items-center justify-center mt-0.5">
-                            <IconComponent className="w-3 h-3 text-[#FF8F00]" />
-                          </div>
-                          <span className="text-[#E0E0E0] text-sm leading-relaxed">
-                            {feature.text}
-                          </span>
-                        </div>
-                      )
-                    })}
+                {/* Mobile/Tablet: Collapsible features */}
+                <div className="lg:hidden space-y-4">
+                  {getVisibleFeatures(premiumFeatures, showAllPremium).map((feature, index) => {
+                    const IconComponent = feature.icon
                     
-                    {/* Show More/Less Button for Mobile/Tablet */}
-                    {premiumFeatures.length > 3 && (
-                      <button
-                        onClick={() => setShowAllPremium(!showAllPremium)}
-                        className="flex items-center gap-2 text-[#FF8F00] hover:text-[#FFB74D] text-sm mt-4 transition-colors"
-                      >
-                        <span>{showAllPremium ? 'Show Less' : 'Show More'}</span>
-                        {showAllPremium ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Desktop: Show all features always */}
-                  <div className="hidden lg:block">
-                    {premiumFeatures.map((feature, index) => {
-                      const IconComponent = feature.icon
-                      
-                      return (
-                        <div key={index} className="flex items-start gap-4">
-                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FF8F00]/20 flex items-center justify-center mt-0.5">
-                            <IconComponent className="w-3 h-3 text-[#FF8F00]" />
-                          </div>
-                          <span className="text-[#E0E0E0] text-sm leading-relaxed">
-                            {feature.text}
-                          </span>
+                    return (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FF8F00]/20 flex items-center justify-center mt-0.5">
+                          <IconComponent className="w-3 h-3 text-[#FF8F00]" />
                         </div>
-                      )
-                    })}
-                  </div>
+                        <span className="text-[#E0E0E0] text-sm leading-relaxed">
+                          {feature.text}
+                        </span>
+                      </div>
+                    )
+                  })}
+                  
+                  {/* Show More/Less Button for Mobile/Tablet */}
+                  {premiumFeatures.length > 3 && (
+                    <button
+                      onClick={() => setShowAllPremium(!showAllPremium)}
+                      className="flex items-center gap-2 text-[#FF8F00] hover:text-[#FFB74D] text-sm mt-4 transition-colors"
+                    >
+                      <span>{showAllPremium ? 'Show Less' : 'Show More'}</span>
+                      {showAllPremium ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Desktop: Show all features with original spacing */}
+                <div className="hidden lg:block space-y-6">
+                  {premiumFeatures.map((feature, index) => {
+                    const IconComponent = feature.icon
+                    
+                    return (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FF8F00]/20 flex items-center justify-center mt-0.5">
+                          <IconComponent className="w-3 h-3 text-[#FF8F00]" />
+                        </div>
+                        <span className="text-[#E0E0E0] text-sm leading-relaxed">
+                          {feature.text}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
