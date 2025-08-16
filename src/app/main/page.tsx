@@ -1,9 +1,9 @@
-import Hero from "../layout/hero";
-import Navbar from "../layout/navbar";
-import Cards from "../ui/cards";
-import About from "../layout/about";
-import Features from "../layout/features";
-import Footer from "../layout/footer";
+import Hero from "../../components/layout/hero";
+import Navbar from "../../components/layout/navbar";
+import Cards from "../../components/ui/cards";
+import About from "../../components/layout/about";
+import Features from "../../components/layout/features";
+import Footer from "../../components/layout/footer";
 
 export default function Home() {
   return (
