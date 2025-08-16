@@ -1,0 +1,19 @@
+{
+  "project": "quezia",
+  "team": "quezia",
+  "prodUrl": "https://quezia.convex.cloud",
+  "functions": {
+    "codegen": {
+      "enabled": true,
+      "path": "./_generated"
+    }
+  },
+  "auth": {
+    "providers": [
+      {
+        "domain": "https://clerk.quezia.com",
+        "applicationID": "convex"
+      }
+    ]
+  }
+}
