@@ -151,8 +151,8 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 animate-slide-down">
-            <div className="bg-black/80 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-6" style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
+          <div className="lg:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-full animate-slide-down">
+            <div className="bg-black/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-6" style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
               {/* Mobile Nav Links */}
               <div className="space-y-1 mb-6">
                 {navLinks.map((link) => (

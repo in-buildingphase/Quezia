@@ -130,10 +130,10 @@ export function GlowCard({
         />
 
         {/* Content */}
-        <div className="text-center space-y-5 relative z-10">
+        <div className="text-center space-y-5 xl:space-y-5 lg:space-y-3 relative z-10">
           <div className="flex justify-center">
             <div
-              className="p-3 rounded-full bg-gradient-to-br from-[#FF8F00]/20 to-[#FF8F00]/10 border transition-all duration-300"
+              className="p-3 xl:p-3 lg:p-2 rounded-full bg-gradient-to-br from-[#FF8F00]/20 to-[#FF8F00]/10 border transition-all duration-300"
               style={{
                 borderColor: isActive && !isNaN(intensity)
                   ? `rgba(255, 143, 0, ${Math.min(0.8, intensity * 2)})`
@@ -144,7 +144,7 @@ export function GlowCard({
               }}
             >
               <IconComponent
-                className="w-6 h-6 text-[#FF8F00] transition-all duration-300"
+                className="w-6 h-6 xl:w-6 xl:h-6 lg:w-5 lg:h-5 text-[#FF8F00] transition-all duration-300"
                 style={{
                   filter: isActive && !isNaN(intensity)
                     ? `drop-shadow(0 0 ${20 * intensity}px rgba(255, 143, 0, ${intensity}))`
@@ -156,11 +156,11 @@ export function GlowCard({
               />
             </div>
           </div>
-          <div className="space-y-3">
-            <h3 className="text-white font-semibold text-sm leading-tight tracking-wide">
+          <div className="space-y-3 xl:space-y-3 lg:space-y-2">
+            <h3 className="text-white font-semibold text-sm xl:text-sm lg:text-xs leading-tight tracking-wide">
               {title}
             </h3>
-            <p className="text-[#999] text-xs leading-relaxed font-medium px-1">
+            <p className="text-[#999] text-xs xl:text-xs lg:text-[10px] leading-relaxed font-medium px-1">
               {description}
             </p>
           </div>
