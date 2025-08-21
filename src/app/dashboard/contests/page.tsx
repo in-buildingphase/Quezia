@@ -103,7 +103,7 @@ export default function Contests() {
               <p className="text-gray-400 text-sm mb-4">Every Saturday • 10:00 AM IST</p>
 
               {/* Timer */}
-              <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0F0F0F] border border-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 mb-4">
+              <div className="bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#262626] rounded-xl p-4 mb-4">
                 <p className="text-gray-400 text-xs mb-1">Starts in:</p>
                 <div className="text-2xl font-bold text-white">{weeklyTimeLeft}</div>
               </div>
@@ -141,7 +141,7 @@ export default function Contests() {
               <p className="text-gray-400 text-sm mb-4">First Sunday • 2:00 PM IST</p>
 
               {/* Timer */}
-              <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0F0F0F] border border-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 mb-4">
+              <div className="bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#262626] rounded-xl p-4 mb-4">
                 <p className="text-gray-400 text-xs mb-1">Starts in:</p>
                 <div className="text-2xl font-bold text-white">{monthlyTimeLeft}</div>
               </div>
