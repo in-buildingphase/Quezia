@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Paperclip, Calculator, Atom, TestTube, Zap } from 'lucide-react';
+import { useMutation, useQuery } from 'convex/react';
+import { useUser } from '@clerk/nextjs';
+import { api } from '../../../convex/_generated/api';
+import { Paperclip, Calculator, Atom, TestTube, Zap, Send, Book, Brain, FileText, Target, Award, Star, Lightbulb, Microscope, Globe, Heart, Home, Music, Camera, Clock } from 'lucide-react';
 
 interface FilterOption {
   id: string;
@@ -13,11 +16,33 @@ interface ChatContainerProps {
   placeholder?: string;
   showFilters?: boolean;
   customFilters?: FilterOption[];
-  onSend?: (message: string, filters: string[]) => void;
   className?: string;
 }
 
-const defaultFilterOptions: FilterOption[] = [
+// Icon mapping for dynamic tags
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Calculator,
+  Atom,
+  TestTube,
+  Zap,
+  Book,
+  Brain,
+  FileText,
+  Target,
+  Award,
+  Star,
+  Lightbulb,
+  Microscope,
+  Globe,
+  Heart,
+  Home,
+  Music,
+  Camera,
+  Clock,
+};
+
+// Fallback options if database is unavailable
+const fallbackFilterOptions: FilterOption[] = [
   { id: 'mathematics', label: 'Mathematics', icon: Calculator },
   { id: 'physics', label: 'Physics', icon: Atom },
   { id: 'chemistry', label: 'Chemistry', icon: TestTube },
@@ -27,12 +52,32 @@ const defaultFilterOptions: FilterOption[] = [
 export function ChatContainer({
   placeholder = "Type your message here...",
   showFilters = true,
-  customFilters = defaultFilterOptions,
-  onSend,
+  customFilters,
   className = ""
 }: ChatContainerProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [message, setMessage] = useState('');
+  const { user } = useUser();
+  
+  // Convex hooks
+  const sendMessage = useMutation(api.messages.sendMessage);
+  const tagsFromDB = useQuery(api.tags.getActiveTags);
+
+  // Convert database tags to FilterOption format
+  const dynamicFilters: FilterOption[] = tagsFromDB?.map((tag: {
+    tagId: string;
+    label: string;
+    icon: string;
+    isActive: boolean;
+    sortOrder: number;
+  }) => ({
+    id: tag.tagId,
+    label: tag.label,
+    icon: iconMap[tag.icon] || Calculator, // Fallback to Calculator if icon not found
+  })) || [];
+
+  // Use custom filters if provided, otherwise use dynamic filters, fallback to hardcoded
+  const filterOptions = customFilters || (dynamicFilters.length > 0 ? dynamicFilters : fallbackFilterOptions);
 
   const toggleFilter = (filterId: string) => {
     setSelectedFilters(prev => 
@@ -42,10 +87,18 @@ export function ChatContainer({
     );
   };
 
-  const handleSend = () => {
-    if (message.trim() && onSend) {
-      onSend(message, selectedFilters);
+  const handleSend = async () => {
+    if (!message.trim() || !user) return;
+
+    try {
+      await sendMessage({
+        userId: user.id,
+        text: message.trim(),
+        tags: selectedFilters
+      });
       setMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
@@ -63,8 +116,10 @@ export function ChatContainer({
 
       {/* Single unified chat container */}
       <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#FF8F00]/0 to-[#FFD54F]/0 focus-within:from-[#FF8F00] focus-within:to-[#FFD54F] transition-all duration-300 z-21">
-        <div className="flex flex-col h-full rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent relative z-22">
-          <div className="flex-shrink-0 p-6 pt-4 mt-auto">
+        <div className="flex flex-col rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent relative z-22">
+          
+          {/* Message Input */}
+          <div className="flex-shrink-0 p-6 pt-4">
             <div className="flex items-end gap-3">
               <textarea
                 value={message}
@@ -83,7 +138,7 @@ export function ChatContainer({
                   <button className="p-2 hover:bg-[#2A2A2A] rounded-lg transition">
                     <Paperclip className="w-4 h-4 text-[#888]" />
                   </button>
-                  {customFilters.map((option) => {
+                  {filterOptions.map((option: FilterOption) => {
                     const isSelected = selectedFilters.includes(option.id);
                     const IconComponent = option.icon;
                     return (
@@ -106,9 +161,10 @@ export function ChatContainer({
                 {/* Right side: send button */}
                 <button 
                   onClick={handleSend}
-                  className="p-3 bg-[#FF8F00] hover:bg-[#FFA000] rounded-lg transition-colors flex-shrink-0"
+                  disabled={!message.trim() || !user}
+                  className="p-3 bg-[#FF8F00] hover:bg-[#FFA000] disabled:bg-[#444] disabled:cursor-not-allowed rounded-lg transition-colors flex-shrink-0"
                 >
-                  <div className="bg-[#AE6E00FF] rounded-full p-2"></div>
+                  <Send className="w-4 h-4 text-white" />
                 </button>
               </div>
             )}

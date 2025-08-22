@@ -8,7 +8,6 @@ import {
   BarChart3,
   History,
   Trophy,
-  Zap,
   Newspaper,
   User,
   HelpCircle,
@@ -26,7 +25,6 @@ const VerticalDockIcon = ({
   className = "",
   children,
   onClick,
-  tooltip,
   isSelected = false,
 }: VerticalDockIconProps) => {
   const [hovered, setHovered] = useState(false);

@@ -25,7 +25,10 @@ export function SearchInput({
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
-            handleSubmit(e as any);
+            e.preventDefault();
+            if (onSearch && query.trim()) {
+                onSearch(query.trim());
+            }
         }
     };
 
