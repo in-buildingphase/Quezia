@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen bg-black flex overflow-hidden">
+    <div className="h-screen bg-[#0C0C0CFF] flex overflow-hidden">
       {/* Fixed Sidebar */}
       <div className="w-20 flex-shrink-0 fixed left-0 top-0 h-full z-10">
         <VerticalDock />

@@ -32,6 +32,7 @@ export default function Hero() {
           <ChatContainer 
             placeholder="Ask me anything about your exams..."
             className="mt-10"
+            glow={true}
           />
 
         </div>
