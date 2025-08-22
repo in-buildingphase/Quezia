@@ -1,4 +1,4 @@
-import { useState, useEffect, RefObject, useRef, useCallback } from "react";
+import { useState, useEffect, RefObject, useRef } from "react";
 
 interface MousePosition {
   x: number;
@@ -105,6 +105,7 @@ export function useGridMousePosition(gridRef: RefObject<HTMLElement | null>) {
     };
     document.addEventListener("mousemove", once, { passive: true });
     return () => document.removeEventListener("mousemove", once);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -140,6 +141,7 @@ export function useGridMousePosition(gridRef: RefObject<HTMLElement | null>) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       ro.disconnect();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridRef, isInitialized]);
 
   return {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Clock, Users, Trophy } from "lucide-react";
 import Image from "next/image";
 
 export default function Contests() {
