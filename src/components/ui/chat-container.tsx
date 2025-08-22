@@ -99,6 +99,7 @@ export function ChatContainer({
         tags: selectedFilters
       });
       setMessage('');
+      setSelectedFilters([]);
     } catch (error) {
       console.error('Failed to send message:', error);
     }
