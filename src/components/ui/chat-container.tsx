@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { useUser } from '@clerk/nextjs';
 import { api } from '../../../convex/_generated/api';
-import { Paperclip, Calculator, Atom, TestTube, Zap, Send, Book, Brain, FileText, Target, Award, Star, Lightbulb, Microscope, Globe, Heart, Home, Music, Camera, Clock } from 'lucide-react';
+import { Settings2, Calculator, Atom, TestTube, Zap, Send, Book, Brain, FileText, Target, Award, Star, Lightbulb, Microscope, Globe, Heart, Home, Music, Camera, Clock } from 'lucide-react';
 
 interface FilterOption {
   id: string;
@@ -17,6 +17,7 @@ interface ChatContainerProps {
   showFilters?: boolean;
   customFilters?: FilterOption[];
   className?: string;
+  glow?: boolean;
 }
 
 // Icon mapping for dynamic tags
@@ -53,7 +54,8 @@ export function ChatContainer({
   placeholder = "Type your message here...",
   showFilters = true,
   customFilters,
-  className = ""
+  className = "",
+  glow = false
 }: ChatContainerProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [message, setMessage] = useState('');
@@ -111,8 +113,10 @@ export function ChatContainer({
 
   return (
     <div className={`group relative w-full max-w-4xl z-20 animate-slide-up-delay-500 ${className}`}>
-      {/* Warm orange glow */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
+      {/* Warm orange glow - conditional */}
+      {glow && (
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
+      )}
 
       {/* Single unified chat container */}
       <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#FF8F00]/0 to-[#FFD54F]/0 focus-within:from-[#FF8F00] focus-within:to-[#FFD54F] transition-all duration-300 z-21">
@@ -136,7 +140,7 @@ export function ChatContainer({
               <div className="flex items-center justify-between w-full mt-4">
                 <div className="flex flex-wrap gap-2">
                   <button className="p-2 hover:bg-[#2A2A2A] rounded-lg transition">
-                    <Paperclip className="w-4 h-4 text-[#888]" />
+                    <Settings2 className="w-5 h-5 text-[#888]" />
                   </button>
                   {filterOptions.map((option: FilterOption) => {
                     const isSelected = selectedFilters.includes(option.id);
