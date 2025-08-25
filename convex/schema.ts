@@ -20,6 +20,10 @@ export default defineSchema({
     text: v.string(), // Message content
     createdAt: v.number(), // Unix timestamp
     tags: v.array(v.string()), // Array of tags for filtering
+    actionDockSettings: v.optional(v.object({
+      numQuestions: v.optional(v.number()),
+      // Add more ActionDock settings here as they are created
+    })), // ActionDock configuration values
   })
     .index("by_userId", ["userId"]) // Index for user's messages
     .index("by_createdAt", ["createdAt"]) // Index for chronological ordering
@@ -36,4 +40,20 @@ export default defineSchema({
   })
     .index("by_tagId", ["tagId"]) // Index for fast lookups by tag ID
     .index("by_active_order", ["isActive", "sortOrder"]), // Index for active tags in order
+
+  actionDockFeatures: defineTable({
+    featureId: v.string(), // Unique feature identifier (e.g., 'numQuestions')
+    heading: v.string(), // Display name (e.g., 'No. of questions')
+    showInfo: v.optional(v.boolean()), // Whether to show info icon
+    type: v.union(v.literal("number"), v.literal("text")), // Input type
+    placeholder: v.optional(v.string()), // Input placeholder
+    defaultValue: v.union(v.string(), v.number()), // Default value
+    min: v.optional(v.number()), // Minimum value for number type
+    max: v.optional(v.number()), // Maximum value for number type
+    isActive: v.boolean(), // Whether feature is currently available
+    sortOrder: v.number(), // Display order (lower numbers first)
+    createdAt: v.number(), // Unix timestamp
+  })
+    .index("by_featureId", ["featureId"]) // Index for fast lookups by feature ID
+    .index("by_active_order", ["isActive", "sortOrder"]), // Index for active features in order
 });
