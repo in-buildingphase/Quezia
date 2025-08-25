@@ -9,6 +9,20 @@ export default defineSchema({
     grade: v.string(),
     dob: v.string(), // Using string for flexibility, can be ISO date string
     phone: v.string(),
+    country: v.optional(v.string()),
+    examPreference: v.optional(v.union(
+      v.literal("JEE"),
+      v.literal("SAT"),
+      v.literal("CUET")
+    )),
+    ageGroup: v.optional(v.union(
+      v.literal("Under 13"),
+      v.literal("13–15"),
+      v.literal("16–18"),
+      v.literal("19–22"),
+      v.literal("23+")
+    )),
+    onboarded: v.optional(v.boolean()),
     createdAt: v.number(), // Unix timestamp
   })
     .index("by_clerkId", ["clerkId"]) // Index for fast lookups by Clerk ID

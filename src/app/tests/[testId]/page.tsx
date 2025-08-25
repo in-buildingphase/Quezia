@@ -131,7 +131,7 @@ export default function TakeTestPage() {
             <div className="min-h-screen bg-black text-[#E0E0E0] flex items-center justify-center px-4">
                 <div className="max-w-md w-full text-center">
                     <div className="text-xl mb-3">Test not found</div>
-                    <button onClick={() => router.push('/tests')} className="text-[#FFB74D]">Go back</button>
+                    <button onClick={() => router.push('/dashboard/home')} className="text-[#FFB74D]">Go back</button>
                 </div>
             </div>
         );
@@ -168,7 +168,7 @@ export default function TakeTestPage() {
 
     return (
         <div className="min-h-screen bg-[#0b0b0b] text-[#E0E0E0]">
-            <TopBar onBack={() => router.push('/tests')} onSubmit={submit} />
+            <TopBar onBack={() => router.push('/dashboard/home')} onSubmit={submit} />
             <QuestionHeader index={progress.index} total={total} onMark={toggleMark} onClear={clearSelection} />
 
             <div className="max-w-6xl mx-auto px-3 sm:px-4 pb-6">
@@ -202,7 +202,7 @@ export default function TakeTestPage() {
                         <div className="mb-4">Score (dummy): <span className="text-[#FFB74D] font-semibold">{correctCount}/{total}</span></div>
                         <div className="flex flex-col sm:flex-row justify-end gap-3">
                             <button onClick={() => setShowSummary(false)} className="px-4 py-2 rounded-xl border bg-[#191919] border-[#333]">Close</button>
-                            <button onClick={() => router.push('/tests')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">Finish</button>
+                            <button onClick={() => router.push('/dashboard/home')} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">Finish</button>
                         </div>
                     </div>
                 </div>
