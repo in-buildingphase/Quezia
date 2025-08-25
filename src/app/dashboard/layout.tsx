@@ -1,12 +1,16 @@
 'use client';
 
 import VerticalDock from '@/components/ui/verticaldock';
+import { useUserSync } from '@/lib/use-user-sync';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Automatically sync user to Convex database when they access the dashboard
+  const { isSyncing, syncError, hasSynced } = useUserSync();
+
   return (
     <div className="h-screen bg-[#0C0C0CFF] flex overflow-hidden">
       {/* Fixed Sidebar */}
