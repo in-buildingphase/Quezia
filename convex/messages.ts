@@ -7,10 +7,7 @@ export const sendMessage = mutation({
     userId: v.string(),
     text: v.string(),
     tags: v.array(v.string()),
-    actionDockSettings: v.optional(v.object({
-      numQuestions: v.optional(v.number()),
-      // Add more ActionDock settings here as they are created
-    })),
+    actionDockSettings: v.optional(v.any()), // Dynamic ActionDock settings
   },
   handler: async (ctx, args) => {
     const { userId, text, tags, actionDockSettings } = args;
