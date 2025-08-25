@@ -3,10 +3,22 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { Id } from '../../../convex/_generated/dataModel';
+
+interface Tag {
+  _id: Id<"tags">;
+  tagId: string;
+  label: string;
+  icon: string;
+  color?: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: number;
+}
 
 export default function TagManager() {
   const [isCreating, setIsCreating] = useState(false);
-  const [editingTag, setEditingTag] = useState<any>(null);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [formData, setFormData] = useState({
     tagId: '',
     label: '',
@@ -53,7 +65,7 @@ export default function TagManager() {
     }
   };
 
-  const handleEdit = (tag: any) => {
+  const handleEdit = (tag: Tag) => {
     setEditingTag(tag);
     setFormData({
       tagId: tag.tagId,
@@ -65,7 +77,7 @@ export default function TagManager() {
     setIsCreating(true);
   };
 
-  const handleDelete = async (tag: any) => {
+  const handleDelete = async (tag: Tag) => {
     if (confirm(`Delete tag "${tag.label}"?`)) {
       try {
         await deleteTag({ id: tag._id });

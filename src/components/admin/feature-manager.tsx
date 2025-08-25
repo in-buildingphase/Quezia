@@ -3,11 +3,39 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { Id } from '../../../convex/_generated/dataModel';
+
+interface ActionDockFeature {
+  _id: Id<"actionDockFeatures">;
+  featureId: string;
+  heading: string;
+  showInfo?: boolean;
+  type: 'number' | 'text' | 'select';
+  placeholder?: string;
+  defaultValue: string | number;
+  min?: number;
+  max?: number;
+  options?: string[];
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: number;
+}
 
 export default function FeatureManager() {
   const [isCreating, setIsCreating] = useState(false);
-  const [editingFeature, setEditingFeature] = useState<any>(null);
-  const [formData, setFormData] = useState({
+  const [editingFeature, setEditingFeature] = useState<ActionDockFeature | null>(null);
+  const [formData, setFormData] = useState<{
+    featureId: string;
+    heading: string;
+    type: 'number' | 'text' | 'select';
+    placeholder: string;
+    defaultValue: string;
+    min: string;
+    max: string;
+    options: string;
+    showInfo: boolean;
+    sortOrder: string;
+  }>({
     featureId: '',
     heading: '',
     type: 'number' as 'number' | 'text' | 'select',
@@ -86,7 +114,7 @@ export default function FeatureManager() {
     }
   };
 
-  const handleEdit = (feature: any) => {
+  const handleEdit = (feature: ActionDockFeature) => {
     setEditingFeature(feature);
     setFormData({
       featureId: feature.featureId,
@@ -103,7 +131,7 @@ export default function FeatureManager() {
     setIsCreating(true);
   };
 
-  const handleDelete = async (feature: any) => {
+  const handleDelete = async (feature: ActionDockFeature) => {
     if (confirm(`Delete feature "${feature.heading}"?`)) {
       try {
         await deleteFeature({ featureId: feature.featureId });

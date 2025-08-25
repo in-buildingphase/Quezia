@@ -25,17 +25,15 @@ interface Feature {
 
 export default function ActionDock({
   isOpen,
-  onClose,
   onValuesChange,
 }: {
   isOpen: boolean;
-  onClose: () => void;
-  onValuesChange?: (values: Record<string, any>) => void;
+  onValuesChange?: (values: Record<string, string | number>) => void;
 }) {
   // Fetch features from database
   const featuresFromDB = useQuery(api.actionDockFeatures.getActiveFeatures);
   
-  const [values, setValues] = useState<Record<string, any>>({});
+  const [values, setValues] = useState<Record<string, string | number>>({});
 
   // Initialize values when features are loaded
   useEffect(() => {
@@ -49,7 +47,7 @@ export default function ActionDock({
     }
   }, [featuresFromDB, onValuesChange]);
 
-  const handleChange = (featureId: string, val: any) => {
+  const handleChange = (featureId: string, val: string | number) => {
     const newValues = { ...values, [featureId]: val };
     setValues(newValues);
     // Immediately notify parent of changes
