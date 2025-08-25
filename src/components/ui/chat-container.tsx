@@ -120,10 +120,7 @@ export function ChatContainer({
         userId: user?.id || 'anonymous',
         text: message.trim(),
         tags: selectedFilters,
-        actionDockSettings: {
-          numQuestions: actionDockValues.numQuestions || 10,
-          // Add more ActionDock settings here as they are created
-        },
+        actionDockSettings: actionDockValues, // Send all ActionDock values dynamically
       });
       setMessage('');
       setSelectedFilters([]);

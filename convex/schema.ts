@@ -20,10 +20,7 @@ export default defineSchema({
     text: v.string(), // Message content
     createdAt: v.number(), // Unix timestamp
     tags: v.array(v.string()), // Array of tags for filtering
-    actionDockSettings: v.optional(v.object({
-      numQuestions: v.optional(v.number()),
-      // Add more ActionDock settings here as they are created
-    })), // ActionDock configuration values
+    actionDockSettings: v.optional(v.any()), // ActionDock configuration values (dynamic based on features)
   })
     .index("by_userId", ["userId"]) // Index for user's messages
     .index("by_createdAt", ["createdAt"]) // Index for chronological ordering
@@ -45,11 +42,12 @@ export default defineSchema({
     featureId: v.string(), // Unique feature identifier (e.g., 'numQuestions')
     heading: v.string(), // Display name (e.g., 'No. of questions')
     showInfo: v.optional(v.boolean()), // Whether to show info icon
-    type: v.union(v.literal("number"), v.literal("text")), // Input type
+    type: v.union(v.literal("number"), v.literal("text"), v.literal("select")), // Input type
     placeholder: v.optional(v.string()), // Input placeholder
     defaultValue: v.union(v.string(), v.number()), // Default value
     min: v.optional(v.number()), // Minimum value for number type
     max: v.optional(v.number()), // Maximum value for number type
+    options: v.optional(v.array(v.string())), // Options for select type (e.g., ["Easy", "Medium", "Hard"])
     isActive: v.boolean(), // Whether feature is currently available
     sortOrder: v.number(), // Display order (lower numbers first)
     createdAt: v.number(), // Unix timestamp

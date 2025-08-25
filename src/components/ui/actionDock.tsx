@@ -12,11 +12,12 @@ interface Feature {
   featureId: string;
   heading: string;
   showInfo?: boolean;
-  type: 'number' | 'text';
+  type: 'number' | 'text' | 'select';
   placeholder?: string;
   defaultValue: string | number;
   min?: number;
   max?: number;
+  options?: string[];
   isActive: boolean;
   sortOrder: number;
   createdAt: number;
@@ -98,6 +99,34 @@ export default function ActionDock({
                     placeholder={f.placeholder}
                     className="w-20 px-3 py-2 rounded-lg bg-[#2A2A2A] text-white border border-[#444] text-center outline-none focus:border-[#FF8F00] focus:ring-1 focus:ring-[#FF8F00]"
                   />
+                )}
+
+                {f.type === 'text' && (
+                  <input
+                    type="text"
+                    value={values[f.featureId] || f.defaultValue}
+                    onChange={(e) =>
+                      handleChange(f.featureId, e.target.value)
+                    }
+                    placeholder={f.placeholder}
+                    className="w-32 px-3 py-2 rounded-lg bg-[#2A2A2A] text-white border border-[#444] outline-none focus:border-[#FF8F00] focus:ring-1 focus:ring-[#FF8F00]"
+                  />
+                )}
+
+                {f.type === 'select' && f.options && (
+                  <select
+                    value={values[f.featureId] || f.defaultValue}
+                    onChange={(e) =>
+                      handleChange(f.featureId, e.target.value)
+                    }
+                    className="w-32 px-3 py-2 rounded-lg bg-[#2A2A2A] text-white border border-[#444] outline-none focus:border-[#FF8F00] focus:ring-1 focus:ring-[#FF8F00]"
+                  >
+                    {f.options.map((option) => (
+                      <option key={option} value={option} className="bg-[#2A2A2A] text-white">
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 )}
               </div>
             ))}
