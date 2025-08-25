@@ -25,7 +25,9 @@ export function PillButton({
         outline: "bg-transparent text-[#E0E0E0] border border-[#FFB74D]/50 hover:border-[#FFB74D] hover:bg-[#FFB74D]/10"
     };
 
-    const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;
+    // Use active variant if isActive is true, otherwise use the specified variant
+    const finalVariant = isActive ? "active" : variant;
+    const classes = `${baseClasses} ${variantClasses[finalVariant]} ${className}`;
 
     return (
         <button
