@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { useUser } from '@clerk/nextjs';
 import { api } from '../../../convex/_generated/api';
 import { Settings2, Calculator, Atom, TestTube, Zap, Send, Book, Brain, FileText, Target, Award, Star, Lightbulb, Microscope, Globe, Heart, Home, Music, Camera, Clock } from 'lucide-react';
+import ActionDock from './actionDock';
 
 interface FilterOption {
   id: string;
@@ -59,11 +60,33 @@ export function ChatContainer({
 }: ChatContainerProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [message, setMessage] = useState('');
+  const [isActionDockOpen, setIsActionDockOpen] = useState(false);
+  const [actionDockValues, setActionDockValues] = useState<Record<string, any>>({
+    numQuestions: 10 // Default value
+  });
   const { user } = useUser();
+  const settingsContainerRef = useRef<HTMLDivElement>(null);
   
   // Convex hooks
   const sendMessage = useMutation(api.messages.sendMessage);
   const tagsFromDB = useQuery(api.tags.getActiveTags);
+
+  // Handle click outside to close ActionDock
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsContainerRef.current && !settingsContainerRef.current.contains(event.target as Node) && isActionDockOpen) {
+        setIsActionDockOpen(false);
+      }
+    };
+
+    if (isActionDockOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isActionDockOpen]);
 
   // Convert database tags to FilterOption format
   const dynamicFilters: FilterOption[] = tagsFromDB?.map((tag: {
@@ -90,13 +113,17 @@ export function ChatContainer({
   };
 
   const handleSend = async () => {
-    if (!message.trim() || !user) return;
+    if (!message.trim()) return;
 
     try {
       await sendMessage({
-        userId: user.id,
+        userId: user?.id || 'anonymous',
         text: message.trim(),
-        tags: selectedFilters
+        tags: selectedFilters,
+        actionDockSettings: {
+          numQuestions: actionDockValues.numQuestions || 10,
+          // Add more ActionDock settings here as they are created
+        },
       });
       setMessage('');
       setSelectedFilters([]);
@@ -140,9 +167,20 @@ export function ChatContainer({
             {showFilters && (
               <div className="flex items-center justify-between w-full mt-4">
                 <div className="flex flex-wrap gap-2">
-                  <button className="p-2 hover:bg-[#2A2A2A] rounded-lg transition">
-                    <Settings2 className="w-5 h-5 text-[#888]" />
-                  </button>
+                  <div className="relative" ref={settingsContainerRef}>
+                      <button 
+                        onClick={() => setIsActionDockOpen((prev) => !prev)}
+                        className="p-2 hover:bg-[#2A2A2A] rounded-lg transition"
+                      >
+                        <Settings2 className="w-5 h-5 text-[#888]" />
+                      </button>
+
+                      <ActionDock 
+                        isOpen={isActionDockOpen} 
+                        onClose={() => setIsActionDockOpen(false)}
+                        onValuesChange={setActionDockValues}
+                      />
+                    </div>
                   {filterOptions.map((option: FilterOption) => {
                     const isSelected = selectedFilters.includes(option.id);
                     const IconComponent = option.icon;
@@ -166,7 +204,7 @@ export function ChatContainer({
                 {/* Right side: send button */}
                 <button 
                   onClick={handleSend}
-                  disabled={!message.trim() || !user}
+                  disabled={!message.trim()}
                   className="p-3 bg-[#FF8F00] hover:bg-[#FFA000] disabled:bg-[#444] disabled:cursor-not-allowed rounded-lg transition-colors flex-shrink-0"
                 >
                   <Send className="w-4 h-4 text-white" />

@@ -7,15 +7,20 @@ export const sendMessage = mutation({
     userId: v.string(),
     text: v.string(),
     tags: v.array(v.string()),
+    actionDockSettings: v.optional(v.object({
+      numQuestions: v.optional(v.number()),
+      // Add more ActionDock settings here as they are created
+    })),
   },
   handler: async (ctx, args) => {
-    const { userId, text, tags } = args;
+    const { userId, text, tags, actionDockSettings } = args;
 
     // Insert the message into the database
     const messageId = await ctx.db.insert("messages", {
       userId,
       text,
       tags,
+      actionDockSettings,
       createdAt: Date.now(),
     });
 

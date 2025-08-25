@@ -35,7 +35,7 @@ export const createTag = mutation({
     label: v.string(),
     icon: v.string(),
     color: v.optional(v.string()),
-    sortOrder: v.number(),
+    sortOrder: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const { tagId, label, icon, color, sortOrder } = args;
@@ -50,13 +50,17 @@ export const createTag = mutation({
       throw new Error(`Tag with ID "${tagId}" already exists`);
     }
 
+    // Get the highest sort order for new tags if not provided
+    const allTags = await ctx.db.query("tags").collect();
+    const maxSortOrder = Math.max(...allTags.map(t => t.sortOrder), 0);
+
     const id = await ctx.db.insert("tags", {
       tagId,
       label,
       icon,
       color,
       isActive: true,
-      sortOrder,
+      sortOrder: sortOrder ?? maxSortOrder + 1,
       createdAt: Date.now(),
     });
 
@@ -128,43 +132,5 @@ export const swapTagOrder = mutation({
     await ctx.db.patch(id2, { sortOrder: tempOrder });
 
     return { success: true };
-  },
-});
-
-// Mutation to seed initial tags (run once)
-export const seedTags = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const defaultTags = [
-      { tagId: 'mathematics', label: 'Mathematics', icon: 'Calculator', sortOrder: 1 },
-      { tagId: 'physics', label: 'Physics', icon: 'Atom', sortOrder: 2 },
-      { tagId: 'chemistry', label: 'Chemistry', icon: 'TestTube', sortOrder: 3 },
-      { tagId: 'surprise', label: 'Surprise Test', icon: 'Zap', sortOrder: 4 },
-    ];
-
-    const insertedIds = [];
-
-    for (const tag of defaultTags) {
-      // Check if tag already exists
-      const existing = await ctx.db
-        .query("tags")
-        .withIndex("by_tagId", (q) => q.eq("tagId", tag.tagId))
-        .first();
-
-      if (!existing) {
-        const id = await ctx.db.insert("tags", {
-          ...tag,
-          isActive: true,
-          createdAt: Date.now(),
-        });
-        insertedIds.push(id);
-      }
-    }
-
-    return {
-      success: true,
-      insertedCount: insertedIds.length,
-      tagIds: insertedIds,
-    };
   },
 });
