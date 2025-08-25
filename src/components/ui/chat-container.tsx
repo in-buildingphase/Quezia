@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Paperclip, Calculator, Atom, TestTube, Zap } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useMutation, useQuery } from 'convex/react';
+import { useUser } from '@clerk/nextjs';
+import { api } from '../../../convex/_generated/api';
+import { Settings2, Calculator, Atom, TestTube, Zap, Send, Book, Brain, FileText, Target, Award, Star, Lightbulb, Microscope, Globe, Heart, Home, Music, Camera, Clock } from 'lucide-react';
+import ActionDock from './actionDock';
 
 interface FilterOption {
   id: string;
@@ -13,11 +17,34 @@ interface ChatContainerProps {
   placeholder?: string;
   showFilters?: boolean;
   customFilters?: FilterOption[];
-  onSend?: (message: string, filters: string[]) => void;
   className?: string;
+  glow?: boolean;
 }
 
-const defaultFilterOptions: FilterOption[] = [
+// Icon mapping for dynamic tags
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Calculator,
+  Atom,
+  TestTube,
+  Zap,
+  Book,
+  Brain,
+  FileText,
+  Target,
+  Award,
+  Star,
+  Lightbulb,
+  Microscope,
+  Globe,
+  Heart,
+  Home,
+  Music,
+  Camera,
+  Clock,
+};
+
+// Fallback options if database is unavailable
+const fallbackFilterOptions: FilterOption[] = [
   { id: 'mathematics', label: 'Mathematics', icon: Calculator },
   { id: 'physics', label: 'Physics', icon: Atom },
   { id: 'chemistry', label: 'Chemistry', icon: TestTube },
@@ -27,12 +54,55 @@ const defaultFilterOptions: FilterOption[] = [
 export function ChatContainer({
   placeholder = "Type your message here...",
   showFilters = true,
-  customFilters = defaultFilterOptions,
-  onSend,
-  className = ""
+  customFilters,
+  className = "",
+  glow = false
 }: ChatContainerProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [message, setMessage] = useState('');
+  const [isActionDockOpen, setIsActionDockOpen] = useState(false);
+  const [actionDockValues, setActionDockValues] = useState<Record<string, string | number>>({
+    numQuestions: 10 // Default value
+  });
+  const { user } = useUser();
+  const settingsContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Convex hooks
+  const sendMessage = useMutation(api.messages.sendMessage);
+  const tagsFromDB = useQuery(api.tags.getActiveTags);
+
+  // Handle click outside to close ActionDock
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsContainerRef.current && !settingsContainerRef.current.contains(event.target as Node) && isActionDockOpen) {
+        setIsActionDockOpen(false);
+      }
+    };
+
+    if (isActionDockOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isActionDockOpen]);
+
+  // Convert database tags to FilterOption format
+  const dynamicFilters: FilterOption[] = tagsFromDB?.map((tag: {
+    tagId: string;
+    label: string;
+    icon: string;
+    isActive: boolean;
+    sortOrder: number;
+  }) => ({
+    id: tag.tagId,
+    label: tag.label,
+    icon: iconMap[tag.icon] || Calculator, // Fallback to Calculator if icon not found
+  })) || [];
+
+  // Use custom filters if provided, otherwise use dynamic filters, fallback to hardcoded
+  const filterOptions = customFilters || (dynamicFilters.length > 0 ? dynamicFilters : fallbackFilterOptions);
 
   const toggleFilter = (filterId: string) => {
     setSelectedFilters(prev => 
@@ -42,10 +112,20 @@ export function ChatContainer({
     );
   };
 
-  const handleSend = () => {
-    if (message.trim() && onSend) {
-      onSend(message, selectedFilters);
+  const handleSend = async () => {
+    if (!message.trim()) return;
+
+    try {
+      await sendMessage({
+        userId: user?.id || 'anonymous',
+        text: message.trim(),
+        tags: selectedFilters,
+        actionDockSettings: actionDockValues, // Send all ActionDock values dynamically
+      });
       setMessage('');
+      setSelectedFilters([]);
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
@@ -58,13 +138,17 @@ export function ChatContainer({
 
   return (
     <div className={`group relative w-full max-w-4xl z-20 animate-slide-up-delay-500 ${className}`}>
-      {/* Warm orange glow */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
+      {/* Warm orange glow - conditional */}
+      {glow && (
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-32 w-[90%] rounded-full bg-[#FF8F00]/40 blur-3xl lg:h-30" />
+      )}
 
       {/* Single unified chat container */}
       <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-[#FF8F00]/0 to-[#FFD54F]/0 focus-within:from-[#FF8F00] focus-within:to-[#FFD54F] transition-all duration-300 z-21">
-        <div className="flex flex-col h-full rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent relative z-22">
-          <div className="flex-shrink-0 p-6 pt-4 mt-auto">
+        <div className="flex flex-col rounded-2xl bg-[#1A1A1A] border border-[#333] focus-within:border-transparent relative z-22">
+          
+          {/* Message Input */}
+          <div className="flex-shrink-0 p-6 pt-4">
             <div className="flex items-end gap-3">
               <textarea
                 value={message}
@@ -80,10 +164,20 @@ export function ChatContainer({
             {showFilters && (
               <div className="flex items-center justify-between w-full mt-4">
                 <div className="flex flex-wrap gap-2">
-                  <button className="p-2 hover:bg-[#2A2A2A] rounded-lg transition">
-                    <Paperclip className="w-4 h-4 text-[#888]" />
-                  </button>
-                  {customFilters.map((option) => {
+                  <div className="relative" ref={settingsContainerRef}>
+                      <button 
+                        onClick={() => setIsActionDockOpen((prev) => !prev)}
+                        className="p-2 hover:bg-[#2A2A2A] rounded-lg transition"
+                      >
+                        <Settings2 className="w-5 h-5 text-[#888]" />
+                      </button>
+
+                      <ActionDock 
+                        isOpen={isActionDockOpen} 
+                        onValuesChange={setActionDockValues}
+                      />
+                    </div>
+                  {filterOptions.map((option: FilterOption) => {
                     const isSelected = selectedFilters.includes(option.id);
                     const IconComponent = option.icon;
                     return (
@@ -106,9 +200,10 @@ export function ChatContainer({
                 {/* Right side: send button */}
                 <button 
                   onClick={handleSend}
-                  className="p-3 bg-[#FF8F00] hover:bg-[#FFA000] rounded-lg transition-colors flex-shrink-0"
+                  disabled={!message.trim()}
+                  className="p-3 bg-[#FF8F00] hover:bg-[#FFA000] disabled:bg-[#444] disabled:cursor-not-allowed rounded-lg transition-colors flex-shrink-0"
                 >
-                  <div className="bg-[#AE6E00FF] rounded-full p-2"></div>
+                  <Send className="w-4 h-4 text-white" />
                 </button>
               </div>
             )}

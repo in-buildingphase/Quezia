@@ -1,9 +1,15 @@
 'use client';
 
 import { useState } from "react";
-import { Check, BookOpen, Brain, TrendingUp, Award, Zap, Shield, Target, ChevronDown, ChevronUp } from "lucide-react"
+import { Check, BookOpen, Brain, TrendingUp, Award, Zap, Target, ChevronDown, ChevronUp } from "lucide-react"
 
 import { GoldenText } from "./goldentext";
+
+interface Feature {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+  included?: boolean;
+}
 
 const freeFeatures = [
   {
@@ -79,7 +85,7 @@ export default function PricingCards() {
   const [showAllPremium, setShowAllPremium] = useState(false);
 
   // Show only first 3 features on mobile/tablet unless expanded
-  const getVisibleFeatures = (features: any[], showAll: boolean) => {
+  const getVisibleFeatures = (features: Feature[], showAll: boolean) => {
     return showAll ? features : features.slice(0, 3);
   };
 
