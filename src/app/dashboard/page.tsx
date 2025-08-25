@@ -11,12 +11,5 @@ export default function Dashboard() {
     router.push('/dashboard/home');
   }, [router]);
 
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF8F00] mx-auto mb-4"></div>
-        <p className="text-[#B0B0B0]">Loading...</p>
-      </div>
-    </div>
-  );
+  return null;
 }
