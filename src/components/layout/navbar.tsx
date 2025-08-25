@@ -110,7 +110,7 @@ export default function Navbar() {
                     {link.name}
                   </a>
                 ))}
-                <Link href="/tests" className="text-white/90 text-sm font-medium hover:text-[#FFB74D] transition-colors duration-300">
+                <Link href="/dashboard/home" className="text-white/90 text-sm font-medium hover:text-[#FFB74D] transition-colors duration-300">
                   Tests
                 </Link>
               </div>
@@ -166,7 +166,7 @@ export default function Navbar() {
                   </a>
                 ))}
                 <Link
-                  href="/tests"
+                  href="/dashboard/home"
                   onClick={closeMenu}
                   className="block text-white/90 text-base font-medium py-3 px-4 rounded-lg hover:bg-white/10 hover:text-[#FFB74D] transition-all duration-300"
                 >

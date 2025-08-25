@@ -31,6 +31,7 @@ export const createUser = mutation({
     // Create new user
     const userId = await ctx.db.insert("users", {
       ...args,
+      onboarded: false,
       createdAt: Date.now(),
     });
 
@@ -49,6 +50,39 @@ export const getUserByClerkId = query({
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .first();
+  },
+});
+
+export const updateOnboarding = mutation({
+  args: {
+    clerkId: v.string(),
+    country: v.string(),
+    examPreference: v.union(
+      v.literal("JEE"),
+      v.literal("SAT"),
+      v.literal("CUET")
+    ),
+    ageGroup: v.union(
+      v.literal("Under 13"),
+      v.literal("13–15"),
+      v.literal("16–18"),
+      v.literal("19–22"),
+      v.literal("23+")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .first();
+    if (!user) throw new Error("User not found");
+    await ctx.db.patch(user._id, {
+      country: args.country,
+      examPreference: args.examPreference,
+      ageGroup: args.ageGroup,
+      onboarded: true,
+    });
+    return user._id;
   },
 });
 
