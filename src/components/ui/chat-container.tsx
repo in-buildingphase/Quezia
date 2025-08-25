@@ -61,7 +61,7 @@ export function ChatContainer({
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [isActionDockOpen, setIsActionDockOpen] = useState(false);
-  const [actionDockValues, setActionDockValues] = useState<Record<string, any>>({
+  const [actionDockValues, setActionDockValues] = useState<Record<string, string | number>>({
     numQuestions: 10 // Default value
   });
   const { user } = useUser();
@@ -174,7 +174,6 @@ export function ChatContainer({
 
                       <ActionDock 
                         isOpen={isActionDockOpen} 
-                        onClose={() => setIsActionDockOpen(false)}
                         onValuesChange={setActionDockValues}
                       />
                     </div>
