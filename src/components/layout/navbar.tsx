@@ -110,6 +110,9 @@ export default function Navbar() {
                     {link.name}
                   </a>
                 ))}
+                <Link href="/tests" className="text-white/90 text-sm font-medium hover:text-[#FFB74D] transition-colors duration-300">
+                  Tests
+                </Link>
               </div>
 
               {/* Desktop Buttons */}
@@ -162,6 +165,13 @@ export default function Navbar() {
                     {link.name}
                   </a>
                 ))}
+                <Link
+                  href="/tests"
+                  onClick={closeMenu}
+                  className="block text-white/90 text-base font-medium py-3 px-4 rounded-lg hover:bg-white/10 hover:text-[#FFB74D] transition-all duration-300"
+                >
+                  Tests
+                </Link>
               </div>
 
               {/* Mobile Buttons */}
@@ -176,7 +186,7 @@ export default function Navbar() {
                 </Link>
 
                 <Link
-                  href="sign-in"
+                  href="/sign-in"
                   onClick={closeMenu}
                   className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium rounded-full bg-gradient-to-r from-[#FF8F00] to-[#FFA000] text-black hover:from-[#FFA000] hover:to-[#FFB74D] shadow-lg transition-all duration-300"
                 >
