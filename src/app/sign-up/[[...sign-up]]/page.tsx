@@ -21,6 +21,7 @@ export default function SignUpPage() {
 
                 <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-8" style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
                     <SignUp
+                        redirectUrl="/onboarding"
                         appearance={{
                             elements: {
                                 formButtonPrimary:
@@ -37,7 +38,7 @@ export default function SignUpPage() {
                                 formResendCodeLink: "text-[#FFB74D] hover:text-[#FFCC80]",
                             },
                         }}
-                        redirectUrl="/onboarding"
+                        redirectUrl="/dashboard/home"
                         signInUrl="/sign-in"
                     />
                 </div>

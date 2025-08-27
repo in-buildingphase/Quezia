@@ -13,10 +13,18 @@ export function useUserSync() {
   const createUser = useMutation(api.users.createUser);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [hasSynced, setHasSynced] = useState(false);
 
   useEffect(() => {
-    // Only proceed if user is loaded and signed in
+    // Reset sync state when user changes
     if (!isLoaded || !isSignedIn || !user) {
+      setHasSynced(false);
+      setSyncError(null);
+      return;
+    }
+
+    // Don't sync again if already synced for this user
+    if (hasSynced) {
       return;
     }
 
@@ -49,6 +57,7 @@ export function useUserSync() {
         const userId = await createUser(userData);
         
         console.log("User synced to Convex successfully:", userId);
+        setHasSynced(true);
       } catch (error) {
         console.error("Error syncing user to Convex:", error);
         setSyncError(error instanceof Error ? error.message : "Unknown error occurred");
@@ -61,11 +70,12 @@ export function useUserSync() {
     const timeoutId = setTimeout(syncUserToConvex, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [isLoaded, isSignedIn, user, createUser]);
+  }, [isLoaded, isSignedIn, user, createUser, hasSynced]);
 
   return {
     isSyncing,
     syncError,
+    hasSynced,
     user,
     isLoaded,
     isSignedIn,
