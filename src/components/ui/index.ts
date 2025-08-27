@@ -1,6 +1,6 @@
 export { ChatContainer} from './chat-container';
 export { AnimatedGradientBadge } from './animatedgradienttext';
-export { default as Cards } from './cards';
+export { default as Cards } from './planCards';
 export { GlowCard } from './glow-card';
 export { GoldenText } from './goldentext';
 export { MainHeading } from './main-heading';

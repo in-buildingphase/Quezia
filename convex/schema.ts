@@ -68,4 +68,18 @@ export default defineSchema({
   })
     .index("by_featureId", ["featureId"]) // Index for fast lookups by feature ID
     .index("by_active_order", ["isActive", "sortOrder"]), // Index for active features in order
+
+  exams: defineTable({
+    examId: v.string(), // Unique exam identifier (e.g., 'jee', 'neet', 'cuet', 'sat')
+    name: v.string(), // Full exam name (e.g., 'Joint Entrance Examination')
+    shortName: v.string(), // Short name for display (e.g., 'JEE', 'NEET')
+    description: v.string(), // Brief description of the exam
+    iconPath: v.string(), // Path to the exam icon (e.g., '/assets/images/jeeIcon.svg')
+    price: v.number(), // Price in your currency (e.g., 299, 499, 0 for free)
+    isActive: v.boolean(), // Whether exam is currently available
+    sortOrder: v.number(), // Display order (lower numbers first)
+    createdAt: v.number(), // Unix timestamp
+  })
+    .index("by_examId", ["examId"]) // Index for fast lookups by exam ID
+    .index("by_active_order", ["isActive", "sortOrder"]), // Index for active exams in order
 });

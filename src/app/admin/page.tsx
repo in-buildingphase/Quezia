@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import TagManager from '../../components/admin/tag-manager';
 import FeatureManager from '../../components/admin/feature-manager';
+import ExamManager from '../../components/admin/exam-manager';
 
 type AdminSection = {
   id: string;
@@ -12,6 +13,12 @@ type AdminSection = {
 };
 
 const adminSections: AdminSection[] = [
+  {
+    id: 'exams',
+    label: 'Exam Management',
+    component: ExamManager,
+    description: 'Add, edit, and manage available exams'
+  },
   {
     id: 'tags',
     label: 'Tags Management',

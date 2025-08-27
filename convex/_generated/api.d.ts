@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as actionDockFeatures from "../actionDockFeatures.js";
+import type * as exams from "../exams.js";
 import type * as messages from "../messages.js";
 import type * as tags from "../tags.js";
 import type * as users from "../users.js";
@@ -28,6 +29,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   actionDockFeatures: typeof actionDockFeatures;
+  exams: typeof exams;
   messages: typeof messages;
   tags: typeof tags;
   users: typeof users;
