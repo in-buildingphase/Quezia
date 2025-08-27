@@ -37,7 +37,7 @@ export default function SignInPage() {
                                 formResendCodeLink: "text-[#FFB74D] hover:text-[#FFCC80]",
                             },
                         }}
-                        redirectUrl="/dashboard"
+                        redirectUrl="/dashboard/home"
                         signUpUrl="/sign-up"
                     />
                 </div>
