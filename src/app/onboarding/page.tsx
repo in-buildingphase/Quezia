@@ -40,8 +40,8 @@ export default function OnboardingPage() {
             await updateOnboarding({
                 clerkId: user.id,
                 country,
-                examPreference: examPreference as any,
-                ageGroup: ageGroup as any,
+                examPreference: examPreference as "JEE" | "SAT" | "CUET",
+                ageGroup: ageGroup as "Under 13" | "13–15" | "16–18" | "19–22" | "23+",
             });
             router.replace("/dashboard");
         } catch (err) {

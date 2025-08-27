@@ -28,7 +28,7 @@ export const createUser = mutation({
       return existingUser._id;
     }
 
-    // Create new user
+    // Create new user with default free subscription
     const userId = await ctx.db.insert("users", {
       ...args,
       onboarded: false,
@@ -157,10 +157,11 @@ export const updateUser = mutation({
     grade: v.optional(v.string()),
     dob: v.optional(v.string()),
     phone: v.optional(v.string()),
+    courseEnrolled: v.optional(v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT"))),
   },
   handler: async (ctx, args) => {
     const { clerkId, ...updates } = args;
-    
+
     // Find the user first
     const user = await ctx.db
       .query("users")
@@ -182,3 +183,5 @@ export const updateUser = mutation({
     return user._id;
   },
 });
+
+
