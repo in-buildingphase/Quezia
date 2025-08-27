@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   // Automatically sync user to Convex database when they access the dashboard
-  const { isSyncing, syncError, hasSynced } = useUserSync();
+  useUserSync();
 
   return (
     <div className="h-screen bg-[#0C0C0CFF] flex overflow-hidden">
