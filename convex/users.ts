@@ -28,9 +28,11 @@ export const createUser = mutation({
       return existingUser._id;
     }
 
-    // Create new user
+    // Create new user with default free subscription
     const userId = await ctx.db.insert("users", {
       ...args,
+      subscriptionType: "free" as const,
+      courseEnrolled: undefined,
       createdAt: Date.now(),
     });
 
@@ -123,6 +125,8 @@ export const updateUser = mutation({
     grade: v.optional(v.string()),
     dob: v.optional(v.string()),
     phone: v.optional(v.string()),
+    subscriptionType: v.optional(v.union(v.literal("free"), v.literal("premium"))),
+    courseEnrolled: v.optional(v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT"))),
   },
   handler: async (ctx, args) => {
     const { clerkId, ...updates } = args;
@@ -146,5 +150,48 @@ export const updateUser = mutation({
 
     console.log(`Updated user with clerkId ${clerkId}:`, updateData);
     return user._id;
+  },
+});
+
+/**
+ * Upgrade user to premium and enroll in a course
+ */
+export const upgradeUserToPremium = mutation({
+  args: {
+    clerkId: v.string(),
+    courseEnrolled: v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT")),
+  },
+  handler: async (ctx, args) => {
+    // Find the user first
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Update to premium with course enrollment
+    await ctx.db.patch(user._id, {
+      subscriptionType: "premium" as const,
+      courseEnrolled: args.courseEnrolled,
+    });
+
+    console.log(`Upgraded user ${args.clerkId} to premium with course: ${args.courseEnrolled}`);
+    return user._id;
+  },
+});
+
+/**
+ * Get users by subscription type
+ */
+export const getUsersBySubscription = query({
+  args: { subscriptionType: v.union(v.literal("free"), v.literal("premium")) },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_subscriptionType", (q) => q.eq("subscriptionType", args.subscriptionType))
+      .collect();
   },
 });

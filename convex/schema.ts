@@ -9,11 +9,14 @@ export default defineSchema({
     grade: v.string(),
     dob: v.string(), // Using string for flexibility, can be ISO date string
     phone: v.string(),
+    subscriptionType: v.union(v.literal("free"), v.literal("premium")), // Subscription status
+    courseEnrolled: v.optional(v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT"))), // Course enrollment for premium users
     createdAt: v.number(), // Unix timestamp
   })
     .index("by_clerkId", ["clerkId"]) // Index for fast lookups by Clerk ID
     .index("by_email", ["email"]) // Index for email lookups
-    .index("by_username", ["username"]), // Index for username lookups
+    .index("by_username", ["username"]) // Index for username lookups
+    .index("by_subscriptionType", ["subscriptionType"]), // Index for subscription filtering
 
   messages: defineTable({
     userId: v.string(), // User ID who sent the message
