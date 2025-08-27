@@ -9,14 +9,25 @@ export default defineSchema({
     grade: v.string(),
     dob: v.string(), // Using string for flexibility, can be ISO date string
     phone: v.string(),
-    subscriptionType: v.union(v.literal("free"), v.literal("premium")), // Subscription status
-    courseEnrolled: v.optional(v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT"))), // Course enrollment for premium users
+    country: v.optional(v.string()),
+    examPreference: v.optional(v.union(
+      v.literal("JEE"),
+      v.literal("SAT"),
+      v.literal("CUET")
+    )),
+    ageGroup: v.optional(v.union(
+      v.literal("Under 13"),
+      v.literal("13–15"),
+      v.literal("16–18"),
+      v.literal("19–22"),
+      v.literal("23+")
+    )),
+    onboarded: v.optional(v.boolean()),
     createdAt: v.number(), // Unix timestamp
   })
     .index("by_clerkId", ["clerkId"]) // Index for fast lookups by Clerk ID
     .index("by_email", ["email"]) // Index for email lookups
-    .index("by_username", ["username"]) // Index for username lookups
-    .index("by_subscriptionType", ["subscriptionType"]), // Index for subscription filtering
+    .index("by_username", ["username"]), // Index for username lookups
 
   messages: defineTable({
     userId: v.string(), // User ID who sent the message

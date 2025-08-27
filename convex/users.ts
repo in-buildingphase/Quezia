@@ -31,8 +31,7 @@ export const createUser = mutation({
     // Create new user with default free subscription
     const userId = await ctx.db.insert("users", {
       ...args,
-      subscriptionType: "free" as const,
-      courseEnrolled: undefined,
+      onboarded: false,
       createdAt: Date.now(),
     });
 
@@ -51,6 +50,39 @@ export const getUserByClerkId = query({
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .first();
+  },
+});
+
+export const updateOnboarding = mutation({
+  args: {
+    clerkId: v.string(),
+    country: v.string(),
+    examPreference: v.union(
+      v.literal("JEE"),
+      v.literal("SAT"),
+      v.literal("CUET")
+    ),
+    ageGroup: v.union(
+      v.literal("Under 13"),
+      v.literal("13–15"),
+      v.literal("16–18"),
+      v.literal("19–22"),
+      v.literal("23+")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .first();
+    if (!user) throw new Error("User not found");
+    await ctx.db.patch(user._id, {
+      country: args.country,
+      examPreference: args.examPreference,
+      ageGroup: args.ageGroup,
+      onboarded: true,
+    });
+    return user._id;
   },
 });
 
@@ -125,12 +157,11 @@ export const updateUser = mutation({
     grade: v.optional(v.string()),
     dob: v.optional(v.string()),
     phone: v.optional(v.string()),
-    subscriptionType: v.optional(v.union(v.literal("free"), v.literal("premium"))),
     courseEnrolled: v.optional(v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT"))),
   },
   handler: async (ctx, args) => {
     const { clerkId, ...updates } = args;
-    
+
     // Find the user first
     const user = await ctx.db
       .query("users")
@@ -153,45 +184,4 @@ export const updateUser = mutation({
   },
 });
 
-/**
- * Upgrade user to premium and enroll in a course
- */
-export const upgradeUserToPremium = mutation({
-  args: {
-    clerkId: v.string(),
-    courseEnrolled: v.union(v.literal("JEE"), v.literal("NEET"), v.literal("CUET"), v.literal("SAT")),
-  },
-  handler: async (ctx, args) => {
-    // Find the user first
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .first();
 
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Update to premium with course enrollment
-    await ctx.db.patch(user._id, {
-      subscriptionType: "premium" as const,
-      courseEnrolled: args.courseEnrolled,
-    });
-
-    console.log(`Upgraded user ${args.clerkId} to premium with course: ${args.courseEnrolled}`);
-    return user._id;
-  },
-});
-
-/**
- * Get users by subscription type
- */
-export const getUsersBySubscription = query({
-  args: { subscriptionType: v.union(v.literal("free"), v.literal("premium")) },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_subscriptionType", (q) => q.eq("subscriptionType", args.subscriptionType))
-      .collect();
-  },
-});
