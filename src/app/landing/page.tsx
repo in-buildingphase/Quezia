@@ -3,7 +3,6 @@ import Navbar from "../../components/layout/navbar";
 import About from "../../components/layout/about";
 import Features from "../../components/layout/features";
 import Cards from "../../components/ui/planCards";
-import LaptopMockup from "../../components/ui/laptop-mockup";
 import Footer from "../../components/layout/footer";
 
 export default function Landing() {
@@ -21,7 +20,6 @@ export default function Landing() {
         <About />
         <Features />
       </div>
-      <LaptopMockup />
       <Cards />
       <Footer />
     </main>
