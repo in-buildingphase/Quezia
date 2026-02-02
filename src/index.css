@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+.boldonse-regular {
+  font-family: "Boldonse", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
