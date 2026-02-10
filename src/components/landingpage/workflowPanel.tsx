@@ -1,15 +1,14 @@
-import React, { forwardRef, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
 interface WorkflowPanelProps {
-  sectionRef: React.RefObject<HTMLElement>
+  sectionRef: React.RefObject<HTMLDivElement | null>
 }
 
-const WorkflowPanel = forwardRef<HTMLDivElement, WorkflowPanelProps>(
-  ({ sectionRef }, ref) => {
+const WorkflowPanel: React.FC<WorkflowPanelProps> = ({ sectionRef }) => {
     const panelRef = useRef<HTMLDivElement>(null)
     const datasetRef = useRef<HTMLDivElement>(null)
     const chatRef = useRef<HTMLDivElement>(null)
@@ -71,7 +70,6 @@ const WorkflowPanel = forwardRef<HTMLDivElement, WorkflowPanelProps>(
     const intelTop = 186
     const intelWidth = 192
     const intelHeight = 128
-    const intelCenterX = intelLeft + intelWidth / 2  // 350
     const intelCenterY = intelTop + intelHeight / 2  // 250
     const intelRight = intelLeft + intelWidth        // 446
     const intelBottom = intelTop + intelHeight       // 314
@@ -361,8 +359,5 @@ const WorkflowPanel = forwardRef<HTMLDivElement, WorkflowPanelProps>(
       </div>
     )
   }
-)
-
-WorkflowPanel.displayName = 'WorkflowPanel'
 
 export default WorkflowPanel

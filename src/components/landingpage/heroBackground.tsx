@@ -135,32 +135,32 @@ const HeroBackground: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. GENERATION CORE (Central Hub - Largest) */}
-      <div className="absolute left-[28%] top-[40%] w-48 h-32 rounded-2xl bg-white/[0.14] backdrop-blur-md border border-white/25 p-5 flex flex-col justify-between shadow-2xl z-20">
+      {/* 3. GENERATION CORE (Central Hub - Reduced Opacity) */}
+      <div className="absolute left-[28%] top-[40%] w-48 h-32 rounded-2xl bg-white/[0.06] backdrop-blur-sm border border-white/15 p-5 flex flex-col justify-between shadow-lg z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.4)] animate-pulse"/>
-            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Generation Core</span>
+            <div className="w-2 h-2 rounded-full bg-white/70 shadow-[0_0_8px_rgba(255,255,255,0.3)] animate-pulse"/>
+            <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Generation Core</span>
           </div>
           <div className="flex gap-0.5">
-            <div className="w-1 h-1 rounded-full bg-green-400/60"/>
-            <div className="w-1 h-1 rounded-full bg-white/30"/>
-            <div className="w-1 h-1 rounded-full bg-white/30"/>
+            <div className="w-1 h-1 rounded-full bg-green-400/50"/>
+            <div className="w-1 h-1 rounded-full bg-white/20"/>
+            <div className="w-1 h-1 rounded-full bg-white/20"/>
           </div>
         </div>
         
         <div className="grid grid-cols-5 gap-1 items-end h-12 pb-1">
-          <div className="h-3 bg-white/20 rounded-sm"/>
-          <div className="h-8 bg-white/60 rounded-sm"/>
-          <div className="h-6 bg-white/40 rounded-sm"/>
-          <div className="h-9 bg-white/50 rounded-sm"/>
-          <div className="h-5 bg-white/30 rounded-sm"/>
+          <div className="h-3 bg-white/15 rounded-sm"/>
+          <div className="h-8 bg-white/40 rounded-sm"/>
+          <div className="h-6 bg-white/30 rounded-sm"/>
+          <div className="h-9 bg-white/35 rounded-sm"/>
+          <div className="h-5 bg-white/20 rounded-sm"/>
         </div>
         
         <div className="space-y-2">
           <div className="flex gap-2">
-            <div className="h-1.5 w-16 bg-white/30 rounded-full"/>
-            <div className="h-1.5 w-12 bg-white/15 rounded-full"/>
+            <div className="h-1.5 w-16 bg-white/20 rounded-full"/>
+            <div className="h-1.5 w-12 bg-white/10 rounded-full"/>
           </div>
         </div>
       </div>
@@ -175,19 +175,19 @@ const HeroBackground: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. INTELLIGENCE MODULE (Upper Center) */}
-      <div className="absolute left-[52%] top-[10%] w-32 h-22 rounded-xl bg-white/[0.10] backdrop-blur-sm border border-white/20 p-4 flex flex-col justify-between shadow-lg">
+      {/* 5. INTELLIGENCE MODULE (Upper Center - Reduced Opacity) */}
+      <div className="absolute left-[52%] top-[10%] w-32 h-22 rounded-xl bg-white/[0.05] backdrop-blur-sm border border-white/12 p-4 flex flex-col justify-between shadow-md">
         <div className="flex items-center justify-between">
-          <span className="text-[9px] font-semibold text-white/90 uppercase tracking-widest">Intelligence</span>
-          <div className="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-white/50"/>
+          <span className="text-[9px] font-semibold text-white/70 uppercase tracking-widest">Intelligence</span>
+          <div className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-white/40"/>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white/50 rotate-45"/>
+          <div className="w-8 h-8 rounded-full border-2 border-white/15 border-t-white/40 rotate-45"/>
           <div className="flex-1 space-y-1">
-            <div className="h-1 w-full bg-white/25 rounded-full"/>
-            <div className="h-1 w-2/3 bg-white/15 rounded-full"/>
+            <div className="h-1 w-full bg-white/20 rounded-full"/>
+            <div className="h-1 w-2/3 bg-white/10 rounded-full"/>
           </div>
         </div>
       </div>
@@ -238,13 +238,13 @@ const HeroBackground: React.FC = () => {
         </div>
       </div>
 
-      {/* 9. ANALYTICS ENGINE (Right Middle - Prominent) */}
-      <div className="absolute right-[19%] top-[48%] w-44 h-30 rounded-2xl bg-white/[0.11] backdrop-blur-md border border-white/20 p-5 flex flex-col justify-between shadow-xl">
+      {/* 9. ANALYTICS ENGINE (Right Middle - Reduced Opacity) */}
+      <div className="absolute right-[19%] top-[48%] w-44 h-30 rounded-2xl bg-white/[0.06] backdrop-blur-sm border border-white/12 p-5 flex flex-col justify-between shadow-lg">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold text-white uppercase tracking-widest">Analytics</span>
+          <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Analytics</span>
           <div className="flex items-center gap-1">
-            <span className="text-[7px] font-mono text-white/40">v2.4</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400/70"/>
+            <span className="text-[7px] font-mono text-white/30">v2.4</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400/50"/>
           </div>
         </div>
         
@@ -252,29 +252,29 @@ const HeroBackground: React.FC = () => {
           <svg className="w-full h-10" viewBox="0 0 100 25">
             <defs>
               <linearGradient id="chartLine" x1="0" y1="0" x2="100%" y2="0">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.2)"/>
-                <stop offset="50%" stopColor="rgba(255,255,255,0.7)"/>
-                <stop offset="100%" stopColor="rgba(255,255,255,0.4)"/>
+                <stop offset="0%" stopColor="rgba(255,255,255,0.15)"/>
+                <stop offset="50%" stopColor="rgba(255,255,255,0.5)"/>
+                <stop offset="100%" stopColor="rgba(255,255,255,0.3)"/>
               </linearGradient>
             </defs>
-            <path d="M 0 20 Q 20 20 30 12 T 60 15 T 100 5" stroke="url(#chartLine)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <circle cx="30" cy="12" r="2.5" fill="rgba(255,255,255,0.9)"/>
-            <circle cx="60" cy="15" r="2" fill="rgba(255,255,255,0.6)"/>
-            <circle cx="100" cy="5" r="2" fill="rgba(255,255,255,0.5)"/>
+            <path d="M 0 20 Q 20 20 30 12 T 60 15 T 100 5" stroke="url(#chartLine)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <circle cx="30" cy="12" r="2" fill="rgba(255,255,255,0.7)"/>
+            <circle cx="60" cy="15" r="1.5" fill="rgba(255,255,255,0.5)"/>
+            <circle cx="100" cy="5" r="1.5" fill="rgba(255,255,255,0.4)"/>
           </svg>
           
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
-              <div className="text-[8px] font-mono text-white/80">99.2%</div>
-              <div className="text-[5px] text-white/30 uppercase">Accuracy</div>
+              <div className="text-[8px] font-mono text-white/60">99.2%</div>
+              <div className="text-[5px] text-white/25 uppercase">Accuracy</div>
             </div>
             <div className="text-center">
-              <div className="text-[8px] font-mono text-white/80">2ms</div>
-              <div className="text-[5px] text-white/30 uppercase">Latency</div>
+              <div className="text-[8px] font-mono text-white/60">2ms</div>
+              <div className="text-[5px] text-white/25 uppercase">Latency</div>
             </div>
             <div className="text-center">
-              <div className="text-[8px] font-mono text-white/80">Top 1%</div>
-              <div className="text-[5px] text-white/30 uppercase">Rank</div>
+              <div className="text-[8px] font-mono text-white/60">Top 1%</div>
+              <div className="text-[5px] text-white/25 uppercase">Rank</div>
             </div>
           </div>
         </div>

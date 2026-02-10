@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
+import { Link } from 'react-router-dom';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import HeroBackground from './heroBackground';
 
@@ -8,9 +9,6 @@ const Hero: React.FC = () => {
   return (
     <div className="relative w-full h-screen pt-16 overflow-hidden">
     <HeroBackground />
-      {/* Bottom gradient */}
-      <div className="absolute inset-x-0 bottom-0 h-160 bg-gradient-to-t from-black/65 to-transparent" />
-
       {/* Top-right content */}
       <div className="absolute top-20 right-10 max-w-md w-full space-y-4">
         {/* Text card */}
@@ -26,18 +24,18 @@ const Hero: React.FC = () => {
 
         {/* CTA buttons */}
         <div className="flex gap-3 w-full">
-          <button className="group flex flex-1 items-center justify-center gap-2 bg-black text-white py-3 rounded-xl boldonse-regular text-sm transition hover:bg-black/80">
+          <Link to="/auth?mode=register" className="group flex flex-1 items-center justify-center gap-2 bg-black text-white py-3 rounded-xl boldonse-regular text-sm transition hover:bg-black/80">
             Get started
             <ArrowRight
               size={16}
               weight="bold"
               className="transition-transform group-hover:translate-x-1"
             />
-          </button>
+          </Link>
 
-          <button className="flex-1 border-3 border-white text-white py-3 rounded-xl boldonse-regular text-sm transition hover:bg-white/10">
+          <Link to="/auth?mode=login" className="flex flex-1 items-center justify-center border-2 border-white text-white py-3 rounded-xl boldonse-regular text-sm transition hover:bg-white/10">
             Log in
-          </button>
+          </Link>
         </div>
       </div>
 
