@@ -142,7 +142,7 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
 
           {/* Grid - scrollable */}
           <div className="flex-1 overflow-y-auto px-4 mb-2">
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 p-1 gap-2">
               {filteredQuestions.map((q) => {
                 const isCurrent = q.globalIndex === currentIndex
                 const displayStatus = isCurrent ? 'current' : q.status

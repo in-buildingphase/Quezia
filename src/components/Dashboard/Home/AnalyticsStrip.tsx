@@ -1,30 +1,23 @@
 import React from 'react'
 import MiniLineGraph from '../../common/MiniLineGraph'
+import SectionStrip from '../../common/SectionStrip'
 import { ArrowUpRight } from '@phosphor-icons/react'
 
 const AnalyticsStrip: React.FC = () => {
+  const actions = (
+    <>
+      <button className="h-7 w-7 rounded-md border border-white/10 hover:bg-white/5 transition" />
+      <button
+        onClick={() => window.location.href = '/tests'}
+        className="h-7 w-7 rounded-md border border-white/10 hover:bg-white/5 transition flex items-center justify-center"
+      >
+        <ArrowUpRight size={14} className="text-white" />
+      </button>
+    </>
+  )
+
   return (
-    <div className="mt-12">
-      <div className="rounded-2xl border-t border-white/20 px-4 pt-3 pb-4">
-        {/* TOP STRIP */}
-        <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm text-neutral-400">
-            Performance overview
-          </p>
-
-          <div className="flex gap-2">
-            <button className="h-7 w-7 rounded-md border border-white/10 hover:bg-white/5 transition" />
-            <button 
-                onClick={() => window.location.href = '/tests'}
-                className="h-7 w-7 rounded-md border border-white/10 hover:bg-white/5 transition flex items-center justify-center"
-              >
-                <ArrowUpRight size={14} className="text-white" />
-              </button>
-          </div>
-        </div>
-
-        {/* INNER */}
-        <div className="rounded-xl border border-white/10 bg-white/[0.045] backdrop-blur px-4 py-4">
+    <SectionStrip title="Performance overview" actions={actions}>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Rank */}
             <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035]">
@@ -103,9 +96,7 @@ const AnalyticsStrip: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+    </SectionStrip>
   )
 }
 

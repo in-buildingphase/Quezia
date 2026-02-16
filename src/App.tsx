@@ -9,6 +9,7 @@ import TestPreviewRules from './pages/Dashboard/Tests/TestPreviewRules';
 import TestSessionPage from './pages/Dashboard/Tests/TestSessionPage';
 import Discover from './pages/Dashboard/Discover';
 import Analytics from './pages/Dashboard/Analytics';
+import TestAnalyticsPage from './pages/TestAnalyticsPage';
 import Account from './pages/Dashboard/Account';
 import Settings from './pages/Dashboard/Settings';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -19,14 +20,14 @@ function App() {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/home" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
-      
+
       {/* Test Session - Full screen, no sidebar */}
       <Route path="/test/:testId" element={
         <ProtectedRoute>
           <TestSessionPage />
         </ProtectedRoute>
       } />
-      
+
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <Dashboard />
@@ -39,6 +40,7 @@ function App() {
         <Route path="tests/thread/:threadId/preview" element={<TestPreviewRules />} />
         <Route path="discover" element={<Discover />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="analytics/:testId" element={<TestAnalyticsPage />} />
         <Route path="account" element={<Account />} />
         <Route path="settings" element={<Settings />} />
       </Route>

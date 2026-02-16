@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, NavLink, useLocation } from 'react-router-dom'
 import {
   House,
   ClipboardText,
@@ -14,6 +14,7 @@ import {
   Trash,
 } from '@phosphor-icons/react'
 import ConfirmModal from '../common/ConfirmModal'
+import { MockDatabase } from '../../services/mockDatabase'
 
 interface NavItem {
   label: string
@@ -33,12 +34,6 @@ const bottomNav: NavItem[] = [
   { label: 'Settings', href: '/dashboard/settings', icon: Gear },
 ]
 
-// Initial dummy tests
-const initialTests = Array.from({ length: 14 }).map((_, i) => ({
-  id: `test-${i + 1}`,
-  name: `Test ${String.fromCharCode(65 + i)}`,
-}))
-
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
@@ -46,8 +41,35 @@ const Sidebar: React.FC = () => {
 
   const isTestsRoute = location.pathname.startsWith('/dashboard/tests')
   const [testsOpen, setTestsOpen] = useState(isTestsRoute)
-  const [tests, setTests] = useState(initialTests)
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; test: typeof initialTests[0] | null }>({
+
+  // Use useMemo to get the most recent 10 tests from MockDatabase
+  const recentTests = React.useMemo(() => {
+    const allTests = MockDatabase.getAllTests()
+    const allAttempts = MockDatabase.getAllAttempts()
+
+    // Sort tests by their most recent interaction (attempt) date, or creation order if no attempt
+    const sorted = [...allTests].sort((a, b) => {
+      const attemptA = allAttempts.find(att => att.testId === a.id)
+      const attemptB = allAttempts.find(att => att.testId === b.id)
+
+      if (attemptA && attemptB) {
+        return new Date(attemptB.createdAt).getTime() - new Date(attemptA.createdAt).getTime()
+      }
+      if (attemptA) return -1
+      if (attemptB) return 1
+
+      // Fallback: reverse order of creation (test-100 first)
+      return parseInt(b.id.split('-')[1]) - parseInt(a.id.split('-')[1])
+    })
+
+    return sorted.slice(0, 10).map(t => ({
+      id: t.id,
+      name: t.title
+    }))
+  }, [])
+
+  const [tests, setTests] = useState(recentTests)
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; test: { id: string; name: string } | null }>({
     open: false,
     test: null,
   })
@@ -65,222 +87,210 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-    <aside
-      className={`h-screen sticky top-0 flex flex-col bg-[#0A0A0A] border-r border-white/[0.08] transition-all duration-300 ease-out ${
-        collapsed ? 'w-[72px]' : 'w-[260px]'
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-16 shrink-0">
-        {!collapsed && (
-          <span className="text-lg font-semibold text-white tracking-tight">
-            Quezia
-          </span>
-        )}
-
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className={`p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/10 transition-all ${
-            collapsed ? 'mx-auto' : ''
+      <aside
+        className={`h-screen sticky top-0 flex flex-col bg-[#0A0A0A] border-r border-white/[0.08] transition-all duration-300 ease-out ${collapsed ? 'w-[72px]' : 'w-[260px]'
           }`}
-        >
-          {collapsed ? (
-            <CaretRight size={16} weight="bold" />
-          ) : (
-            <CaretLeft size={16} weight="bold" />
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 h-16 shrink-0">
+          {!collapsed && (
+            <span className="text-lg font-semibold text-white tracking-tight">
+              Quezia
+            </span>
           )}
-        </button>
-      </div>
 
-      {/* Navigation */}
-      <div className="flex-1 flex flex-col py-4 px-3 overflow-hidden">
-        <nav className="space-y-0.5">
-          {topNav.map((item) => {
-            const Icon = item.icon
-            const active =
-              item.label === 'Tests'
-                ? isTestsRoute
-                : location.pathname === item.href
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className={`p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/10 transition-all ${collapsed ? 'mx-auto' : ''
+              }`}
+          >
+            {collapsed ? (
+              <CaretRight size={16} weight="bold" />
+            ) : (
+              <CaretLeft size={16} weight="bold" />
+            )}
+          </button>
+        </div>
 
-            if (item.label === 'Tests') {
-              return (
-                <div key="Tests">
-                  {/* Tests parent */}
-                  <div
-                    className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all ${
-                      collapsed ? 'justify-center' : ''
-                    }`}
-                    onClick={() => navigate('/dashboard/tests')}
-                  >
-                    {active && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
-                    )}
+        {/* Navigation */}
+        <div className="flex-1 flex flex-col py-4 px-3 overflow-hidden">
+          <nav className="space-y-0.5">
+            {topNav.map((item) => {
+              const Icon = item.icon
+              const active =
+                item.label === 'Tests'
+                  ? isTestsRoute
+                  : location.pathname === item.href
 
-                    <Icon
-                      size={20}
-                      weight={active ? 'fill' : 'regular'}
-                      className={`shrink-0 ${
-                        active
+              if (item.label === 'Tests') {
+                return (
+                  <div key="Tests">
+                    {/* Tests parent */}
+                    <div
+                      className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all ${collapsed ? 'justify-center' : ''
+                        }`}
+                      onClick={() => navigate('/dashboard/tests')}
+                    >
+                      {active && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
+                      )}
+
+                      <Icon
+                        size={20}
+                        weight={active ? 'fill' : 'regular'}
+                        className={`shrink-0 ${active
                           ? 'text-white'
                           : 'text-gray-400 group-hover:text-gray-200'
-                      }`}
-                    />
-
-                    {!collapsed && (
-                      <>
-                        <span
-                          className={`text-sm font-medium flex-1 ${
-                            active ? 'text-white' : 'text-gray-400'
                           }`}
-                        >
-                          Tests
-                        </span>
+                      />
 
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setTestsOpen((p) => !p)
-                          }}
-                          className="text-gray-500 hover:text-gray-300"
-                        >
-                          {testsOpen ? (
-                            <CaretUp size={14} />
-                          ) : (
-                            <CaretDown size={14} />
-                          )}
-                        </button>
-                      </>
-                    )}
-                  </div>
+                      {!collapsed && (
+                        <>
+                          <span
+                            className={`text-sm font-medium flex-1 ${active ? 'text-white' : 'text-gray-400'
+                              }`}
+                          >
+                            Tests
+                          </span>
 
-                  {/* Tests dropdown */}
-                  {!collapsed && testsOpen && (
-                    <div className="mt-1 ml-8 pr-2">
-                      <div className="max-h-[320px] overflow-y-auto space-y-0.5 scrollbar-thin scrollbar-thumb-white/10">
-                        {tests.map((test) => {
-                          const testActive =
-                            location.pathname ===
-                            `/dashboard/tests/thread/${test.id}`
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setTestsOpen((p) => !p)
+                            }}
+                            className="text-gray-500 hover:text-gray-300"
+                          >
+                            {testsOpen ? (
+                              <CaretUp size={14} />
+                            ) : (
+                              <CaretDown size={14} />
+                            )}
+                          </button>
+                        </>
+                      )}
+                    </div>
 
-                          return (
-                            <div
-                              key={test.id}
-                              className={`group/test flex items-center justify-between rounded-md transition-colors ${
-                                testActive
+                    {/* Tests dropdown */}
+                    {!collapsed && testsOpen && (
+                      <div className="mt-1 ml-8 pr-2">
+                        <div className="max-h-[320px] overflow-y-auto space-y-0.5 scrollbar-thin scrollbar-thumb-white/10">
+                          {tests.map((test) => {
+                            const testActive =
+                              location.pathname ===
+                              `/dashboard/tests/thread/${test.id}`
+
+                            return (
+                              <div
+                                key={test.id}
+                                className={`group/test flex items-center justify-between rounded-md transition-colors ${testActive
                                   ? 'text-white bg-white/10'
                                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                              }`}
-                            >
-                              <NavLink
-                                to={`/dashboard/tests/thread/${test.id}`}
-                                className="flex-1 px-3 py-1.5 text-sm"
+                                  }`}
                               >
-                                {test.name}
-                              </NavLink>
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  setDeleteModal({ open: true, test })
-                                }}
-                                className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-gray-500 hover:text-red-400 hover:bg-white/10 transition-all"
-                              >
-                                <Trash size={14} />
-                              </button>
-                            </div>
-                          )
-                        })}
+                                <NavLink
+                                  to={`/dashboard/tests/thread/${test.id}`}
+                                  className="flex-1 px-3 py-1.5 text-sm"
+                                >
+                                  {test.name}
+                                </NavLink>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    setDeleteModal({ open: true, test })
+                                  }}
+                                  className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-gray-500 hover:text-red-400 hover:bg-white/10 transition-all"
+                                >
+                                  <Trash size={14} />
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    )}
+                  </div>
+                )
+              }
+
+              // Normal nav items
+              return (
+                <NavLink
+                  key={item.label}
+                  to={item.href}
+                  className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${collapsed ? 'justify-center' : ''
+                    }`}
+                >
+                  {active && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
                   )}
-                </div>
+
+                  <Icon
+                    size={20}
+                    weight={active ? 'fill' : 'regular'}
+                    className={`shrink-0 ${active
+                      ? 'text-white'
+                      : 'text-gray-400 group-hover:text-gray-200'
+                      }`}
+                  />
+
+                  {!collapsed && (
+                    <span
+                      className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-400'
+                        }`}
+                    >
+                      {item.label}
+                    </span>
+                  )}
+                </NavLink>
               )
-            }
+            })}
+          </nav>
 
-            // Normal nav items
-            return (
-              <NavLink
-                key={item.label}
-                to={item.href}
-                className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                  collapsed ? 'justify-center' : ''
-                }`}
-              >
-                {active && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
-                )}
+          {/* Divider */}
+          <div className="mt-auto mx-3 h-px bg-white/[0.08]" />
 
-                <Icon
-                  size={20}
-                  weight={active ? 'fill' : 'regular'}
-                  className={`shrink-0 ${
-                    active
+          {/* Bottom Nav */}
+          <nav className="space-y-0.5 pb-4">
+            {bottomNav.map((item) => {
+              const active = location.pathname === item.href
+              const Icon = item.icon
+
+              return (
+                <NavLink
+                  key={item.label}
+                  to={item.href}
+                  className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${collapsed ? 'justify-center' : ''
+                    }`}
+                >
+                  {active && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
+                  )}
+
+                  <Icon
+                    size={20}
+                    weight={active ? 'fill' : 'regular'}
+                    className={`shrink-0 ${active
                       ? 'text-white'
                       : 'text-gray-400 group-hover:text-gray-200'
-                  }`}
-                />
+                      }`}
+                  />
 
-                {!collapsed && (
-                  <span
-                    className={`text-sm font-medium ${
-                      active ? 'text-white' : 'text-gray-400'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                )}
-              </NavLink>
-            )
-          })}
-        </nav>
+                  {!collapsed && (
+                    <span
+                      className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-400'
+                        }`}
+                    >
+                      {item.label}
+                    </span>
+                  )}
+                </NavLink>
+              )
+            })}
+          </nav>
+        </div>
 
-        {/* Divider */}
-        <div className="mt-auto mx-3 h-px bg-white/[0.08]" />
-
-        {/* Bottom Nav */}
-        <nav className="space-y-0.5 pb-4">
-          {bottomNav.map((item) => {
-            const active = location.pathname === item.href
-            const Icon = item.icon
-
-            return (
-              <NavLink
-                key={item.label}
-                to={item.href}
-                className={`group relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                  collapsed ? 'justify-center' : ''
-                }`}
-              >
-                {active && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
-                )}
-
-                <Icon
-                  size={20}
-                  weight={active ? 'fill' : 'regular'}
-                  className={`shrink-0 ${
-                    active
-                      ? 'text-white'
-                      : 'text-gray-400 group-hover:text-gray-200'
-                  }`}
-                />
-
-                {!collapsed && (
-                  <span
-                    className={`text-sm font-medium ${
-                      active ? 'text-white' : 'text-gray-400'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                )}
-              </NavLink>
-            )
-          })}
-        </nav>
-      </div>
-
-    </aside>
+      </aside>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal

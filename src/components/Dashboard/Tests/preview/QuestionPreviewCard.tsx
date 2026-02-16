@@ -24,7 +24,7 @@ const QuestionPreviewCard: React.FC<Props> = ({ question, onRegenerate }) => {
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-neutral-500 whitespace-nowrap">
-            ({question.marks} mark{question.marks > 1 ? 's' : ''})
+            {question.marks} mark{question.marks > 1 ? 's' : ''}
           </span>
           <button
             onClick={() => onRegenerate?.(question.id)}

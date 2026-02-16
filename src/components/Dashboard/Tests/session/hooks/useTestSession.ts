@@ -5,7 +5,7 @@ import { type QuestionStatus } from '../../navigation/QuestionLegend'
 type QuestionState = {
   id: number
   selectedAnswer: number | null
-  integerAnswer: string
+  numericAnswer: string
   isMarkedForReview: boolean
 }
 
@@ -13,7 +13,7 @@ type UseTestSessionReturn = {
   currentIndex: number
   currentQuestion: SessionQuestion
   selectedAnswer: number | null
-  integerAnswer: string
+  numericAnswer: string
   isMarkedForReview: boolean
   questionStates: { id: number; status: QuestionStatus }[]
   canGoPrevious: boolean
@@ -22,7 +22,7 @@ type UseTestSessionReturn = {
   goToPrevious: () => void
   goToNext: () => void
   selectAnswer: (index: number) => void
-  setIntegerAnswer: (value: string) => void
+  setNumericAnswer: (value: string) => void
   toggleMarkForReview: () => void
   clearResponse: () => void
 }
@@ -33,7 +33,7 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
     questions.map((q) => ({
       id: q.id,
       selectedAnswer: null,
-      integerAnswer: '',
+      numericAnswer: '',
       isMarkedForReview: false,
     }))
   )
@@ -65,15 +65,17 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   const selectAnswer = useCallback((answerIndex: number) => {
     setQuestionStates((prev) =>
       prev.map((state, i) =>
-        i === currentIndex ? { ...state, selectedAnswer: answerIndex } : state
+        i === currentIndex 
+          ? { ...state, selectedAnswer: state.selectedAnswer === answerIndex ? null : answerIndex } 
+          : state
       )
     )
   }, [currentIndex])
 
-  const setIntegerAnswer = useCallback((value: string) => {
+  const setNumericAnswer = useCallback((value: string) => {
     setQuestionStates((prev) =>
       prev.map((state, i) =>
-        i === currentIndex ? { ...state, integerAnswer: value } : state
+        i === currentIndex ? { ...state, numericAnswer: value } : state
       )
     )
   }, [currentIndex])
@@ -89,7 +91,7 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   const clearResponse = useCallback(() => {
     setQuestionStates((prev) =>
       prev.map((state, i) =>
-        i === currentIndex ? { ...state, selectedAnswer: null, integerAnswer: '' } : state
+        i === currentIndex ? { ...state, selectedAnswer: null, numericAnswer: '' } : state
       )
     )
   }, [currentIndex])
@@ -99,7 +101,7 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
       const question = questions[index]
       const hasAnswer = question.type === 'mcq' 
         ? state.selectedAnswer !== null 
-        : state.integerAnswer !== ''
+        : state.numericAnswer !== ''
       
       let status: QuestionStatus = 'unattempted'
       if (state.isMarkedForReview) {
@@ -115,7 +117,7 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
     currentIndex,
     currentQuestion,
     selectedAnswer: currentState.selectedAnswer,
-    integerAnswer: currentState.integerAnswer,
+    numericAnswer: currentState.numericAnswer,
     isMarkedForReview: currentState.isMarkedForReview,
     questionStates: paletteStates,
     canGoPrevious,
@@ -124,7 +126,7 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
     goToPrevious,
     goToNext,
     selectAnswer,
-    setIntegerAnswer,
+    setNumericAnswer,
     toggleMarkForReview,
     clearResponse,
   }

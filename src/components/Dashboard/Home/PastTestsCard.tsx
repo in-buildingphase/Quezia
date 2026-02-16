@@ -61,8 +61,11 @@ const PastTestCard: React.FC<PastTestCardProps> = ({
     },
   }[status]
 
+  // Use useState to initialize a stable 'now' value to satisfy purity rules
+  const [now] = React.useState(() => Date.now())
+
   const timeAgo = (iso: string) => {
-    const diff = Date.now() - new Date(iso).getTime()
+    const diff = now - new Date(iso).getTime()
     const hours = Math.floor(diff / (1000 * 60 * 60))
     if (hours < 1) return 'Just now'
     if (hours < 24) return `${hours}h ago`
@@ -71,7 +74,7 @@ const PastTestCard: React.FC<PastTestCardProps> = ({
 
   return (
     <div
-  className="
+      className="
     min-w-[260px]
     h-[230px]
     shrink-0
@@ -82,42 +85,42 @@ const PastTestCard: React.FC<PastTestCardProps> = ({
     transition-all duration-200
     hover:-translate-y-1
   "
->
-  {/* TOP CONTENT */}
-  <div>
-    {/* STATUS ROW */}
-    <div className="mb-2 flex items-center justify-between">
-      <span className={`text-xs font-medium ${statusConfig.color}`}>
-        {statusConfig.label}
-      </span>
+    >
+      {/* TOP CONTENT */}
+      <div>
+        {/* STATUS ROW */}
+        <div className="mb-2 flex items-center justify-between">
+          <span className={`text-xs font-medium ${statusConfig.color}`}>
+            {statusConfig.label}
+          </span>
 
-      {statusConfig.metaRight && (
-        <span className="text-xs text-neutral-500">
-          {statusConfig.metaRight}
-        </span>
-      )}
-    </div>
+          {statusConfig.metaRight && (
+            <span className="text-xs text-neutral-500">
+              {statusConfig.metaRight}
+            </span>
+          )}
+        </div>
 
-    {/* TITLE */}
-    <p className="text-sm font-medium text-white leading-snug">
-      {title}
-    </p>
+        {/* TITLE */}
+        <p className="text-sm font-medium text-white leading-snug">
+          {title}
+        </p>
 
-    {/* META */}
-    <div className="mt-3 space-y-1 text-xs text-neutral-400">
-      <p>{subject} · {exam}</p>
-      <p>Last active {timeAgo(lastInteractedAt)}</p>
+        {/* META */}
+        <div className="mt-3 space-y-1 text-xs text-neutral-400">
+          <p>{subject} · {exam}</p>
+          <p>Last active {timeAgo(lastInteractedAt)}</p>
 
-      {status === 'COMPLETED' && accuracy !== undefined && (
-        <p>Accuracy {accuracy}%</p>
-      )}
-    </div>
-  </div>
+          {status === 'COMPLETED' && accuracy !== undefined && (
+            <p>Accuracy {accuracy}%</p>
+          )}
+        </div>
+      </div>
 
-  {/* CTA — ALWAYS AT BOTTOM */}
-  <button
-    onClick={() => onOpen(id)}
-    className="
+      {/* CTA — ALWAYS AT BOTTOM */}
+      <button
+        onClick={() => onOpen(id)}
+        className="
       mt-auto
       w-full
       rounded-lg
@@ -128,10 +131,10 @@ const PastTestCard: React.FC<PastTestCardProps> = ({
       transition
       hover:bg-white/[0.1]
     "
-  >
-    {statusConfig.cta}
-  </button>
-</div>
+      >
+        {statusConfig.cta}
+      </button>
+    </div>
 
   )
 }
