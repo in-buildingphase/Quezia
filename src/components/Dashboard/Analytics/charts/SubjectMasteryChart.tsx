@@ -22,16 +22,16 @@ const SubjectMasteryChart: React.FC<Props> = ({ data }) => {
     const suffix = metric === 'accuracy' ? '%' : ''
 
     return (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 pt-4 backdrop-blur-xl h-full flex flex-col overflow-hidden">
+        <div className="rounded-3xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-5 pt-4 backdrop-blur-xl h-full flex flex-col overflow-hidden">
             {/* Compact header: title + toggle on one line */}
             <div className="flex items-center justify-between shrink-0">
-                <h3 className="text-base font-semibold text-white">Subject Mastery</h3>
-                <div className="flex rounded-lg bg-white/5 border border-white/10 p-0.5">
+                <h3 className="text-base font-semibold text-[var(--color-text-primary)]">Subject Mastery</h3>
+                <div className="flex rounded-lg bg-[var(--color-bg-subtle)] border border-[var(--color-border-default)] p-0.5">
                     <button
                         onClick={() => setMetric('accuracy')}
                         className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-all duration-200 ${metric === 'accuracy'
-                            ? 'bg-[#EC2801]/15 text-[#EC2801] shadow-sm'
-                            : 'text-neutral-500 hover:text-neutral-300'
+                            ? 'bg-[var(--color-accent-subtle)] text-[var(--color-accent)] shadow-sm'
+                            : 'text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)]'
                             }`}
                     >
                         Accuracy
@@ -39,8 +39,8 @@ const SubjectMasteryChart: React.FC<Props> = ({ data }) => {
                     <button
                         onClick={() => setMetric('avgMark')}
                         className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-all duration-200 ${metric === 'avgMark'
-                            ? 'bg-[#EC2801]/15 text-[#EC2801] shadow-sm'
-                            : 'text-neutral-500 hover:text-neutral-300'
+                            ? 'bg-[var(--color-accent-subtle)] text-[var(--color-accent)] shadow-sm'
+                            : 'text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)]'
                             }`}
                     >
                         Avg Mark
@@ -52,25 +52,25 @@ const SubjectMasteryChart: React.FC<Props> = ({ data }) => {
             <div className="flex-1 min-h-0 relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="55%" outerRadius="78%" data={data}>
-                        <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                        <PolarGrid stroke="var(--color-bg-muted)" opacity={0.5} />
                         <PolarAngleAxis
                             dataKey="subject"
-                            tick={{ fill: '#737373', fontSize: 11, fontWeight: 500 }}
+                            tick={{ fill: 'var(--color-chart-tick)', fontSize: 11, fontWeight: 500 }}
                         />
                         <Radar
                             name={label}
                             dataKey={metric}
-                            stroke="#EC2801"
-                            fill="#EC2801"
+                            stroke="var(--color-accent)"
+                            fill="var(--color-accent)"
                             fillOpacity={0.5}
                             animationDuration={800}
                         />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: 'rgba(23, 23, 23, 0.9)',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                backgroundColor: 'var(--color-chart-tooltip-bg)',
+                                border: '1px solid var(--color-border-default)',
                                 borderRadius: '12px',
-                                color: '#fff',
+                                color: 'var(--color-chart-tooltip-text)',
                                 fontSize: '12px'
                             }}
                         />
@@ -82,8 +82,8 @@ const SubjectMasteryChart: React.FC<Props> = ({ data }) => {
             <div className="shrink-0 px-4 pb-1 flex justify-around">
                 {data.map((item) => (
                     <div key={item.subject} className="flex flex-col items-center">
-                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider">{item.subject}</span>
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider">{item.subject}</span>
+                        <span className="text-sm font-bold text-[var(--color-text-primary)]">
                             {metric === 'accuracy' ? item.accuracy : item.avgMark}{suffix}
                         </span>
                     </div>

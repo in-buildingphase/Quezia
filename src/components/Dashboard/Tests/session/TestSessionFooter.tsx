@@ -22,17 +22,16 @@ const TestSessionFooter: React.FC<Props> = ({
   canGoNext,
 }) => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-white/5 bg-neutral-950">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-[var(--color-border-default)] bg-[var(--color-bg-base)]">
       <div className="h-full max-w-screen-xl mx-auto px-6 flex items-center justify-between">
         {/* Previous */}
         <button
           onClick={onPrevious}
           disabled={!canGoPrevious}
-          className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition ${
-            canGoPrevious
-              ? 'border-white/10 bg-white/[0.02] text-neutral-300 hover:bg-white/[0.05]'
-              : 'border-white/5 text-neutral-600 cursor-not-allowed'
-          }`}
+          className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition ${canGoPrevious
+              ? 'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-muted)]'
+              : 'border-[var(--color-border-default)] text-[var(--color-text-disabled)] cursor-not-allowed'
+            }`}
         >
           <CaretLeft className="h-4 w-4" />
           Previous
@@ -41,7 +40,7 @@ const TestSessionFooter: React.FC<Props> = ({
         {/* Center: Question position indicator */}
         <button
           onClick={onTogglePalette}
-          className="text-sm text-neutral-400 hover:text-neutral-200 transition"
+          className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition"
         >
           {currentQuestion} / {totalQuestions}
         </button>
@@ -50,11 +49,10 @@ const TestSessionFooter: React.FC<Props> = ({
         <button
           onClick={onNext}
           disabled={!canGoNext}
-          className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition ${
-            canGoNext
-              ? 'border-white/10 bg-white/[0.02] text-neutral-300 hover:bg-white/[0.05]'
-              : 'border-white/5 text-neutral-600 cursor-not-allowed'
-          }`}
+          className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition ${canGoNext
+              ? 'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-muted)]'
+              : 'border-[var(--color-border-default)] text-[var(--color-text-disabled)] cursor-not-allowed'
+            }`}
         >
           Next
           <CaretRight className="h-4 w-4" />

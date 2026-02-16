@@ -51,11 +51,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
   return (
     <>
       {/* Chat / prompt */}
-      <div className="mb-3 rounded-xl bg-white/5 px-5 py-3">
+      <div className="mb-3 rounded-xl bg-[var(--color-bg-subtle)] px-5 py-3">
         <textarea
           ref={textareaRef}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent text-neutral-300 placeholder-neutral-500 outline-none max-h-32"
+          className="w-full resize-none bg-transparent text-[var(--color-text-secondary)] placeholder-[var(--color-text-disabled)] outline-none max-h-32"
           onInput={handleTextareaInput}
           rows={1}
         />
@@ -75,7 +75,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               setIsSubjectOpen(open)
               if (open) setIsDifficultyOpen(false)
             }}
-            icon={<BookOpen size={16} className="text-neutral-400" />}
+            icon={<BookOpen size={16} className="text-[var(--color-text-tertiary)]" />}
             placeholder="Subject"
             openUp={openUp}
           />
@@ -90,13 +90,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
               setIsDifficultyOpen(open)
               if (open) setIsSubjectOpen(false)
             }}
-            icon={<Gauge size={16} className="text-neutral-400" />}
+            icon={<Gauge size={16} className="text-[var(--color-text-tertiary)]" />}
             placeholder="Difficulty"
             openUp={openUp}
           />
         </div>
         {/* Send button */}
-        <button className="group flex items-center justify-center h-10 w-10 rounded-full border border-white/10 bg-white/5 text-neutral-300 transition hover:bg-[#EC280113] hover:text-[#EC2801] focus:outline-none">
+        <button className="group flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-accent-subtle)] hover:text-[var(--color-accent)] focus:outline-none">
           <PaperPlane className="h-4 w-4 rotate-90 transition-transform" />
         </button>
       </div>

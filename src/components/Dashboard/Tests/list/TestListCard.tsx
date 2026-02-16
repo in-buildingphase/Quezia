@@ -25,9 +25,9 @@ const TestListCard: React.FC<Props> = ({ test }) => {
   const navigate = useNavigate()
 
   const statusColor = {
-    IN_PROGRESS: 'bg-amber-400',
-    COMPLETED: 'bg-emerald-400',
-    GENERATED: 'bg-neutral-500',
+    IN_PROGRESS: 'bg-[var(--color-warning)]',
+    COMPLETED: 'bg-[var(--color-success)]',
+    GENERATED: 'bg-[var(--color-text-disabled)]',
   }[test.status]
 
   const formatDate = (iso: string) => {
@@ -46,13 +46,13 @@ const TestListCard: React.FC<Props> = ({ test }) => {
   // Right side value based on status
   const renderRightValue = () => {
     if (test.status === 'COMPLETED' && test.score !== undefined && test.totalMarks !== undefined) {
-      return <span className="text-sm tabular-nums text-emerald-400">{test.score}/{test.totalMarks}</span>
+      return <span className="text-sm tabular-nums text-[var(--color-success)]">{test.score}/{test.totalMarks}</span>
     }
     if (test.status === 'IN_PROGRESS' && test.attemptedQuestions !== undefined) {
-      return <span className="text-sm tabular-nums text-neutral-500">{test.attemptedQuestions}/{test.totalQuestions}</span>
+      return <span className="text-sm tabular-nums text-[var(--color-text-tertiary)]">{test.attemptedQuestions}/{test.totalQuestions}</span>
     }
     if (test.status === 'GENERATED' && test.totalMarks !== undefined) {
-      return <span className="text-sm tabular-nums text-neutral-600">{test.totalMarks} marks</span>
+      return <span className="text-sm tabular-nums text-[var(--color-text-disabled)]">{test.totalMarks} marks</span>
     }
     return null
   }
@@ -60,17 +60,17 @@ const TestListCard: React.FC<Props> = ({ test }) => {
   return (
     <button
       onClick={handleClick}
-      className="w-full text-left group py-4 px-1 flex items-center gap-4 border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.015] -mx-1 transition"
+      className="w-full text-left group py-4 px-1 flex items-center gap-4 border-b border-[var(--color-border-default)] opacity-80 last:border-b-0 hover:bg-[var(--color-bg-subtle)] transition"
     >
       {/* Status dot */}
       <div className={`flex-shrink-0 w-2 h-2 rounded-full ${statusColor}`} />
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-[15px] text-neutral-200 truncate group-hover:text-white transition">
+        <h3 className="text-[15px] text-[var(--color-text-secondary)] truncate group-hover:text-[var(--color-text-primary)] transition">
           {test.title}
         </h3>
-        <p className="text-xs text-neutral-500 mt-1">
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
           {test.subject} · {test.totalQuestions} questions · {formatDate(test.createdAt)}
         </p>
       </div>
@@ -78,7 +78,7 @@ const TestListCard: React.FC<Props> = ({ test }) => {
       {/* Right side */}
       <div className="flex items-center gap-3 flex-shrink-0">
         {renderRightValue()}
-        <CaretRight size={14} weight="bold" className="text-neutral-600 group-hover:text-neutral-400 transition" />
+        <CaretRight size={14} weight="bold" className="text-[var(--color-text-disabled)] group-hover:text-[var(--color-text-secondary)] transition" />
       </div>
     </button>
   )

@@ -72,34 +72,34 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
     // Helper for consistency color
     const getConsistencyColor = (consistency: string) => {
         switch (consistency) {
-            case 'stable': return 'text-emerald-400'
-            case 'improving': return 'text-blue-400'
-            case 'volatile': return 'text-amber-400'
-            case 'declining': return 'text-rose-400'
-            default: return 'text-neutral-400'
+            case 'stable': return 'text-[var(--color-success)]'
+            case 'improving': return 'text-[var(--color-info)]'
+            case 'volatile': return 'text-[var(--color-warning)]'
+            case 'declining': return 'text-[var(--color-error)]'
+            default: return 'text-[var(--color-text-tertiary)]'
         }
     }
 
     return (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl h-full flex flex-col overflow-hidden">
+        <div className="rounded-3xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] backdrop-blur-xl h-full flex flex-col overflow-hidden">
             {/* Header & Controls */}
-            <div className="p-6 border-b border-white/5 space-y-4">
+            <div className="p-6 border-b border-[var(--color-border-default)] space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h3 className="text-lg font-semibold text-white">Topic Performance</h3>
-                        <p className="text-sm text-neutral-400">Detailed topic-wise analysis</p>
+                        <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Topic Performance</h3>
+                        <p className="text-sm text-[var(--color-text-tertiary)]">Detailed topic-wise analysis</p>
                     </div>
 
                     <div className="flex flex-wrap gap-2 z-20">
                         {/* Search */}
                         <div className="relative grow md:grow-0 w-full md:w-auto">
-                            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" size={14} />
+                            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-disabled)]" size={14} />
                             <input
                                 type="text"
                                 placeholder="Search..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full md:w-72 bg-black/20 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white/20 transition-all h-9"
+                                className="w-full md:w-72 bg-black/20 border border-[var(--color-border-default)] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-disabled)] focus:outline-none focus:border-[var(--color-accent-subtle)] transition-all h-9"
                             />
                         </div>
 
@@ -163,7 +163,7 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
             </div>
 
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 bg-white/[0.01] text-[10px] uppercase tracking-wider text-neutral-500 font-medium">
+            <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-[var(--color-border-default)] bg-[var(--color-bg-base)] opacity-50 text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] font-medium">
                 <div className="col-span-4 md:col-span-5">Topic</div>
                 <div className="col-span-3 md:col-span-2 text-right">Accuracy</div>
                 <div className="col-span-2 md:col-span-2 text-right hidden md:block">Attempts</div>
@@ -177,33 +177,33 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
                     processedData.map((item) => {
                         const isExpanded = expandedTopic === item.topic
                         return (
-                            <div key={item.topic} className={`border-b border-white/5 transition-colors ${isExpanded ? 'bg-white/[0.03]' : 'hover:bg-white/[0.01]'}`}>
+                            <div key={item.topic} className={`border-b border-[var(--color-border-default)] transition-colors ${isExpanded ? 'bg-[var(--color-bg-muted)]' : 'hover:bg-[var(--color-bg-base)]'}`}>
                                 {/* Main Row */}
                                 <div
                                     className="grid grid-cols-12 gap-4 px-6 py-3.5 cursor-pointer items-center group"
                                     onClick={() => toggleExpand(item.topic)}
                                 >
                                     <div className="col-span-4 md:col-span-5 flex items-center gap-3">
-                                        <div className={`w-1 h-8 rounded-full shrink-0 ${item.accuracy >= 70 ? 'bg-emerald-500' :
-                                            item.accuracy >= 50 ? 'bg-amber-500' : 'bg-rose-500'
+                                        <div className={`w-1 h-8 rounded-full shrink-0 ${item.accuracy >= 70 ? 'bg-[var(--color-success)]' :
+                                            item.accuracy >= 50 ? 'bg-[var(--color-warning)]' : 'bg-[var(--color-error)]'
                                             }`} />
                                         <div className="min-w-0">
-                                            <div className="text-sm font-medium text-white truncate group-hover:text-amber-500 transition-colors">{item.topic}</div>
-                                            <div className="text-[10px] text-neutral-500">{item.subject}</div>
+                                            <div className="text-sm font-medium text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-accent)] transition-colors">{item.topic}</div>
+                                            <div className="text-[10px] text-[var(--color-text-tertiary)]">{item.subject}</div>
                                         </div>
                                     </div>
 
-                                    <div className="col-span-3 md:col-span-2 text-right font-mono text-sm text-neutral-300">
+                                    <div className="col-span-3 md:col-span-2 text-right font-mono text-sm text-[var(--color-text-secondary)]">
                                         {item.accuracy}%
                                     </div>
 
-                                    <div className="col-span-2 md:col-span-2 text-right hidden md:block text-xs text-neutral-400">
-                                        {item.attempted} <span className="text-[10px] text-neutral-600">/ {item.totalAvailable}</span>
+                                    <div className="col-span-2 md:col-span-2 text-right hidden md:block text-xs text-[var(--color-text-tertiary)]">
+                                        {item.attempted} <span className="text-[10px] text-[var(--color-text-disabled)]">/ {item.totalAvailable}</span>
                                     </div>
 
                                     <div className="col-span-3 md:col-span-2 text-right flex justify-end">
-                                        <div className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-white/5 ${item.trendDelta > 0 ? 'text-emerald-400' :
-                                            item.trendDelta < 0 ? 'text-rose-400' : 'text-neutral-400'
+                                        <div className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--color-bg-base)] ${item.trendDelta > 0 ? 'text-[var(--color-success)]' :
+                                            item.trendDelta < 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-tertiary)]'
                                             }`}>
                                             {item.trendDelta > 0 ? <TrendUp size={12} weight="bold" /> :
                                                 item.trendDelta < 0 ? <TrendDown size={12} weight="bold" /> : <Minus size={12} />}
@@ -211,7 +211,7 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
                                         </div>
                                     </div>
 
-                                    <div className="col-span-2 md:col-span-1 flex justify-center text-neutral-600 group-hover:text-white transition-colors">
+                                    <div className="col-span-2 md:col-span-1 flex justify-center text-[var(--color-text-disabled)] group-hover:text-[var(--color-text-primary)] transition-colors">
                                         {isExpanded ? <CaretUp size={14} /> : <CaretDown size={14} />}
                                     </div>
                                 </div>
@@ -219,62 +219,62 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
                                 {/* Expanded Details */}
                                 {isExpanded && (
                                     <div className="px-6 pb-6 pt-2 animate-in slide-in-from-top-1 duration-200">
-                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-black/20 border border-white/5">
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-[var(--color-bg-base)] border border-[var(--color-border-default)]">
 
                                             {/* Key Metrics */}
-                                            <div className="space-y-3 md:col-span-1 md:border-r border-white/5 md:pr-4">
+                                            <div className="space-y-3 md:col-span-1 md:border-r border-[var(--color-border-default)] md:pr-4">
                                                 <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                                                    <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
                                                         <Clock size={14} /> Avg Time
                                                     </div>
-                                                    <span className="text-xs font-medium text-white">{item.avgTimePerQ}s</span>
+                                                    <span className="text-xs font-medium text-[var(--color-text-primary)]">{item.avgTimePerQ}s</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                                                    <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
                                                         <WarningOctagon size={14} /> Negative Rate
                                                     </div>
-                                                    <span className="text-xs font-medium text-white">{item.negativeRate}%</span>
+                                                    <span className="text-xs font-medium text-[var(--color-text-primary)]">{item.negativeRate}%</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                                                    <div className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
                                                         <Funnel size={14} /> Last Tested
                                                     </div>
-                                                    <span className="text-xs font-medium text-white">{item.lastTestedDate}</span>
+                                                    <span className="text-xs font-medium text-[var(--color-text-primary)]">{item.lastTestedDate}</span>
                                                 </div>
                                             </div>
 
                                             {/* Difficulty Breakdown */}
-                                            <div className="md:col-span-2 space-y-3 md:border-r border-white/5 md:px-4">
-                                                <div className="text-[10px] uppercase text-neutral-500 tracking-wider">Difficulty Accuracy</div>
+                                            <div className="md:col-span-2 space-y-3 md:border-r border-[var(--color-border-default)] md:px-4">
+                                                <div className="text-[10px] uppercase text-[var(--color-text-disabled)] tracking-wider">Difficulty Accuracy</div>
                                                 <div className="grid grid-cols-3 gap-3">
                                                     {/* Easy */}
                                                     <div>
                                                         <div className="flex justify-between items-end mb-1.5">
-                                                            <span className="text-[10px] text-neutral-400">Easy</span>
-                                                            <span className="text-xs font-semibold text-emerald-400">{item.difficultyBreakdown.easy}%</span>
+                                                            <span className="text-[10px] text-[var(--color-text-tertiary)]">Easy</span>
+                                                            <span className="text-xs font-semibold text-[var(--color-success)]">{item.difficultyBreakdown.easy}%</span>
                                                         </div>
-                                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${item.difficultyBreakdown.easy}%` }} />
+                                                        <div className="h-1.5 w-full bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
+                                                            <div className="h-full bg-[var(--color-success)] rounded-full" style={{ width: `${item.difficultyBreakdown.easy}%` }} />
                                                         </div>
                                                     </div>
                                                     {/* Medium */}
                                                     <div>
                                                         <div className="flex justify-between items-end mb-1.5">
-                                                            <span className="text-[10px] text-neutral-400">Medium</span>
-                                                            <span className="text-xs font-semibold text-amber-400">{item.difficultyBreakdown.medium}%</span>
+                                                            <span className="text-[10px] text-[var(--color-text-tertiary)]">Medium</span>
+                                                            <span className="text-xs font-semibold text-[var(--color-warning)]">{item.difficultyBreakdown.medium}%</span>
                                                         </div>
-                                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-amber-500 rounded-full" style={{ width: `${item.difficultyBreakdown.medium}%` }} />
+                                                        <div className="h-1.5 w-full bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
+                                                            <div className="h-full bg-[var(--color-warning)] rounded-full" style={{ width: `${item.difficultyBreakdown.medium}%` }} />
                                                         </div>
                                                     </div>
                                                     {/* Hard */}
                                                     <div>
                                                         <div className="flex justify-between items-end mb-1.5">
-                                                            <span className="text-[10px] text-neutral-400">Hard</span>
-                                                            <span className="text-xs font-semibold text-rose-400">{item.difficultyBreakdown.hard}%</span>
+                                                            <span className="text-[10px] text-[var(--color-text-secondary)]">Hard</span>
+                                                            <span className="text-xs font-semibold text-[var(--color-error)]">{item.difficultyBreakdown.hard}%</span>
                                                         </div>
-                                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-rose-500 rounded-full" style={{ width: `${item.difficultyBreakdown.hard}%` }} />
+                                                        <div className="h-1.5 w-full bg-[var(--color-bg-muted)] rounded-full overflow-hidden">
+                                                            <div className="h-full bg-[var(--color-error)] rounded-full" style={{ width: `${item.difficultyBreakdown.hard}%` }} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -282,7 +282,7 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
 
                                             {/* Status Badge */}
                                             <div className="md:col-span-1 flex flex-col items-end justify-center md:pl-4">
-                                                <div className="text-[10px] text-neutral-500 uppercase mb-1">Consistency</div>
+                                                <div className="text-[10px] text-[var(--color-text-disabled)] uppercase mb-1">Consistency</div>
                                                 <div className={`text-xs font-medium capitalize ${getConsistencyColor(item.consistency)}`}>
                                                     {item.consistency}
                                                 </div>
@@ -295,7 +295,7 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
                         )
                     })
                 ) : (
-                    <div className="text-center py-12 text-neutral-500">
+                    <div className="text-center py-12 text-[var(--color-text-disabled)]">
                         No topics found matching your criteria.
                     </div>
                 )}

@@ -35,23 +35,23 @@ const TestSessionHeader: React.FC<Props> = ({ title, subject, timeRemaining, sta
 
   const submitDescription = (
     <div className="space-y-3">
-      <p className="text-neutral-400">Are you sure you want to submit? You won't be able to change your answers after submission.</p>
+      <p className="text-[var(--color-text-secondary)]">Are you sure you want to submit? You won't be able to change your answers after submission.</p>
       <div className="grid grid-cols-2 gap-3 pt-2">
-        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2">
-          <div className="text-lg font-semibold text-emerald-400">{stats.attempted}</div>
-          <div className="text-xs text-neutral-400">Attempted</div>
+        <div className="rounded-lg border border-[var(--color-success-subtle)] bg-[var(--color-success-subtle)] px-3 py-2">
+          <div className="text-lg font-semibold text-[var(--color-on-success)]">{stats.attempted}</div>
+          <div className="text-xs text-[var(--color-text-tertiary)]">Attempted</div>
         </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2">
-          <div className="text-lg font-semibold text-neutral-300">{stats.unattempted}</div>
-          <div className="text-xs text-neutral-400">Unattempted</div>
+        <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2">
+          <div className="text-lg font-semibold text-[var(--color-text-secondary)]">{stats.unattempted}</div>
+          <div className="text-xs text-[var(--color-text-tertiary)]">Unattempted</div>
         </div>
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2">
-          <div className="text-lg font-semibold text-amber-400">{stats.markedForReview}</div>
-          <div className="text-xs text-neutral-400">Marked for Review</div>
+        <div className="rounded-lg border border-[var(--color-warning-subtle)] bg-[var(--color-warning-subtle)] px-3 py-2">
+          <div className="text-lg font-semibold text-[var(--color-on-warning)]">{stats.markedForReview}</div>
+          <div className="text-xs text-[var(--color-text-tertiary)]">Marked for Review</div>
         </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2">
-          <div className="text-lg font-semibold text-neutral-300">{stats.total}</div>
-          <div className="text-xs text-neutral-400">Total Questions</div>
+        <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2">
+          <div className="text-lg font-semibold text-[var(--color-text-secondary)]">{stats.total}</div>
+          <div className="text-xs text-[var(--color-text-tertiary)]">Total Questions</div>
         </div>
       </div>
     </div>
@@ -59,24 +59,24 @@ const TestSessionHeader: React.FC<Props> = ({ title, subject, timeRemaining, sta
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-white/5 bg-neutral-950">
+      <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-[var(--color-border-default)] bg-[var(--color-bg-base)]">
         <div className="h-full max-w-screen-xl mx-auto px-6 flex items-center justify-between">
           {/* Left: Back + Test context */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowLeaveModal(true)}
-              className="p-1.5 -ml-1.5 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-white/5 transition"
+              className="p-1.5 -ml-1.5 rounded-lg text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-subtle)] transition"
               title="Leave test"
             >
               <CaretLeft size={18} weight="bold" />
             </button>
-            <h1 className="text-sm font-medium text-neutral-200">
+            <h1 className="text-sm font-medium text-[var(--color-text-primary)]">
               {title}
             </h1>
             {subject && (
               <>
-                <span className="text-neutral-600">·</span>
-                <span className="text-sm text-neutral-400">{subject}</span>
+                <span className="text-[var(--color-text-disabled)]">·</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{subject}</span>
               </>
             )}
           </div>
@@ -84,13 +84,13 @@ const TestSessionHeader: React.FC<Props> = ({ title, subject, timeRemaining, sta
           {/* Right: Timer + Submit */}
           <div className="flex items-center gap-4">
             {timeRemaining && (
-              <div className="text-sm font-mono text-neutral-300">
+              <div className="text-sm font-mono text-[var(--color-text-secondary)]">
                 {timeRemaining}
               </div>
             )}
             <button
               onClick={() => setShowSubmitModal(true)}
-              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-200 transition"
+              className="rounded-lg bg-[var(--color-text-primary)] px-4 py-2 text-sm font-medium text-[var(--color-bg-base)] hover:bg-[var(--color-action-primary-hover)] transition"
             >
               Submit Test
             </button>

@@ -50,16 +50,16 @@ const MetricCard: React.FC<{ data: MetricCardData }> = ({ data }) => {
     const styles = sentimentStyles[sentiment]
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-all group">
+        <div className="relative overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4 hover:bg-[var(--color-bg-muted)] transition-all group">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                {icon && <div style={{ color: color?.replace('[', '').replace(']', '') || '#fff' }}>{icon}</div>}
+                {icon && <div style={{ color: color?.replace('[', '').replace(']', '') || 'var(--color-text-primary)' }}>{icon}</div>}
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
-                    <p className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-1">{label}</p>
+                    <p className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider mb-1">{label}</p>
                     <div className="flex items-baseline gap-1">
-                        <h3 className="text-2xl font-bold text-white tracking-tight">{value}</h3>
+                        <h3 className="text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">{value}</h3>
                     </div>
                 </div>
 

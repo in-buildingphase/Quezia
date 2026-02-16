@@ -18,20 +18,19 @@ const InsightBar: React.FC<Props> = ({ insights }) => {
             {insights.map((insight, index) => (
                 <div
                     key={index}
-                    className={`flex items-start gap-4 p-4 rounded-2xl border backdrop-blur-sm transition-all hover:scale-[1.01] ${insight.type === 'success' ? 'bg-green-500/5 border-green-500/20 text-green-400' :
-                        insight.type === 'warning' ? 'bg-yellow-500/5 border-yellow-500/20 text-yellow-400' :
-                            insight.type === 'critical' ? 'bg-red-500/5 border-red-500/20 text-red-400' :
-                                'bg-blue-500/5 border-blue-500/20 text-blue-400'
+                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all shadow-[var(--shadow-sm)] ${insight.type === 'critical' ? 'bg-[var(--color-error-subtle)] border-[var(--color-border-default)] text-[var(--color-on-error)]' :
+                        insight.type === 'warning' ? 'bg-[var(--color-warning-subtle)] border-[var(--color-border-default)] text-[var(--color-on-warning)]' :
+                            'bg-[var(--color-success-subtle)] border-[var(--color-border-default)] text-[var(--color-on-success)]'
                         }`}
                 >
-                    <div className={`p-2 rounded-xl ${insight.type === 'success' ? 'bg-green-500/10' :
-                        insight.type === 'warning' ? 'bg-yellow-500/10' :
-                            insight.type === 'critical' ? 'bg-red-500/10' :
-                                'bg-blue-500/10'
+                    <div className={`p-2 rounded-xl ${insight.type === 'success' ? 'bg-[var(--color-success-subtle)]' :
+                        insight.type === 'warning' ? 'bg-[var(--color-warning-subtle)]' :
+                            insight.type === 'critical' ? 'bg-[var(--color-error-subtle)]' :
+                                'bg-[var(--color-info-subtle)]'
                         }`}>
                         {insight.icon}
                     </div>
-                    <p className="text-sm font-medium leading-relaxed mt-1">
+                    <p className="text-sm font-medium leading-relaxed mt-1 text-[var(--color-text-secondary)]">
                         {insight.text}
                     </p>
                 </div>

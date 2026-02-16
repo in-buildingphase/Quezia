@@ -4,7 +4,7 @@ import Sidebar from '../../components/Dashboard/Sidebar'
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="flex w-full min-h-screen bg-[#F5F5F5]">
+    <div className="flex w-full min-h-screen bg-[var(--color-bg-base)]">
       {/* Sidebar */}
       <Sidebar />
 

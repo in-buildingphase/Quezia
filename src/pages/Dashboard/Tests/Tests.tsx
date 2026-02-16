@@ -10,7 +10,7 @@ const Tests: React.FC = () => {
   const [isDifficultyOpen, setIsDifficultyOpen] = useState(false)
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-neutral-950 px-6 pt-60 pb-8">
+    <div className="min-h-screen overflow-x-hidden bg-[var(--color-bg-base)] px-6 pt-60 pb-8">
       {/* Create new test section */}
       <div className="w-full">
         <GlassCard

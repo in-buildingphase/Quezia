@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden px-4 bg-neutral-950">
+    <div className="relative min-h-screen overflow-x-hidden px-4 bg-[var(--color-bg-base)]">
       <GlassCard
         title={`Hello ${user?.username || 'User'}`}
         subtitle="Prepare smarter with Quezia."

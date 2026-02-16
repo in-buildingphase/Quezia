@@ -23,10 +23,10 @@ const CompactHeaderSummary: React.FC<Props> = ({
     riskRatio
 }) => {
     return (
-        <div className="bg-neutral-900/50 border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-1">
-                <h1 className="text-xl font-bold text-white tracking-tight">{title}</h1>
-                <p className="text-xs text-neutral-500 font-medium uppercase tracking-widest">{date}</p>
+                <h1 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">{title}</h1>
+                <p className="text-xs text-[var(--color-text-tertiary)] font-medium uppercase tracking-widest">{date}</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-8 md:gap-12">
@@ -38,20 +38,20 @@ const CompactHeaderSummary: React.FC<Props> = ({
                     label="Risk Ratio"
                     value={riskRatio.toFixed(2)}
                     icon={<Gauge size={16} />}
-                    color={riskRatio > 0.4 ? 'text-red-400' : 'text-neutral-400'}
+                    color={riskRatio > 0.4 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-secondary)]'}
                 />
             </div>
         </div>
     )
 }
 
-const Metric = ({ label, value, icon, color = 'text-white' }: { label: string, value: string | number, icon: React.ReactNode, color?: string }) => (
+const Metric = ({ label, value, icon, color = 'text-[var(--color-text-primary)]' }: { label: string, value: string | number, icon: React.ReactNode, color?: string }) => (
     <div className="flex items-center gap-3">
-        <div className="p-2 bg-white/5 rounded-lg text-neutral-500">
+        <div className="p-2 bg-[var(--color-bg-subtle)] rounded-lg text-[var(--color-text-tertiary)]">
             {icon}
         </div>
         <div>
-            <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1">{label}</p>
+            <p className="text-[10px] text-[var(--color-text-tertiary)] font-bold uppercase tracking-widest leading-none mb-1">{label}</p>
             <p className={`text-sm font-bold ${color} leading-none`}>{value}</p>
         </div>
     </div>

@@ -50,7 +50,8 @@ const MiniLineGraph: React.FC<MiniLineGraphProps> = ({
           x2={width - paddingX}
           y1={midY}
           y2={midY}
-          stroke="rgba(255,255,255,0.12)"
+          stroke="var(--color-bg-muted)"
+          strokeOpacity={0.4}
           strokeDasharray="4 4"
         />
 
@@ -91,7 +92,7 @@ const MiniLineGraph: React.FC<MiniLineGraphProps> = ({
           cx={xScale(lastIndex)}
           cy={yScale(data[lastIndex])}
           r={6}
-          fill="rgba(0,0,0,0.6)"
+          fill="var(--color-bg-base)"
           stroke={color}
           strokeWidth={2}
         />

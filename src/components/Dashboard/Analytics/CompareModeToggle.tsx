@@ -16,7 +16,7 @@ const CompareModeToggle: React.FC<Props> = ({ mode, onChange }) => {
     ]
 
     return (
-        <div className="bg-white/5 p-1 rounded-xl border border-white/10 flex items-center">
+        <div className="bg-[var(--color-bg-subtle)] p-1 rounded-xl border border-[var(--color-border-default)] flex items-center">
             {options.map((option) => {
                 const isActive = mode === option.id
                 const Icon = option.icon
@@ -26,11 +26,11 @@ const CompareModeToggle: React.FC<Props> = ({ mode, onChange }) => {
                         key={option.id}
                         onClick={() => onChange(option.id)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                            ? 'bg-white/10 text-white shadow-sm border border-white/10'
-                            : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'
+                            ? 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] shadow-sm border border-[var(--color-border-default)]'
+                            : 'text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]'
                             }`}
                     >
-                        <Icon weight={isActive ? "fill" : "regular"} className={isActive ? "text-[#EC2801]" : ""} />
+                        <Icon weight={isActive ? "fill" : "regular"} className={isActive ? "text-[var(--color-accent)]" : ""} />
                         <span>{option.label}</span>
                     </button>
                 )

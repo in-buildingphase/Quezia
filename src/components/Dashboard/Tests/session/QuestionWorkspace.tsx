@@ -36,8 +36,8 @@ const QuestionWorkspace: React.FC<Props> = ({
   onClearResponse,
   onReportIssue,
 }) => {
-  const hasResponse = question.type === 'mcq' 
-    ? selectedAnswer !== null 
+  const hasResponse = question.type === 'mcq'
+    ? selectedAnswer !== null
     : numericAnswer !== ''
 
   const isNumericQuestion = question.type === 'numeric'
@@ -60,47 +60,47 @@ const QuestionWorkspace: React.FC<Props> = ({
 
       <main className="flex-1 flex h-full overflow-hidden">
 
-      {/* Main content area */}
-      <div className="flex-1 flex items-start justify-center overflow-y-auto py-8">
-        <div className="w-full max-w-2xl px-6">
-          <QuestionHeader
-            questionNumber={questionNumber}
-            totalQuestions={totalQuestions}
-            marks={question.marks}
-            onReportIssue={onReportIssue}
-          />
-
-          <QuestionText text={question.text} />
-
-          {question.type === 'mcq' && (
-            <AnswerInput
-              type="mcq"
-              options={question.options}
-              selectedIndex={selectedAnswer}
-              onSelect={onSelectAnswer}
+        {/* Main content area */}
+        <div className="flex-1 flex items-start justify-center overflow-y-auto py-8">
+          <div className="w-full max-w-2xl px-6">
+            <QuestionHeader
+              questionNumber={questionNumber}
+              totalQuestions={totalQuestions}
+              marks={question.marks}
+              onReportIssue={onReportIssue}
             />
-          )}
 
-          {/* For numeric questions, answer is entered via left panel */}
-          {isNumericQuestion && (
-            <div className="mt-6 rounded-lg border border-white/5 bg-white/[0.02] p-4">
-              {numericAnswer ? (
-                <p className="font-mono text-lg text-neutral-200">{numericAnswer}</p>
-              ) : (
-                <p className="font-mono text-lg text-neutral-500">—</p>
-              )}
-            </div>
-          )}
+            <QuestionText text={question.text} />
 
-          <QuestionActions
-            isMarkedForReview={isMarkedForReview}
-            onMarkForReview={onMarkForReview}
-            onClearResponse={onClearResponse}
-            hasResponse={hasResponse}
-          />
+            {question.type === 'mcq' && (
+              <AnswerInput
+                type="mcq"
+                options={question.options}
+                selectedIndex={selectedAnswer}
+                onSelect={onSelectAnswer}
+              />
+            )}
+
+            {/* For numeric questions, answer is entered via left panel */}
+            {isNumericQuestion && (
+              <div className="mt-6 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+                {numericAnswer ? (
+                  <p className="font-mono text-lg text-[var(--color-text-primary)]">{numericAnswer}</p>
+                ) : (
+                  <p className="font-mono text-lg text-[var(--color-text-tertiary)]">—</p>
+                )}
+              </div>
+            )}
+
+            <QuestionActions
+              isMarkedForReview={isMarkedForReview}
+              onMarkForReview={onMarkForReview}
+              onClearResponse={onClearResponse}
+              hasResponse={hasResponse}
+            />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
     </>
   )
 }

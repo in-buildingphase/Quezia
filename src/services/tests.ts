@@ -7,7 +7,7 @@ export const testsService = {
             // For now, return the single mock test regardless of ID, or strictly check ID
             // The mockDB has 'test-1'. If threadId is something else, we might want to return 'test-1' for demo.
             const test = MockDatabase.getTest(threadId)
-            return test || MockDatabase.getTest('test-1') // Fallback for demo
+            return test
         })
     },
 
@@ -16,9 +16,6 @@ export const testsService = {
             // Similarly, return attempts for 'test-1' if threadId doesn't match, or filter by threadId
             // In this demo, we assume the user is viewing the 'test-1' thread equivalent
             const attempts = MockDatabase.getAttemptsForTest(threadId)
-            if (attempts.length === 0 && threadId !== 'test-1') {
-                return MockDatabase.getAttemptsForTest('test-1')
-            }
             return attempts
         })
     },

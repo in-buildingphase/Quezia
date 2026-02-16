@@ -19,10 +19,10 @@ type Props = {
 }
 
 const statusStyles: Record<QuestionStatus, string> = {
-  unattempted: 'border-white/10 bg-transparent text-neutral-400',
-  attempted: 'border-emerald-500/30 bg-emerald-500/20 text-emerald-300',
-  marked: 'border-amber-500/30 bg-amber-500/20 text-amber-300',
-  current: 'border-white/40 bg-white/20 text-white',
+  unattempted: 'border-[var(--color-border-default)] bg-transparent text-[var(--color-text-tertiary)]',
+  attempted: 'border-[var(--color-success-subtle)] bg-[var(--color-success-subtle)] text-[var(--color-on-success)]',
+  marked: 'border-[var(--color-warning-subtle)] bg-[var(--color-warning-subtle)] text-[var(--color-on-warning)]',
+  current: 'border-[var(--color-border-strong)] bg-[var(--color-bg-muted)] text-[var(--color-text-primary)]',
 }
 
 const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, onSelect, onClose, isOpen }) => {
@@ -65,7 +65,7 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
     }
     const section = sections.find((s) => s.id === activeSection)
     if (!section) return questions.map((q, i) => ({ ...q, globalIndex: i }))
-    
+
     return questions
       .map((q, i) => ({ ...q, globalIndex: i }))
       .filter((_, i) => i >= section.startIndex && i <= section.endIndex)
@@ -91,19 +91,18 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
     <>
       {/* Right-side drawer - fixed position, slides in from right */}
       <div
-        className={`fixed top-14 bottom-16 right-0 w-80 border-l border-white/10 bg-neutral-950 z-40 transition-transform duration-200 ease-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-14 bottom-16 right-0 w-80 border-l border-[var(--color-border-default)] bg-[var(--color-bg-base)] z-40 transition-transform duration-200 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="h-full flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 pt-4 pb-2 flex-shrink-0">
-            <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <h3 className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-tertiary)]">
               Questions
             </h3>
             <button
               onClick={onClose}
-              className="p-1 rounded hover:bg-white/5 text-neutral-500 hover:text-neutral-300 transition-colors"
+              className="p-1 rounded hover:bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-colors"
             >
               <X size={14} />
             </button>
@@ -112,25 +111,24 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
           {/* Section Tabs */}
           {sections && sections.length > 0 && (
             <div className="flex-shrink-0 px-2 pb-3">
-              <div className="flex gap-1 p-1 rounded-lg bg-white/5">
+              <div className="flex gap-1 p-1 rounded-lg bg-[var(--color-bg-subtle)]">
                 {sections.map((section) => {
                   const isActive = activeSection === section.id
                   const sectionQuestions = questions.slice(section.startIndex, section.endIndex + 1)
                   const attemptedInSection = sectionQuestions.filter((q) => q.status === 'attempted').length
                   const totalInSection = section.endIndex - section.startIndex + 1
-                  
+
                   return (
                     <button
                       key={section.id}
                       onClick={() => handleSectionClick(section.id)}
-                      className={`flex-1 flex flex-col items-center gap-0.5 px-2 py-2 rounded-md text-xs transition ${
-                        isActive
-                          ? 'bg-white/10 text-white'
-                          : 'text-neutral-400 hover:text-neutral-300 hover:bg-white/5'
-                      }`}
+                      className={`flex-1 flex flex-col items-center gap-0.5 px-2 py-2 rounded-md text-xs transition ${isActive
+                          ? 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)]'
+                          : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]'
+                        }`}
                     >
                       <span className="font-medium truncate max-w-full">{section.name}</span>
-                      <span className={`text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                      <span className={`text-[10px] ${isActive ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-disabled)]'}`}>
                         {attemptedInSection}/{totalInSection}
                       </span>
                     </button>
@@ -161,9 +159,9 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
           </div>
 
           {/* Legend - fixed at bottom */}
-          <div className="flex-shrink-0 px-4 py-3 border-t border-white/5">
-            <div className="text-[10px] text-neutral-500 mb-2 uppercase tracking-wide">
-              {sections && sections.length > 0 
+          <div className="flex-shrink-0 px-4 py-3 border-t border-[var(--color-border-default)]">
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mb-2 uppercase tracking-wide">
+              {sections && sections.length > 0
                 ? `${sections.find(s => s.id === activeSection)?.name || 'Section'} Status`
                 : 'Status'
               }
@@ -177,12 +175,12 @@ const QuestionPalette: React.FC<Props> = ({ questions, sections, currentIndex, o
               compact
             />
             {sections && sections.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-white/5">
-                <div className="text-[10px] text-neutral-500 mb-2 uppercase tracking-wide">Overall</div>
-                <div className="flex items-center gap-3 text-xs text-neutral-400">
+              <div className="mt-3 pt-3 border-t border-[var(--color-border-default)]">
+                <div className="text-[10px] text-[var(--color-text-tertiary)] mb-2 uppercase tracking-wide">Overall</div>
+                <div className="flex items-center gap-3 text-xs text-[var(--color-text-secondary)]">
                   <span>{totalCounts.attempted}/{questions.length} answered</span>
                   {totalCounts.marked > 0 && (
-                    <span className="text-amber-400">{totalCounts.marked} marked</span>
+                    <span className="text-[var(--color-on-warning)]">{totalCounts.marked} marked</span>
                   )}
                 </div>
               </div>

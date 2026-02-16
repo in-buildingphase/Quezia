@@ -28,10 +28,10 @@ const ThreadHeader: React.FC<Props> = ({ threadId, title, attempts, onStartTest 
   return (
     <div className="mb-4 flex items-center justify-between" ref={containerRef}>
       <div>
-        <p className="text-xs uppercase tracking-wide text-neutral-500">
+        <p className="text-xs uppercase tracking-wide text-[var(--color-text-tertiary)]">
           Test thread
         </p>
-        <h1 className="mt-1 text-lg font-medium text-neutral-200">
+        <h1 className="mt-1 text-lg font-medium text-[var(--color-text-primary)]">
           {title || `Thread #${threadId}`}
         </h1>
       </div>
@@ -40,8 +40,8 @@ const ThreadHeader: React.FC<Props> = ({ threadId, title, attempts, onStartTest 
         <button
           onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${isAnalyticsOpen
-            ? 'bg-white text-neutral-900 shadow-lg shadow-white/10'
-            : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white border border-white/5'
+            ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-base)] shadow-[var(--shadow-md)]'
+            : 'bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-default)]'
             }`}
         >
           <ChartBar size={18} weight={isAnalyticsOpen ? "fill" : "regular"} />

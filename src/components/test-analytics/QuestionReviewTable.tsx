@@ -48,18 +48,18 @@ const QuestionReviewTable: React.FC<Props> = ({ questions }) => {
     }
 
     return (
-        <div className="bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden flex flex-col">
+        <div className="bg-[var(--color-bg-surface)] backdrop-blur-md border border-[var(--color-border-default)] rounded-3xl overflow-hidden flex flex-col">
             {/* Toolbar */}
-            <div className="p-6 border-b border-white/10 space-y-4">
+            <div className="p-6 border-b border-[var(--color-border-default)] space-y-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <h3 className="text-xl font-bold text-white tracking-tight">Question Depth Review</h3>
+                    <h3 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">Question Depth Review</h3>
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <div className="relative flex-1 md:w-64">
-                            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
                             <input
                                 type="text"
                                 placeholder="Search topic or subject..."
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-white placeholder:text-neutral-600 focus:outline-none focus:border-blue-500/50 transition-colors"
+                                className="w-full bg-[var(--color-bg-subtle)] border border-[var(--color-border-default)] rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-[var(--color-text-primary)] placeholder-[var(--color-text-disabled)] focus:outline-none focus:border-[var(--color-accent-subtle)] transition-colors"
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                             />
@@ -79,7 +79,7 @@ const QuestionReviewTable: React.FC<Props> = ({ questions }) => {
             <div className="flex-1 overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
-                        <tr className="bg-white/5 text-[10px] text-neutral-500 uppercase tracking-widest font-bold border-b border-white/5">
+                        <tr className="bg-[var(--color-bg-subtle)] text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-widest font-bold border-b border-[var(--color-border-default)]">
                             <th className="px-6 py-4 cursor-pointer hover:text-white" onClick={() => handleSort('id')}>
                                 <div className="flex items-center gap-1">
                                     # {sortConfig?.key === 'id' && <CaretDown className={sortConfig.direction === 'asc' ? 'rotate-180' : ''} />}
@@ -115,36 +115,36 @@ const QuestionReviewTable: React.FC<Props> = ({ questions }) => {
                             <th className="px-6 py-4"></th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[var(--color-border-default)]">
                         {filteredQuestions.map((q, i) => (
-                            <tr key={i} className="group hover:bg-white/[0.02] transition-colors">
-                                <td className="px-6 py-4 text-sm font-bold text-white">#{q.id}</td>
-                                <td className="px-6 py-4 text-xs font-medium text-neutral-400 uppercase tracking-wider">{q.section}</td>
-                                <td className="px-6 py-4 text-xs font-bold text-neutral-300 uppercase">{q.subject}</td>
-                                <td className="px-6 py-4 text-sm font-medium text-white group-hover:text-blue-400 transition-colors uppercase tracking-tight">{q.topic}</td>
+                            <tr key={i} className="group hover:bg-[var(--color-bg-muted)] transition-colors">
+                                <td className="px-6 py-4 text-sm font-bold text-[var(--color-text-primary)]">#{q.id}</td>
+                                <td className="px-6 py-4 text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider">{q.section}</td>
+                                <td className="px-6 py-4 text-xs font-bold text-[var(--color-text-secondary)] uppercase">{q.subject}</td>
+                                <td className="px-6 py-4 text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors uppercase tracking-tight">{q.topic}</td>
                                 <td className="px-6 py-4">
-                                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${q.difficulty === 'easy' ? 'bg-green-500/10 text-green-400' :
-                                        q.difficulty === 'medium' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-red-500/10 text-red-400'
+                                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${q.difficulty === 'easy' ? 'bg-[var(--color-success-subtle)] text-[var(--color-on-success)]' :
+                                        q.difficulty === 'medium' ? 'bg-[var(--color-warning-subtle)] text-[var(--color-on-warning)]' : 'bg-[var(--color-error-subtle)] text-[var(--color-on-error)]'
                                         }`}>
                                         {q.difficulty}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <div className={`flex items-center gap-1.5 text-xs font-bold uppercase ${q.status === 'correct' ? 'text-green-500' :
-                                        q.status === 'incorrect' ? 'text-red-500' : 'text-neutral-600'
+                                    <div className={`flex items-center gap-1.5 text-xs font-bold uppercase ${q.status === 'correct' ? 'text-[var(--color-success)]' :
+                                        q.status === 'incorrect' ? 'text-[var(--color-error)]' : 'text-[var(--color-text-disabled)]'
                                         }`}>
                                         {q.status}
                                     </div>
                                 </td>
-                                <td className={`px-6 py-4 text-sm font-mono font-bold ${q.marks > 0 ? 'text-green-500' : q.marks < 0 ? 'text-red-500' : 'text-neutral-500'
+                                <td className={`px-6 py-4 text-sm font-mono font-bold ${q.marks > 0 ? 'text-[var(--color-success)]' : q.marks < 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-tertiary)]'
                                     }`}>
                                     {q.marks > 0 ? `+${q.marks}` : q.marks}
                                 </td>
-                                <td className={`px-6 py-4 text-sm font-mono font-medium ${q.time > 180 ? 'text-yellow-500' : 'text-neutral-300'}`}>
+                                <td className={`px-6 py-4 text-sm font-mono font-medium ${q.time > 180 ? 'text-[var(--color-warning)]' : 'text-[var(--color-text-secondary)]'}`}>
                                     {q.time}s
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                    <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-neutral-500 hover:bg-white/10 hover:text-white transition-all opacity-0 group-hover:opacity-100">
+                                    <button className="p-2 rounded-lg bg-[var(--color-bg-subtle)] border border-[var(--color-border-default)] text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)] transition-all opacity-0 group-hover:opacity-100">
                                         <ArrowRight size={14} />
                                     </button>
                                 </td>
@@ -160,7 +160,7 @@ const QuestionReviewTable: React.FC<Props> = ({ questions }) => {
 const FilterButton = ({ active, children, onClick }: { active: boolean, children: React.ReactNode, onClick: () => void }) => (
     <button
         onClick={onClick}
-        className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${active ? 'bg-white/15 text-white shadow-lg shadow-white/5' : 'text-neutral-500 hover:text-neutral-400 hover:bg-white/5'
+        className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${active ? 'bg-[rgba(255,255,255,0.15)] text-[var(--color-text-primary)] shadow-lg shadow-[var(--color-bg-muted)]' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]'
             }`}
     >
         {children}

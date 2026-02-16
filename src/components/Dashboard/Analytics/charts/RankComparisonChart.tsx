@@ -32,10 +32,10 @@ const RankComparisonChart: React.FC<Props> = ({ data }) => {
     }, [data])
 
     return (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl h-full flex flex-col overflow-hidden">
+        <div className="rounded-3xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-6 backdrop-blur-xl h-full flex flex-col overflow-hidden">
             <div className="mb-4">
-                <h3 className="text-lg font-semibold text-white">Rank Distribution</h3>
-                <p className="text-sm text-neutral-400">Your standing against peers</p>
+                <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Rank Distribution</h3>
+                <p className="text-sm text-[var(--color-text-tertiary)]">Your standing against peers</p>
             </div>
 
             {/* overflow-hidden is critical here — it clips any stray SVG pixels */}
@@ -44,25 +44,25 @@ const RankComparisonChart: React.FC<Props> = ({ data }) => {
                     <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 30 }}>
                         <defs>
                             <linearGradient id="colorRank" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#ec2801" stopOpacity={0.15} />
-                                <stop offset="95%" stopColor="#ec2801" stopOpacity={0} />
+                                <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.15} />
+                                <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0} />
                             </linearGradient>
                         </defs>
 
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bg-muted)" opacity={0.4} vertical={false} />
 
                         <XAxis
                             dataKey="testId"
-                            stroke="#525252"
-                            tick={{ fill: '#737373', fontSize: 10 }}
+                            stroke="var(--color-chart-axis)"
+                            tick={{ fill: 'var(--color-chart-tick)', fontSize: 10 }}
                             tickLine={false}
                             axisLine={false}
                             dy={12}
                         />
 
                         <YAxis
-                            stroke="#525252"
-                            tick={{ fill: '#737373', fontSize: 10 }}
+                            stroke="var(--color-chart-axis)"
+                            tick={{ fill: 'var(--color-chart-tick)', fontSize: 10 }}
                             tickLine={false}
                             axisLine={false}
                             reversed          // lower rank = better = top of chart
@@ -73,15 +73,15 @@ const RankComparisonChart: React.FC<Props> = ({ data }) => {
 
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: 'rgba(10, 10, 10, 0.95)',
-                                border: '1px solid rgba(236, 40, 1, 0.2)',
+                                backgroundColor: 'var(--color-chart-tooltip-bg)',
+                                border: '1px solid var(--color-accent-subtle)',
                                 borderRadius: '16px',
                                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                                 padding: '12px',
-                                color: '#fff'
+                                color: 'var(--color-chart-tooltip-text)'
                             }}
-                            itemStyle={{ color: '#fff', fontSize: '13px' }}
-                            labelStyle={{ color: '#737373', fontSize: '11px', marginBottom: '4px' }}
+                            itemStyle={{ color: 'var(--color-chart-tooltip-text)', fontSize: '13px' }}
+                            labelStyle={{ color: 'var(--color-text-tertiary)', fontSize: '11px', marginBottom: '4px' }}
                         />
 
                         {/* Student rank — solid line + gradient fill */}
@@ -89,7 +89,7 @@ const RankComparisonChart: React.FC<Props> = ({ data }) => {
                             type="monotone"
                             dataKey="studentRank"
                             name="Your Rank"
-                            stroke="#ec2801"
+                            stroke="var(--color-accent)"
                             strokeWidth={3}
                             fillOpacity={1}
                             fill="url(#colorRank)"
@@ -102,7 +102,7 @@ const RankComparisonChart: React.FC<Props> = ({ data }) => {
                             type="monotone"
                             dataKey="avgRank"
                             name="Avg Peer Rank"
-                            stroke="#404040"
+                            stroke="var(--color-text-disabled)"
                             strokeDasharray="4 4"
                             strokeWidth={2}
                             fillOpacity={0}

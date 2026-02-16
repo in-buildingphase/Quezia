@@ -53,10 +53,10 @@ const AnswerInput: React.FC<Props> = (props) => {
           }
         }}
         placeholder="Enter your answer"
-        className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-neutral-100 placeholder-neutral-500 focus:border-white/20 focus:bg-white/[0.05] focus:outline-none transition"
+        className="w-full rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3 text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:border-[var(--color-border-strong)] focus:bg-[var(--color-bg-muted)] focus:outline-none transition"
       />
       {props.hint && (
-        <p className="text-xs text-neutral-500 px-1">{props.hint}</p>
+        <p className="text-xs text-[var(--color-text-tertiary)] px-1">{props.hint}</p>
       )}
     </div>
   )
