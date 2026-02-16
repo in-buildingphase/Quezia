@@ -37,18 +37,18 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-white/10 bg-neutral-900/70 backdrop-blur px-6 py-5">
+    <div className="w-full max-w-md rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] backdrop-blur px-6 py-5">
 
       {/* TITLE */}
       <div className="mb-4">
-        <p className="text-xs uppercase tracking-wide text-neutral-500">
+        <p className="text-xs uppercase tracking-wide text-[var(--color-text-tertiary)]">
           {mock ? 'Mock test' : 'Custom test'}
         </p>
-        <h2 className="mt-1 text-base font-medium text-neutral-200">
+        <h2 className="mt-1 text-base font-medium text-[var(--color-text-primary)]">
           {preset.title}
         </h2>
         {preset.subtitle && (
-          <p className="mt-0.5 text-sm text-neutral-400">
+          <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">
             {preset.subtitle}
           </p>
         )}
@@ -57,9 +57,9 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
       {/* META */}
       <div className="mb-4 flex items-center justify-between text-sm">
         <div>
-          <p className="text-neutral-500">Duration</p>
+          <p className="text-[var(--color-text-tertiary)]">Duration</p>
           {mock ? (
-            <p className="text-neutral-200">{formatDuration(durationMinutes)}</p>
+            <p className="text-[var(--color-text-primary)]">{formatDuration(durationMinutes)}</p>
           ) : (
             <div className="flex items-center gap-2">
               {isEditingDuration ? (
@@ -68,23 +68,23 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
                     type="text"
                     value={durationInput}
                     onChange={(e) => setDurationInput(e.target.value)}
-                    className="w-20 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-neutral-200 outline-none focus:border-white/20"
+                    className="w-20 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-2 py-1 text-[var(--color-text-primary)] outline-none focus:border-[var(--color-border-strong)]"
                     autoFocus
                     onKeyDown={(e) => e.key === 'Enter' && handleDurationSave()}
                   />
                   <button
                     onClick={handleDurationSave}
-                    className="rounded-md p-1 text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
+                    className="rounded-md p-1 text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)]"
                   >
                     <Check className="h-4 w-4" />
                   </button>
                 </>
               ) : (
                 <>
-                  <p className="text-neutral-200">{formatDuration(durationMinutes)}</p>
+                  <p className="text-[var(--color-text-primary)]">{formatDuration(durationMinutes)}</p>
                   <button
                     onClick={() => setIsEditingDuration(true)}
-                    className="rounded-md p-1 text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
+                    className="rounded-md p-1 text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-primary)]"
                   >
                     <PencilSimple className="h-4 w-4" />
                   </button>
@@ -95,14 +95,14 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
         </div>
         {questionsCount !== undefined && (
           <div>
-            <p className="text-neutral-500">Questions</p>
-            <p className="text-neutral-200">{questionsCount}</p>
+            <p className="text-[var(--color-text-tertiary)]">Questions</p>
+            <p className="text-[var(--color-text-primary)]">{questionsCount}</p>
           </div>
         )}
         {preset.sections && preset.sections.length > 0 && (
           <div className="text-right">
-            <p className="text-neutral-500">Sections</p>
-            <p className="text-neutral-200">
+            <p className="text-[var(--color-text-tertiary)]">Sections</p>
+            <p className="text-[var(--color-text-primary)]">
               {preset.sections.length}
             </p>
           </div>
@@ -110,10 +110,10 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
       </div>
 
       {/* RULES (compact) */}
-      <ul className="mb-4 space-y-2 text-sm text-neutral-300">
+      <ul className="mb-4 space-y-2 text-sm text-[var(--color-text-secondary)]">
         {preset.rules.slice(0, 5).map((rule, i) => (
           <li key={i} className="flex gap-2">
-            <span className="text-neutral-500">•</span>
+            <span className="text-[var(--color-text-tertiary)]">•</span>
             <span>{rule}</span>
           </li>
         ))}
@@ -121,7 +121,7 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
 
       {/* QUEZIA NOTE */}
       {preset.queziaNote && (
-        <p className="mb-4 text-xs text-neutral-400">
+        <p className="mb-4 text-xs text-[var(--color-text-tertiary)]">
           {preset.queziaNote}
         </p>
       )}
@@ -129,7 +129,7 @@ const TestPreviewRulesCard: React.FC<Props> = ({ preset, questionsCount, onStart
       {/* CTA */}
       <button
         onClick={onStart}
-        className="w-full rounded-xl bg-white py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-200 transition"
+        className="w-full rounded-xl bg-[var(--color-text-primary)] py-2.5 text-sm font-medium text-[var(--color-bg-base)] hover:bg-[var(--color-action-primary-hover)] transition"
       >
         Start Test
       </button>

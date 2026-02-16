@@ -11,13 +11,12 @@ const AnswerOption: React.FC<Props> = ({ label, text, isSelected, onSelect }) =>
   return (
     <button
       onClick={onSelect}
-      className={`w-full text-left rounded-lg border px-4 py-3 transition ${
-        isSelected
-          ? 'border-white/30 bg-white/10 text-neutral-100'
-          : 'border-white/5 bg-white/[0.02] text-neutral-300 hover:border-white/10 hover:bg-white/[0.04]'
-      }`}
+      className={`w-full text-left rounded-lg border px-4 py-3 transition ${isSelected
+          ? 'border-[var(--color-border-strong)] bg-[var(--color-bg-muted)] text-[var(--color-text-primary)]'
+          : 'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-muted)]'
+        }`}
     >
-      <span className="mr-3 text-neutral-400">{label})</span>
+      <span className="mr-3 text-[var(--color-text-tertiary)]">{label})</span>
       {text}
     </button>
   )

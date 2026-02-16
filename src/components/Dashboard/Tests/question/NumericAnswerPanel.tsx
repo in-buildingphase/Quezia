@@ -111,23 +111,22 @@ const NumericAnswerPanel: React.FC<Props> = ({ value, onChange, rules = {} }) =>
   ]
 
   return (
-    <div className="fixed left-0 top-14 bottom-16 w-60 border-r border-white/5 bg-neutral-950 p-4 flex flex-col z-20">
+    <div className="fixed left-0 top-14 bottom-16 w-60 border-r border-[var(--color-border-default)] bg-[var(--color-bg-base)] p-4 flex flex-col z-20">
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-xs font-medium text-neutral-300 mb-1">
+        <h3 className="text-xs font-medium text-[var(--color-text-secondary)] mb-1">
           Final Numerical Answer
         </h3>
-        <p className="text-[10px] text-neutral-600">
+        <p className="text-[10px] text-[var(--color-text-disabled)]">
           {getRuleIndicator()}
         </p>
       </div>
 
       {/* Answer Display */}
-      <div className="mb-4 rounded-lg border border-white/10 bg-neutral-900 py-6 px-4">
+      <div className="mb-4 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-6 px-4">
         <div
-          className={`text-center font-mono text-2xl ${
-            value === '' ? 'text-neutral-600' : 'text-neutral-100'
-          }`}
+          className={`text-center font-mono text-2xl ${value === '' ? 'text-[var(--color-text-disabled)]' : 'text-[var(--color-text-primary)]'
+            }`}
         >
           {displayValue}
         </div>
@@ -137,12 +136,12 @@ const NumericAnswerPanel: React.FC<Props> = ({ value, onChange, rules = {} }) =>
       <div className="grid grid-cols-3 gap-2 mb-4">
         {keys.flat().map((key, i) => {
           if (key === null) return <div key={i} />
-          
+
           return (
             <button
               key={key}
               onClick={() => handleKey(key)}
-              className="aspect-square rounded-lg border border-white/5 bg-white/[0.02] text-neutral-300 text-lg font-medium hover:bg-white/[0.06] hover:border-white/10 transition-colors active:scale-95"
+              className="aspect-square rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] text-lg font-medium hover:bg-[var(--color-bg-muted)] hover:border-[var(--color-border-strong)] transition-colors active:scale-95"
             >
               {key}
             </button>
@@ -154,20 +153,20 @@ const NumericAnswerPanel: React.FC<Props> = ({ value, onChange, rules = {} }) =>
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => handleKey('backspace')}
-          className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-white/5 bg-white/[0.02] text-neutral-400 text-sm hover:bg-white/[0.06] hover:border-white/10 transition-colors"
+          className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] text-sm hover:bg-[var(--color-bg-muted)] hover:border-[var(--color-border-strong)] transition-colors"
         >
           <Backspace size={16} />
         </button>
         <button
           onClick={() => handleKey('clear')}
-          className="py-2.5 rounded-lg border border-white/5 bg-white/[0.02] text-neutral-400 text-sm hover:bg-white/[0.06] hover:border-white/10 transition-colors"
+          className="py-2.5 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] text-sm hover:bg-[var(--color-bg-muted)] hover:border-[var(--color-border-strong)] transition-colors"
         >
           Clear
         </button>
       </div>
 
       {/* Helper text */}
-      <p className="mt-4 text-[10px] text-neutral-600 leading-relaxed">
+      <p className="mt-4 text-[10px] text-[var(--color-text-disabled)] leading-relaxed">
         {getHelperText()}
       </p>
     </div>

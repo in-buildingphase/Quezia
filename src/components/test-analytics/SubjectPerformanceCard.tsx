@@ -16,16 +16,16 @@ interface Props {
 
 const SubjectPerformanceCard: React.FC<Props> = ({ subjects }) => {
     return (
-        <div className="bg-neutral-900/50 border border-white/5 rounded-3xl p-6 h-full flex flex-col">
+        <div className="bg-[var(--color-bg-base)] border border-[var(--color-border-default)] rounded-3xl p-6 h-full flex flex-col">
             <div className="flex items-center justify-between mb-8">
-                <h3 className="text-sm font-bold text-neutral-400 uppercase tracking-widest">Subject Analysis</h3>
+                <h3 className="text-sm font-bold text-[var(--color-text-tertiary)] uppercase tracking-widest">Subject Analysis</h3>
                 <div className="flex gap-4">
                     {['Strong', 'Average', 'Weak'].map(s => (
                         <div key={s} className="flex items-center gap-2">
-                            <div className={`w-1.5 h-1.5 rounded-full ${s === 'Strong' ? 'bg-green-500' :
-                                s === 'Average' ? 'bg-yellow-500' : 'bg-red-500'
+                            <div className={`w-1.5 h-1.5 rounded-full ${s === 'Strong' ? 'bg-[var(--color-success)]' :
+                                s === 'Average' ? 'bg-[var(--color-warning)]' : 'bg-[var(--color-error)]'
                                 }`} />
-                            <span className="text-[10px] text-neutral-600 font-bold uppercase tracking-tight">{s}</span>
+                            <span className="text-[10px] text-[var(--color-text-disabled)] font-bold uppercase tracking-tight">{s}</span>
                         </div>
                     ))}
                 </div>
@@ -34,30 +34,30 @@ const SubjectPerformanceCard: React.FC<Props> = ({ subjects }) => {
             <div className="flex-1">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="text-[9px] text-neutral-600 uppercase tracking-[0.2em] font-black border-b border-white/5">
+                        <tr className="text-[9px] text-[var(--color-text-disabled)] uppercase tracking-[0.2em] font-black border-b border-[var(--color-border-default)]">
                             <th className="pb-4">Subject</th>
                             <th className="pb-4">Accuracy</th>
                             <th className="pb-4 text-right">Score</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[var(--color-border-default)]">
                         {subjects.map((s, i) => (
                             <tr key={i} className="group">
                                 <td className="py-4">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-1 h-3 rounded-full ${s.status === 'strong' ? 'bg-green-500' :
-                                            s.status === 'average' ? 'bg-yellow-500' : 'bg-red-500'
+                                        <div className={`w-1 h-3 rounded-full ${s.status === 'strong' ? 'bg-[var(--color-success)]' :
+                                            s.status === 'average' ? 'bg-[var(--color-warning)]' : 'bg-[var(--color-error)]'
                                             }`} />
-                                        <span className="text-xs font-bold text-neutral-300 uppercase tracking-tight">{s.subject}</span>
+                                        <span className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-tight">{s.subject}</span>
                                     </div>
                                 </td>
                                 <td className="py-4">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xs font-mono font-bold text-white">{s.accuracy}%</span>
-                                        <div className="w-20 h-1 bg-white/5 rounded-full overflow-hidden">
+                                        <span className="text-xs font-mono font-bold text-[var(--color-text-primary)]">{s.accuracy}%</span>
+                                        <div className="w-20 h-1 bg-[var(--color-bg-subtle)] rounded-full overflow-hidden">
                                             <div
-                                                className={`h-full rounded-full ${s.accuracy > 75 ? 'bg-green-500' :
-                                                    s.accuracy > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                                className={`h-full rounded-full ${s.accuracy > 75 ? 'bg-[var(--color-success)]' :
+                                                    s.accuracy > 50 ? 'bg-[var(--color-warning)]' : 'bg-[var(--color-error)]'
                                                     }`}
                                                 style={{ width: `${s.accuracy}%` }}
                                             />
@@ -65,8 +65,8 @@ const SubjectPerformanceCard: React.FC<Props> = ({ subjects }) => {
                                     </div>
                                 </td>
                                 <td className="py-4 text-right">
-                                    <span className="text-sm font-mono font-bold text-neutral-300">{s.score}</span>
-                                    <span className="text-[10px] text-neutral-600 font-bold ml-1">/ {s.maxScore}</span>
+                                    <span className="text-sm font-mono font-bold text-[var(--color-text-secondary)]">{s.score}</span>
+                                    <span className="text-[10px] text-[var(--color-text-disabled)] font-bold ml-1">/ {s.maxScore}</span>
                                 </td>
                             </tr>
                         ))}

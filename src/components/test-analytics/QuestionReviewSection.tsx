@@ -47,12 +47,12 @@ const QuestionReviewSection: React.FC<Props> = ({ questions }) => {
     return (
         <div className="flex flex-col lg:flex-row gap-6 h-[700px]">
             {/* Left Pane: Navigator */}
-            <div className="w-full lg:w-[35%] flex flex-col bg-neutral-900/50 border border-white/5 rounded-3xl overflow-hidden">
-                <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+            <div className="w-full lg:w-[35%] flex flex-col bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-3xl overflow-hidden">
+                <div className="p-4 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex flex-col gap-0.5">
-                            <h3 className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.2em] leading-none">Question Debugger</h3>
-                            <span className="text-[9px] font-bold text-neutral-700 tracking-tighter">
+                            <h3 className="text-[10px] font-black text-[var(--color-text-tertiary)] uppercase tracking-[0.2em] leading-none">Question Debugger</h3>
+                            <span className="text-[9px] font-bold text-[var(--color-text-disabled)] tracking-tighter">
                                 {filteredQuestions.length} Items Found
                             </span>
                         </div>
@@ -60,8 +60,8 @@ const QuestionReviewSection: React.FC<Props> = ({ questions }) => {
                         <button
                             onClick={() => setIsMistakeOnly(!isMistakeOnly)}
                             className={`px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all ${isMistakeOnly
-                                    ? 'bg-red-500/10 border-red-500/20 text-red-500 shadow-[0_0_12px_rgba(239,68,68,0.1)]'
-                                    : 'bg-white/5 border-white/5 text-neutral-600 hover:text-white'
+                                ? 'bg-[var(--color-error-subtle)] border-[var(--color-error-subtle)] text-[var(--color-error)] shadow-[0_0_12px_var(--color-error-subtle)]'
+                                : 'bg-[var(--color-bg-subtle)] border-[var(--color-border-default)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
                                 }`}
                         >
                             Mistake Only
@@ -70,9 +70,9 @@ const QuestionReviewSection: React.FC<Props> = ({ questions }) => {
 
                     <div className="flex flex-wrap gap-1.5">
                         <FilterChip label="All" active={filter === 'all'} onClick={() => { setFilter('all'); setActiveIndex(0); }} />
-                        <FilterChip label="Incorrect" active={filter === 'incorrect'} onClick={() => { setFilter('incorrect'); setActiveIndex(0); }} color="text-red-400" />
+                        <FilterChip label="Incorrect" active={filter === 'incorrect'} onClick={() => { setFilter('incorrect'); setActiveIndex(0); }} color="text-[var(--color-error)]" />
                         <FilterChip label="Missed" active={filter === 'unattempted'} onClick={() => { setFilter('unattempted'); setActiveIndex(0); }} />
-                        <FilterChip label="Hard" active={filter === 'hard'} onClick={() => { setFilter('hard'); setActiveIndex(0); }} color="text-yellow-400" />
+                        <FilterChip label="Hard" active={filter === 'hard'} onClick={() => { setFilter('hard'); setActiveIndex(0); }} color="text-[var(--color-warning)]" />
                     </div>
                 </div>
 
@@ -86,19 +86,19 @@ const QuestionReviewSection: React.FC<Props> = ({ questions }) => {
             </div>
 
             {/* Right Pane: Detail */}
-            <div className="flex-1 bg-neutral-900/50 border border-white/5 rounded-3xl overflow-hidden flex flex-col">
+            <div className="flex-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] rounded-3xl overflow-hidden flex flex-col">
                 <QuestionDetailView question={activeQuestion} />
             </div>
         </div>
     )
 }
 
-const FilterChip = ({ label, active, onClick, color = 'text-neutral-400' }: { label: string, active: boolean, onClick: () => void, color?: string }) => (
+const FilterChip = ({ label, active, onClick, color = 'text-[var(--color-text-tertiary)]' }: { label: string, active: boolean, onClick: () => void, color?: string }) => (
     <button
         onClick={onClick}
         className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${active
-            ? 'bg-white/10 text-white border border-white/10 shadow-lg'
-            : `${color} hover:bg-white/5 border border-transparent`
+            ? 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-default)] shadow-lg'
+            : `${color} hover:bg-[var(--color-bg-subtle)] border border-transparent`
             }`}
     >
         {label}

@@ -28,13 +28,13 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
     const navigate = useNavigate()
     if (!attempts || attempts.length === 0) {
         return (
-            <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl p-6 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-base)] backdrop-blur-xl p-6 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <ChartBar className="h-4 w-4 text-[#EC2801]" />
-                        <h3 className="text-sm font-medium text-white">Analytics</h3>
+                        <ChartBar className="h-4 w-4 text-[var(--color-accent)]" />
+                        <h3 className="text-sm font-medium text-[var(--color-text-primary)]">Analytics</h3>
                     </div>
-                    <button onClick={onClose} className="text-neutral-500 hover:text-white transition">
+                    <button onClick={onClose} className="text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] transition">
                         <X size={16} />
                     </button>
                 </div>
@@ -59,16 +59,16 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
 
 
     return (
-        <div className="absolute top-full right-0 mt-2 w-[400px] rounded-2xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl p-5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full right-0 mt-2 w-[400px] rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-base)] backdrop-blur-xl p-5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-300">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-white/5 border border-white/5">
-                        <ChartBar className="h-4 w-4 text-[#EC2801]" />
+                    <div className="p-1.5 rounded-lg bg-[var(--color-bg-subtle)] border border-[var(--color-border-default)]">
+                        <ChartBar className="h-4 w-4 text-[var(--color-accent)]" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-medium text-white">Performance Analytics</h3>
-                        <p className="text-[10px] text-neutral-500 uppercase tracking-wider">
+                        <h3 className="text-sm font-medium text-[var(--color-text-primary)]">Performance Analytics</h3>
+                        <p className="text-[10px] text-[var(--color-text-disabled)] uppercase tracking-wider">
                             {attempts.length} Attempt{attempts.length !== 1 ? 's' : ''} recorded
                         </p>
                     </div>
@@ -83,21 +83,21 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 flex flex-col justify-between">
-                    <p className="text-[11px] text-neutral-400">Best Score</p>
-                    <p className="mt-1 text-lg font-semibold text-white">
-                        {best.score}<span className="text-sm text-neutral-500 font-normal ml-1">/ {best.totalMarks}</span>
+                <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 flex flex-col justify-between">
+                    <p className="text-[11px] text-[var(--color-text-tertiary)]">Best Score</p>
+                    <p className="mt-1 text-lg font-semibold text-[var(--color-text-primary)]">
+                        {best.score}<span className="text-sm text-[var(--color-text-disabled)] font-normal ml-1">/ {best.totalMarks}</span>
                     </p>
                 </div>
 
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 flex flex-col justify-between">
-                    <p className="text-[11px] text-neutral-400">Latest Score</p>
+                <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 flex flex-col justify-between">
+                    <p className="text-[11px] text-[var(--color-text-tertiary)]">Latest Score</p>
                     <div className="mt-1 flex items-baseline justify-between">
-                        <p className="text-lg font-semibold text-white">
-                            {latest.score}<span className="text-sm text-neutral-500 font-normal ml-1">/ {latest.totalMarks}</span>
+                        <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+                            {latest.score}<span className="text-sm text-[var(--color-text-disabled)] font-normal ml-1">/ {latest.totalMarks}</span>
                         </p>
                         {previous && (
-                            <div className={`flex items-center gap-0.5 text-[10px] font-medium ${latest.score > previous.score ? 'text-emerald-400' : latest.score < previous.score ? 'text-rose-400' : 'text-neutral-500'
+                            <div className={`flex items-center gap-0.5 text-[10px] font-medium ${latest.score > previous.score ? 'text-[var(--color-success)]' : latest.score < previous.score ? 'text-[var(--color-error)]' : 'text-[var(--color-text-disabled)]'
                                 }`}>
                                 {latest.score > previous.score ? <TrendUp size={10} /> : latest.score < previous.score ? <TrendDown size={10} /> : <Minus size={10} />}
                                 {Math.abs(latest.score - previous.score)}
@@ -106,12 +106,12 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 flex flex-col justify-between">
-                    <p className="text-[11px] text-neutral-400">Accuracy</p>
+                <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 flex flex-col justify-between">
+                    <p className="text-[11px] text-[var(--color-text-tertiary)]">Accuracy</p>
                     <div className="mt-1 flex items-baseline justify-between">
-                        <p className="text-lg font-semibold text-white">{latest.accuracy}%</p>
+                        <p className="text-lg font-semibold text-[var(--color-text-primary)]">{latest.accuracy}%</p>
                         {previous && (
-                            <div className={`flex items-center gap-0.5 text-[10px] font-medium ${latest.accuracy > previous.accuracy ? 'text-emerald-400' : latest.accuracy < previous.accuracy ? 'text-rose-400' : 'text-neutral-500'
+                            <div className={`flex items-center gap-0.5 text-[10px] font-medium ${latest.accuracy > previous.accuracy ? 'text-[var(--color-success)]' : latest.accuracy < previous.accuracy ? 'text-[var(--color-error)]' : 'text-[var(--color-text-disabled)]'
                                 }`}>
                                 {latest.accuracy > previous.accuracy ? <TrendUp size={10} /> : latest.accuracy < previous.accuracy ? <TrendDown size={10} /> : <Minus size={10} />}
                                 {Math.abs(latest.accuracy - previous.accuracy)}%
@@ -138,16 +138,16 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
             </div>
 
             {/* Footer / Action */}
-            <div className="mt-5 pt-4 border-t border-white/5 flex justify-center">
+            <div className="mt-5 pt-4 border-t border-[var(--color-border-default)] flex justify-center">
                 <button
                     onClick={() => {
                         onClose()
                         navigate(`/dashboard/analytics/${testId}`)
                     }}
-                    className="text-xs font-medium text-neutral-400 hover:text-white transition flex items-center gap-1 group"
+                    className="text-xs font-medium text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] transition flex items-center gap-1 group"
                 >
                     View detailed history
-                    <ChartBar size={14} className="group-hover:text-[#EC2801] transition-colors" />
+                    <ChartBar size={14} className="group-hover:text-[var(--color-accent)] transition-colors" />
                 </button>
             </div>
         </div>

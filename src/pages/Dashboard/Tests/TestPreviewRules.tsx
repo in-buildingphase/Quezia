@@ -85,11 +85,11 @@ const TestPreviewRules: React.FC = () => {
   }
 
   return (
-    <div className="relative h-screen bg-neutral-950 px-4 py-6 flex items-center justify-center">
+    <div className="relative h-screen bg-[var(--color-bg-base)] px-4 py-6 flex items-center justify-center">
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-6 left-4 flex items-center gap-2 text-sm text-neutral-400 hover:text-neutral-200 transition"
+        className="absolute top-6 left-4 flex items-center gap-2 text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition"
       >
         <ArrowLeft className="h-4 w-4" />
         Back

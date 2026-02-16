@@ -23,10 +23,10 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     const spinner = (
         <div className="flex flex-col items-center justify-center gap-3">
             <div
-                className={`${sizeMap[size]} rounded-full border-white/10 border-t-[#EC2801] animate-spin`}
+                className={`${sizeMap[size]} rounded-full border-[var(--color-border-default)] border-t-[var(--color-accent)] animate-spin`}
             />
             {message && (
-                <p className="text-neutral-500 text-xs tracking-wide animate-pulse">
+                <p className="text-[var(--color-text-tertiary)] text-xs tracking-wide animate-pulse">
                     {message}
                 </p>
             )}
@@ -35,7 +35,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
     if (fullScreen) {
         return (
-            <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+            <div className="min-h-screen bg-[var(--color-bg-base)] flex items-center justify-center">
                 {spinner}
             </div>
         )

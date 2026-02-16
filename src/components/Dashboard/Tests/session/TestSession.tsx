@@ -99,7 +99,7 @@ const TestSession: React.FC = () => {
   )?.name
 
   return (
-    <div className="h-screen bg-neutral-950 flex flex-col">
+    <div className="h-screen bg-[var(--color-bg-base)] flex flex-col">
       <TestSessionHeader
         title={testTitle}
         subject={activeSection || testSubject}
@@ -127,39 +127,37 @@ const TestSession: React.FC = () => {
 
       {/* Edge toggle button with hover info strip - fixed on right edge */}
       <div
-        className={`group fixed right-0 top-1/2 -translate-y-1/2 z-30 flex items-center transition-transform duration-200 ${
-          isPaletteOpen ? 'translate-x-80' : ''
-        }`}
+        className={`group fixed right-0 top-1/2 -translate-y-1/2 z-30 flex items-center transition-transform duration-200 ${isPaletteOpen ? 'translate-x-80' : ''
+          }`}
       >
         {/* Hover info strip - attached to left of button, appears on hover */}
         {!isPaletteOpen && (
-          <div className="flex items-center gap-4 px-4 h-14 rounded-l-lg border border-r-0 border-white/10 bg-neutral-900 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150">
+          <div className="flex items-center gap-4 px-4 h-14 rounded-l-lg border border-r-0 border-[var(--color-border-default)] bg-[var(--color-bg-surface)] opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150">
             <div className="flex items-center gap-1.5">
-              <Check size={12} weight="bold" className="text-emerald-400" />
-              <span className="text-xs text-neutral-300">{stats.attempted}</span>
-              <span className="text-[10px] text-neutral-500">Attempted</span>
+              <Check size={12} weight="bold" className="text-[var(--color-on-success)]" />
+              <span className="text-xs text-[var(--color-text-secondary)]">{stats.attempted}</span>
+              <span className="text-[10px] text-[var(--color-text-tertiary)]">Attempted</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Flag size={12} weight="fill" className="text-amber-400" />
-              <span className="text-xs text-neutral-300">{stats.markedForReview}</span>
-              <span className="text-[10px] text-neutral-500">Marked</span>
+              <Flag size={12} weight="fill" className="text-[var(--color-on-warning)]" />
+              <span className="text-xs text-[var(--color-text-secondary)]">{stats.markedForReview}</span>
+              <span className="text-[10px] text-[var(--color-text-tertiary)]">Marked</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Circle size={12} className="text-neutral-500" />
-              <span className="text-xs text-neutral-300">{stats.unattempted}</span>
-              <span className="text-[10px] text-neutral-500">Left</span>
+              <Circle size={12} className="text-[var(--color-text-tertiary)]" />
+              <span className="text-xs text-[var(--color-text-secondary)]">{stats.unattempted}</span>
+              <span className="text-[10px] text-[var(--color-text-tertiary)]">Left</span>
             </div>
           </div>
         )}
-        
+
         {/* Toggle button */}
         <button
           onClick={() => setIsPaletteOpen((prev) => !prev)}
-          className={`flex items-center justify-center w-10 h-14 border border-r-0 transition-colors ${
-            isPaletteOpen
-              ? 'rounded-l-lg bg-white/[0.08] border-white/20 text-neutral-200'
-              : 'rounded-l-lg bg-neutral-900 border-white/10 text-neutral-400 group-hover:bg-white/[0.05] group-hover:text-neutral-200 group-hover:rounded-none group-hover:border-l-0'
-          }`}
+          className={`flex items-center justify-center w-10 h-14 border border-r-0 transition-colors ${isPaletteOpen
+            ? 'rounded-l-lg bg-[var(--color-bg-muted)] border-[var(--color-border-strong)] text-[var(--color-text-primary)]'
+            : 'rounded-l-lg bg-[var(--color-bg-surface)] border-[var(--color-border-default)] text-[var(--color-text-tertiary)] group-hover:bg-[var(--color-bg-subtle)] group-hover:text-[var(--color-text-primary)] group-hover:rounded-none group-hover:border-l-0'
+            }`}
           title="Toggle question palette"
         >
           <GridFour size={18} />

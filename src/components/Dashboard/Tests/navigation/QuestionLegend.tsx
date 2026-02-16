@@ -14,10 +14,10 @@ type Props = {
 }
 
 const statusStyles: Record<QuestionStatus, string> = {
-  unattempted: 'border-white/10 bg-transparent',
-  attempted: 'border-emerald-500/30 bg-emerald-500/20',
-  marked: 'border-amber-500/30 bg-amber-500/20',
-  current: 'border-white/40 bg-white/20',
+  unattempted: 'border-[var(--color-border-default)] bg-transparent',
+  attempted: 'border-[var(--color-success-subtle)] bg-[var(--color-success-subtle)]',
+  marked: 'border-[var(--color-warning-subtle)] bg-[var(--color-warning-subtle)]',
+  current: 'border-[var(--color-border-strong)] bg-[var(--color-bg-muted)]',
 }
 
 const QuestionLegend: React.FC<Props> = ({ items, compact }) => {
@@ -28,7 +28,7 @@ const QuestionLegend: React.FC<Props> = ({ items, compact }) => {
           <div
             className={`h-3 w-3 rounded border ${statusStyles[item.status]}`}
           />
-          <span className="text-xs text-neutral-400">
+          <span className="text-xs text-[var(--color-text-secondary)]">
             {item.label} ({item.count})
           </span>
         </div>

@@ -68,7 +68,7 @@ const Analytics = () => {
 
 
   return (
-    <div className="min-h-screen bg-neutral-950 px-6 py-8 md:px-10 md:py-12 font-sans text-neutral-200">
+    <div className="min-h-screen bg-[var(--color-bg-base)] px-6 py-8 md:px-10 md:py-12 font-sans text-[var(--color-text-secondary)]">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header & Filters */}

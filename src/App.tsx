@@ -22,7 +22,7 @@ function App() {
       <Route path="/auth" element={<AuthPage />} />
 
       {/* Test Session - Full screen, no sidebar */}
-      <Route path="/test/:testId" element={
+      <Route path="/test/:threadId" element={
         <ProtectedRoute>
           <TestSessionPage />
         </ProtectedRoute>

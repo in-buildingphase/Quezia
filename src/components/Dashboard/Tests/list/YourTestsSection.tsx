@@ -133,7 +133,7 @@ const YourTestsSection: React.FC = () => {
 
   // Actions for the section header
   const actions = (
-    <span className="text-xs text-neutral-500">
+    <span className="text-xs text-[var(--color-text-tertiary)]">
       {filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''}
     </span>
   )
@@ -146,14 +146,14 @@ const YourTestsSection: React.FC = () => {
         <div className="relative flex-1">
           <MagnifyingGlass
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-disabled)]"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="Search your tests..."
-            className="w-full h-9 pl-9 pr-3 rounded-lg border border-white/5 bg-white/[0.02] text-sm text-neutral-200 placeholder:text-neutral-600 focus:border-white/20 focus:outline-none transition"
+            className="w-full h-9 pl-9 pr-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-base)] text-sm text-[var(--color-text-secondary)] placeholder:text-[var(--color-text-disabled)] focus:border-[var(--color-accent-subtle)] focus:outline-none transition"
           />
         </div>
 
@@ -193,11 +193,11 @@ const YourTestsSection: React.FC = () => {
           paginatedTests.map((test) => <TestListCard key={test.id} test={test} />)
         ) : (
           <div className="py-12 text-center">
-            <p className="text-sm text-neutral-500">No tests found</p>
+            <p className="text-sm text-[var(--color-text-tertiary)]">No tests found</p>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="mt-2 text-xs text-neutral-400 hover:text-neutral-300 underline"
+                className="mt-2 text-xs text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)] underline"
               >
                 Clear search
               </button>
@@ -208,8 +208,8 @@ const YourTestsSection: React.FC = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
-          <p className="text-xs text-neutral-500">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--color-border-default)]">
+          <p className="text-xs text-[var(--color-text-tertiary)]">
             Page {currentPage} of {totalPages}
           </p>
 
@@ -217,7 +217,7 @@ const YourTestsSection: React.FC = () => {
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="w-8 h-8 rounded-lg border border-white/5 flex items-center justify-center text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="w-8 h-8 rounded-lg border border-[var(--color-border-default)] flex items-center justify-center text-[var(--color-text-disabled)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
               <CaretLeft size={14} />
             </button>
@@ -228,8 +228,8 @@ const YourTestsSection: React.FC = () => {
                 key={page}
                 onClick={() => setCurrentPage(page)}
                 className={`w-8 h-8 rounded-lg text-sm transition ${page === currentPage
-                  ? 'bg-white/[0.08] text-neutral-100 border border-white/10'
-                  : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.03]'
+                  ? 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-default)]'
+                  : 'text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]'
                   }`}
               >
                 {page}
@@ -239,7 +239,7 @@ const YourTestsSection: React.FC = () => {
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="w-8 h-8 rounded-lg border border-white/5 flex items-center justify-center text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="w-8 h-8 rounded-lg border border-[var(--color-border-default)] flex items-center justify-center text-[var(--color-text-disabled)] hover:bg-[var(--color-bg-muted)] hover:text-[var(--color-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
               <CaretRight size={14} />
             </button>

@@ -88,20 +88,20 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <aside
-        className={`h-screen sticky top-0 flex flex-col bg-[#0A0A0A] border-r border-white/[0.08] transition-all duration-300 ease-out ${collapsed ? 'w-[72px]' : 'w-[260px]'
+        className={`h-screen sticky top-0 flex flex-col bg-[var(--color-bg-base)] border-r border-[var(--color-border-default)] transition-all duration-300 ease-out ${collapsed ? 'w-[72px]' : 'w-[260px]'
           }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 h-16 shrink-0">
           {!collapsed && (
-            <span className="text-lg font-semibold text-white tracking-tight">
+            <span className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
               Quezia
             </span>
           )}
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={`p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/10 transition-all ${collapsed ? 'mx-auto' : ''
+            className={`p-1.5 rounded-lg text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-muted)] transition-all ${collapsed ? 'mx-auto' : ''
               }`}
           >
             {collapsed ? (
@@ -132,22 +132,22 @@ const Sidebar: React.FC = () => {
                       onClick={() => navigate('/dashboard/tests')}
                     >
                       {active && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[var(--color-text-primary)] rounded-r-full" />
                       )}
 
                       <Icon
                         size={20}
                         weight={active ? 'fill' : 'regular'}
                         className={`shrink-0 ${active
-                          ? 'text-white'
-                          : 'text-gray-400 group-hover:text-gray-200'
+                          ? 'text-[var(--color-text-primary)]'
+                          : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
                           }`}
                       />
 
                       {!collapsed && (
                         <>
                           <span
-                            className={`text-sm font-medium flex-1 ${active ? 'text-white' : 'text-gray-400'
+                            className={`text-sm font-medium flex-1 ${active ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-tertiary)]'
                               }`}
                           >
                             Tests
@@ -158,7 +158,7 @@ const Sidebar: React.FC = () => {
                               e.stopPropagation()
                               setTestsOpen((p) => !p)
                             }}
-                            className="text-gray-500 hover:text-gray-300"
+                            className="text-[var(--color-text-disabled)] hover:text-[var(--color-text-secondary)]"
                           >
                             {testsOpen ? (
                               <CaretUp size={14} />
@@ -183,8 +183,8 @@ const Sidebar: React.FC = () => {
                               <div
                                 key={test.id}
                                 className={`group/test flex items-center justify-between rounded-md transition-colors ${testActive
-                                  ? 'text-white bg-white/10'
-                                  : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                                  ? 'text-[var(--color-text-primary)] bg-[var(--color-bg-muted)]'
+                                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]'
                                   }`}
                               >
                                 <NavLink
@@ -199,7 +199,7 @@ const Sidebar: React.FC = () => {
                                     e.stopPropagation()
                                     setDeleteModal({ open: true, test })
                                   }}
-                                  className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-gray-500 hover:text-red-400 hover:bg-white/10 transition-all"
+                                  className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-[var(--color-text-disabled)] hover:text-[var(--color-error)] hover:bg-[var(--color-bg-muted)] transition-all"
                                 >
                                   <Trash size={14} />
                                 </button>
@@ -222,21 +222,21 @@ const Sidebar: React.FC = () => {
                     }`}
                 >
                   {active && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[var(--color-text-primary)] rounded-r-full" />
                   )}
 
                   <Icon
                     size={20}
                     weight={active ? 'fill' : 'regular'}
                     className={`shrink-0 ${active
-                      ? 'text-white'
-                      : 'text-gray-400 group-hover:text-gray-200'
+                      ? 'text-[var(--color-text-primary)]'
+                      : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
                       }`}
                   />
 
                   {!collapsed && (
                     <span
-                      className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-400'
+                      className={`text-sm font-medium ${active ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-tertiary)]'
                         }`}
                     >
                       {item.label}
@@ -248,7 +248,7 @@ const Sidebar: React.FC = () => {
           </nav>
 
           {/* Divider */}
-          <div className="mt-auto mx-3 h-px bg-white/[0.08]" />
+          <div className="mt-auto mx-3 h-px bg-[var(--color-border-default)]" />
 
           {/* Bottom Nav */}
           <nav className="space-y-0.5 pb-4">
@@ -264,21 +264,21 @@ const Sidebar: React.FC = () => {
                     }`}
                 >
                   {active && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r-full" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[var(--color-text-primary)] rounded-r-full" />
                   )}
 
                   <Icon
                     size={20}
                     weight={active ? 'fill' : 'regular'}
                     className={`shrink-0 ${active
-                      ? 'text-white'
-                      : 'text-gray-400 group-hover:text-gray-200'
+                      ? 'text-[var(--color-text-primary)]'
+                      : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
                       }`}
                   />
 
                   {!collapsed && (
                     <span
-                      className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-400'
+                      className={`text-sm font-medium ${active ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-tertiary)]'
                         }`}
                     >
                       {item.label}

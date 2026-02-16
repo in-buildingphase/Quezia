@@ -62,7 +62,7 @@ const TestsThread: React.FC = () => {
   }))
 
   return (
-    <div className='h-screen flex flex-col overflow-hidden bg-neutral-950 px-4 pb-4 pt-2'>
+    <div className='h-screen flex flex-col overflow-hidden bg-[var(--color-bg-base)] px-4 pb-4 pt-2'>
       <ThreadHeader
         threadId={threadId || ''}
         title={testConfig?.title}
@@ -80,7 +80,7 @@ const TestsThread: React.FC = () => {
       />
 
       {/* PROMPT INPUT */}
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
         <PromptInput
           selectedSubject={selectedSubject}
           setSelectedSubject={setSelectedSubject}
