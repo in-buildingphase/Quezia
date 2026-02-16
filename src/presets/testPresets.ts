@@ -1,4 +1,4 @@
-import { type TestInstructionsPreset } from '../components/Dashboard/Tests/TestPreviewRulesCard'
+import { type TestInstructionsPreset } from '../components/Dashboard/Tests/preview/TestPreviewRulesCard'
 
 export const JEE_FULL_MOCK_PRESET: TestInstructionsPreset = {
   title: 'JEE Full Mock Test',

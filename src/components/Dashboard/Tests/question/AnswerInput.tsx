@@ -1,7 +1,7 @@
 import React from 'react'
 import AnswerOption from './AnswerOption'
 
-export type QuestionType = 'mcq' | 'integer'
+export type QuestionType = 'mcq' | 'numeric'
 
 export type AnswerValue = number | string | null
 
@@ -12,14 +12,14 @@ type MCQProps = {
   onSelect: (index: number) => void
 }
 
-type IntegerProps = {
-  type: 'integer'
+type NumericProps = {
+  type: 'numeric'
   value: string
   onChange: (value: string) => void
   hint?: string
 }
 
-type Props = MCQProps | IntegerProps
+type Props = MCQProps | NumericProps
 
 const AnswerInput: React.FC<Props> = (props) => {
   if (props.type === 'mcq') {
@@ -38,7 +38,7 @@ const AnswerInput: React.FC<Props> = (props) => {
     )
   }
 
-  // Integer type
+  // Numeric type
   return (
     <div className="space-y-2">
       <input

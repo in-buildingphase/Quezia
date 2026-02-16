@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { userApi, type User } from '../../services/userApi'
 import GlassCard from '../../components/Dashboard/GlassCard'
-import PromptInput from '../../components/Dashboard/Home/PromptInput'
+import PromptInput from '../../components/common/PromptInput'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 import AnalyticsStrip from '../../components/Dashboard/Home/AnalyticsStrip'
 import PastTestsStrip from '../../components/Dashboard/Home/PastTestsStrip'
 
@@ -29,11 +30,7 @@ const Home: React.FC = () => {
   }, [])
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   return (

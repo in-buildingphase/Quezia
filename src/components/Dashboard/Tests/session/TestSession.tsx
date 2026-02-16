@@ -5,6 +5,7 @@ import TestSessionHeader from './TestSessionHeader'
 import TestSessionFooter from './TestSessionFooter'
 import QuestionWorkspace from './QuestionWorkspace'
 import QuestionPalette from '../navigation/QuestionPalette'
+import ReportIssueModal from '../../../common/ReportIssueModal'
 import { useTestSession } from './hooks/useTestSession'
 import { type TestConfig, generateSampleQuestions } from '../../../../types/test'
 
@@ -28,6 +29,7 @@ const TestSession: React.FC = () => {
   const testSubject = testConfig?.subject
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(durationMinutes * 60) // in seconds
   const [isSubmitted, setIsSubmitted] = useState(false)
 
@@ -63,7 +65,7 @@ const TestSession: React.FC = () => {
     currentIndex,
     currentQuestion,
     selectedAnswer,
-    integerAnswer,
+    numericAnswer,
     isMarkedForReview,
     questionStates,
     canGoPrevious,
@@ -72,7 +74,7 @@ const TestSession: React.FC = () => {
     goToPrevious,
     goToNext,
     selectAnswer,
-    setIntegerAnswer,
+    setNumericAnswer,
     toggleMarkForReview,
     clearResponse,
   } = useTestSession(questions)
@@ -113,12 +115,13 @@ const TestSession: React.FC = () => {
           questionNumber={currentIndex + 1}
           totalQuestions={questions.length}
           selectedAnswer={selectedAnswer}
-          integerAnswer={integerAnswer}
+          numericAnswer={numericAnswer}
           isMarkedForReview={isMarkedForReview}
           onSelectAnswer={selectAnswer}
-          onIntegerChange={setIntegerAnswer}
+          onNumericChange={setNumericAnswer}
           onMarkForReview={toggleMarkForReview}
           onClearResponse={clearResponse}
+          onReportIssue={() => setIsReportModalOpen(true)}
         />
       </div>
 
@@ -130,18 +133,21 @@ const TestSession: React.FC = () => {
       >
         {/* Hover info strip - attached to left of button, appears on hover */}
         {!isPaletteOpen && (
-          <div className="flex items-center gap-3 px-3 h-14 rounded-l-lg border border-r-0 border-white/10 bg-neutral-900 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150">
-            <div className="flex items-center gap-1.5" title="Attempted">
+          <div className="flex items-center gap-4 px-4 h-14 rounded-l-lg border border-r-0 border-white/10 bg-neutral-900 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150">
+            <div className="flex items-center gap-1.5">
               <Check size={12} weight="bold" className="text-emerald-400" />
               <span className="text-xs text-neutral-300">{stats.attempted}</span>
+              <span className="text-[10px] text-neutral-500">Attempted</span>
             </div>
-            <div className="flex items-center gap-1.5" title="Marked for Review">
+            <div className="flex items-center gap-1.5">
               <Flag size={12} weight="fill" className="text-amber-400" />
               <span className="text-xs text-neutral-300">{stats.markedForReview}</span>
+              <span className="text-[10px] text-neutral-500">Marked</span>
             </div>
-            <div className="flex items-center gap-1.5" title="Unattempted">
+            <div className="flex items-center gap-1.5">
               <Circle size={12} className="text-neutral-500" />
               <span className="text-xs text-neutral-300">{stats.unattempted}</span>
+              <span className="text-[10px] text-neutral-500">Left</span>
             </div>
           </div>
         )}
@@ -179,6 +185,16 @@ const TestSession: React.FC = () => {
         canGoPrevious={canGoPrevious}
         canGoNext={canGoNext}
         isPaletteOpen={isPaletteOpen}
+      />
+
+      {/* Report Issue Modal */}
+      <ReportIssueModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        questionNumber={currentIndex + 1}
+        questionId={currentQuestion.id}
+        testId={testConfig?.id}
+        section={activeSection}
       />
     </div>
   )

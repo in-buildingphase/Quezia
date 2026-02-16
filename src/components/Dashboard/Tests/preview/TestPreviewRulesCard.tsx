@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PencilSimple, Check } from '@phosphor-icons/react'
-import { parseDuration, formatDuration } from '../../../types/test'
+import { parseDuration, formatDuration } from '../../../../types/test'
 
 export type TestInstructionsPreset = {
   title: string

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft } from '@phosphor-icons/react'
-import TestPreviewRulesCard from '../../../components/Dashboard/Tests/TestPreviewRulesCard'
-import { JEE_FULL_MOCK_PRESET } from '../../../presets/testPresets'
+import TestPreviewRulesCard, { type TestInstructionsPreset } from '../../../components/Dashboard/Tests/preview/TestPreviewRulesCard'
+import { formatDuration } from '../../../types/test'
 import { type TestConfig } from '../../../types/test'
 
 const TestPreviewRules: React.FC = () => {
@@ -10,7 +10,7 @@ const TestPreviewRules: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Get testConfig from route state (passed from TestsThread)
+  // Get testConfig from route state (passed from TestsThread or TestAnalyticsPage)
   const routeState = location.state as { testConfig?: TestConfig } | null
   const testConfig = routeState?.testConfig
 
@@ -18,6 +18,47 @@ const TestPreviewRules: React.FC = () => {
   const [durationMinutes, setDurationMinutes] = useState(
     testConfig?.durationMinutes ?? 180
   )
+
+  const dynamicPreset = useMemo((): TestInstructionsPreset => {
+    if (!testConfig) {
+      return {
+        title: 'Test Session',
+        duration: formatDuration(durationMinutes),
+        marking: {
+          correct: '+4 marks',
+          incorrect: '−1 mark',
+          unattempted: '0 marks',
+        },
+        rules: [
+          'All questions are compulsory.',
+          'You may navigate freely between questions.',
+          'Answers can be changed before final submission.',
+          'The test will auto-submit when the timer ends.',
+        ],
+      }
+    }
+
+    return {
+      title: testConfig.title,
+      subtitle: testConfig.subject,
+      duration: formatDuration(durationMinutes),
+      sections: testConfig.sections?.map(s => s.name),
+      marking: {
+        correct: `+${testConfig.marking?.correct || 4} marks`,
+        incorrect: `${testConfig.marking?.incorrect || -1} mark${testConfig.marking?.incorrect === -1 ? '' : 's'}`,
+        unattempted: `${testConfig.marking?.unattempted || 0} marks`,
+      },
+      rules: [
+        'All questions are compulsory.',
+        'You may navigate freely between questions.',
+        'Answers can be changed before final submission.',
+        'The test will auto-submit when the timer ends.',
+        'Avoid refreshing or leaving the test window.',
+        ...(testConfig.isMock ? ['Simulated under real exam conditions.'] : [])
+      ],
+      queziaNote: 'Quezia will analyze your performance and strategy after submission.'
+    }
+  }, [testConfig, durationMinutes])
 
   const handleStart = () => {
     // Build updated config with potentially modified duration
@@ -55,7 +96,7 @@ const TestPreviewRules: React.FC = () => {
       </button>
 
       <TestPreviewRulesCard
-        preset={JEE_FULL_MOCK_PRESET}
+        preset={dynamicPreset}
         questionsCount={testConfig?.questions.length}
         onStart={handleStart}
         onDurationChange={handleDurationChange}
