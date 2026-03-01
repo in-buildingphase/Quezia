@@ -11,10 +11,11 @@ export type Difficulty = 'easy' | 'medium' | 'hard'
 
 export type MCQQuestion = {
   id: number
+  questionId?: string
   text: string
   marks: number
   type: 'mcq'
-  options: string[]
+  options: (string | { key: string; text: string })[]
   section?: string
   topic?: string
   difficulty?: Difficulty
@@ -31,6 +32,7 @@ export type NumericRules = {
 
 export type NumericQuestion = {
   id: number
+  questionId?: string
   text: string
   marks: number
   type: 'numeric'
@@ -50,7 +52,7 @@ export type PreviewQuestion = {
   id: number
   text: string
   marks: number
-  options?: string[]
+  options?: (string | { key: string; text: string })[]
 }
 
 // Full test configuration passed between routes

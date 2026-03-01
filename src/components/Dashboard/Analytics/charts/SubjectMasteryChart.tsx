@@ -7,6 +7,8 @@ import {
     ResponsiveContainer,
     Tooltip
 } from 'recharts'
+import { Target } from '@phosphor-icons/react'
+import Placeholder from '../../../common/Placeholder'
 import type { SubjectMastery } from '../types'
 
 interface Props {
@@ -50,32 +52,41 @@ const SubjectMasteryChart: React.FC<Props> = ({ data }) => {
 
             {/* Radar chart — takes all remaining space */}
             <div className="flex-1 min-h-0 relative">
-                <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="55%" outerRadius="78%" data={data}>
-                        <PolarGrid stroke="var(--color-bg-muted)" opacity={0.5} />
-                        <PolarAngleAxis
-                            dataKey="subject"
-                            tick={{ fill: 'var(--color-chart-tick)', fontSize: 11, fontWeight: 500 }}
-                        />
-                        <Radar
-                            name={label}
-                            dataKey={metric}
-                            stroke="var(--color-accent)"
-                            fill="var(--color-accent)"
-                            fillOpacity={0.5}
-                            animationDuration={800}
-                        />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'var(--color-chart-tooltip-bg)',
-                                border: '1px solid var(--color-border-default)',
-                                borderRadius: '12px',
-                                color: 'var(--color-chart-tooltip-text)',
-                                fontSize: '12px'
-                            }}
-                        />
-                    </RadarChart>
-                </ResponsiveContainer>
+                {data.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="55%" outerRadius="78%" data={data}>
+                            <PolarGrid stroke="var(--color-bg-muted)" opacity={0.5} />
+                            <PolarAngleAxis
+                                dataKey="subject"
+                                tick={{ fill: 'var(--color-chart-tick)', fontSize: 11, fontWeight: 500 }}
+                            />
+                            <Radar
+                                name={label}
+                                dataKey={metric}
+                                stroke="var(--color-accent)"
+                                fill="var(--color-accent)"
+                                fillOpacity={0.5}
+                                animationDuration={800}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'var(--color-chart-tooltip-bg)',
+                                    border: '1px solid var(--color-border-default)',
+                                    borderRadius: '12px',
+                                    color: 'var(--color-chart-tooltip-text)',
+                                    fontSize: '12px'
+                                }}
+                            />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <Placeholder
+                        icon={Target}
+                        title="No Mastery Data"
+                        description="Complete tests to see your subject-wise proficiency breakdown."
+                        className="border-none bg-transparent p-0"
+                    />
+                )}
             </div>
 
             {/* Footer stats */}

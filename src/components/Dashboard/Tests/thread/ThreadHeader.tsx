@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { ChartBar } from '@phosphor-icons/react'
+import { ChartBar, Trash } from '@phosphor-icons/react'
 import AttemptsAnalyticsPopup, { type Attempt } from '../analytics/AttemptsAnalyticsPopup'
 
 type Props = {
@@ -7,9 +7,18 @@ type Props = {
   title?: string
   attempts: Attempt[]
   onStartTest: () => void
+  onDelete?: () => void
+  showDelete?: boolean
 }
 
-const ThreadHeader: React.FC<Props> = ({ threadId, title, attempts, onStartTest }) => {
+const ThreadHeader: React.FC<Props> = ({
+  threadId,
+  title,
+  attempts,
+  onStartTest,
+  onDelete,
+  showDelete
+}) => {
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -36,7 +45,17 @@ const ThreadHeader: React.FC<Props> = ({ threadId, title, attempts, onStartTest 
         </h1>
       </div>
 
-      <div className="relative">
+      <div className="flex items-center gap-3 relative">
+        {showDelete && (
+          <button
+            onClick={onDelete}
+            className="flex items-center justify-center p-2.5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] hover:bg-[var(--color-error)] hover:text-white transition-all group"
+            title="Delete thread"
+          >
+            <Trash size={18} />
+          </button>
+        )}
+
         <button
           onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${isAnalyticsOpen

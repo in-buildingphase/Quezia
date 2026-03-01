@@ -97,10 +97,10 @@ const TestPreviewRules: React.FC = () => {
 
       <TestPreviewRulesCard
         preset={dynamicPreset}
-        questionsCount={testConfig?.questions.length}
+        questionsCount={testConfig?.questions?.length || (testConfig as any)?.totalQuestions}
         onStart={handleStart}
         onDurationChange={handleDurationChange}
-        mock={testConfig?.isMock ?? true}
+        mock={true}
       />
     </div>
   )

@@ -7,7 +7,7 @@ export type AnswerValue = number | string | null
 
 type MCQProps = {
   type: 'mcq'
-  options: string[]
+  options: (string | { key: string; text: string })[]
   selectedIndex: number | null
   onSelect: (index: number) => void
 }
@@ -25,15 +25,22 @@ const AnswerInput: React.FC<Props> = (props) => {
   if (props.type === 'mcq') {
     return (
       <div className="space-y-3">
-        {props.options.map((option, index) => (
-          <AnswerOption
-            key={index}
-            label={String.fromCharCode(65 + index)}
-            text={option}
-            isSelected={props.selectedIndex === index}
-            onSelect={() => props.onSelect(index)}
-          />
-        ))}
+        {props.options?.map((option, index) => {
+          const label = typeof option === 'string' ? String.fromCharCode(65 + index) : option.key
+          const text = typeof option === 'string' ? option : option.text
+          return (
+            <AnswerOption
+              key={index}
+              label={label}
+              text={text}
+              isSelected={props.selectedIndex === index}
+              onSelect={() => props.onSelect(index)}
+            />
+          )
+        })}
+        {!props.options && (
+          <p className="text-sm text-[var(--color-text-tertiary)] italic">No options available for this question.</p>
+        )}
       </div>
     )
   }

@@ -65,8 +65,9 @@ const QuestionDetailView: React.FC<Props> = ({ question }) => {
                 {options && (
                     <div className="space-y-3 max-w-2xl">
                         {options.map((opt, idx) => {
-                            const isUserSelection = userAnswer === idx
-                            const isCorrect = correctAnswer === idx
+                            const optionKey = String.fromCharCode(65 + idx) // A, B, C, D…
+                            const isUserSelection = userAnswer != null && (String(userAnswer).toUpperCase() === optionKey || userAnswer === idx)
+                            const isCorrect = correctAnswer != null && (String(correctAnswer).toUpperCase() === optionKey || correctAnswer === idx)
 
                             let borderClass = 'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]'
                             let labelClass = 'bg-[var(--color-bg-muted)] text-[var(--color-text-disabled)]'
