@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+/* ─── Font Faces ─── */
+@font-face {
+  font-family: 'FogtwoNo5';
+  src: url('./assets/Fogtwo No5 Font/FogtwoNo5.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/Inter Font/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/Inter Font/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ─── Typography Defaults ─── */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+}
+
+h1, h2 {
+  font-family: 'FogtwoNo5', serif;
+}
+
+h3, h4, h5, h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
 .boldonse-regular {
   font-family: "Boldonse", system-ui;
   font-weight: 400;

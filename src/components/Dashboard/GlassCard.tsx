@@ -3,10 +3,11 @@ import React from 'react'
 interface GlassCardProps {
   title: string
   subtitle: string
+  headerAction?: React.ReactNode
   children: React.ReactNode
 }
 
-const GlassCard: React.FC<GlassCardProps> = ({ title, subtitle, children }) => {
+const GlassCard: React.FC<GlassCardProps> = ({ title, subtitle, headerAction, children }) => {
   return (
     <div className="relative z-10 px-8 py-10 w-full">
       <div
@@ -24,7 +25,10 @@ const GlassCard: React.FC<GlassCardProps> = ({ title, subtitle, children }) => {
         <div className="relative z-10 overflow-visible">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-3xl font-semibold text-[var(--color-text-primary)]">{title}</h1>
+            <div className="flex items-center justify-between gap-4">
+              <h1 className="text-3xl font-semibold text-[var(--color-text-primary)]">{title}</h1>
+              {headerAction}
+            </div>
             <p className="mt-2 text-[var(--color-text-tertiary)]">{subtitle}</p>
           </div>
 

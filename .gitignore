@@ -26,3 +26,7 @@ dist-ssr
 # Rules
 rules/
 
+# Environment variables
+.env
+.env.*
+!.env.example
