@@ -9,30 +9,14 @@ import PastTestsStrip from '../../components/Dashboard/Home/PastTestsStrip'
 import { Exam } from '@phosphor-icons/react'
 
 const Home: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user, loading } = useAuth()
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('')
   const [isSubjectOpen, setIsSubjectOpen] = useState(false)
   const [isDifficultyOpen, setIsDifficultyOpen] = useState(false)
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await userApi.getMe()
-        setUser(userData)
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchUser()
-  }, [])
-
   if (loading) {
-    return <LoadingSpinner fullScreen message="Loading..." />
+    return <LoadingSpinner fullScreen message="Preparing your dashboard..." />
   }
 
   return (

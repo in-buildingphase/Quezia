@@ -23,7 +23,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     const spinner = (
         <div className="flex flex-col items-center justify-center gap-3">
             <div
-                className={`${sizeMap[size]} rounded-full border-[var(--color-border-default)] border-t-[var(--color-accent)] animate-spin`}
+                className={`${sizeMap[size]} rounded-full border-[var(--color-border-default)] border-t-[var(--color-text-primary)] animate-spin`}
             />
             {message && (
                 <p className="text-[var(--color-text-tertiary)] text-xs tracking-wide animate-pulse">

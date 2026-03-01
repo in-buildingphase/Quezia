@@ -72,23 +72,28 @@ const QuestionWorkspace: React.FC<Props> = ({
 
             <QuestionText text={question.text} />
 
-            {question.type === 'mcq' && (
+            {question.type === 'mcq' ? (
               <AnswerInput
                 type="mcq"
                 options={question.options}
                 selectedIndex={selectedAnswer}
                 onSelect={onSelectAnswer}
               />
-            )}
-
-            {/* For numeric questions, answer is entered via left panel */}
-            {isNumericQuestion && (
-              <div className="mt-6 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
-                {numericAnswer ? (
-                  <p className="font-mono text-lg text-[var(--color-text-primary)]">{numericAnswer}</p>
-                ) : (
-                  <p className="font-mono text-lg text-[var(--color-text-tertiary)]">—</p>
-                )}
+            ) : (
+              <div className="space-y-4">
+                <AnswerInput
+                  type="numeric"
+                  value={numericAnswer}
+                  onChange={onNumericChange}
+                  hint={(question as NumericQuestion).hint}
+                />
+                <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+                  {numericAnswer ? (
+                    <p className="font-mono text-lg text-[var(--color-text-primary)]">{numericAnswer}</p>
+                  ) : (
+                    <p className="font-mono text-lg text-[var(--color-text-tertiary)]">—</p>
+                  )}
+                </div>
               </div>
             )}
 

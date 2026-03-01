@@ -1,6 +1,6 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { authApi } from '../../services/authApi';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false';
 
@@ -18,6 +18,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/auth?mode=login" replace />;
+  }
+
+  // Check for onboarding
+  const onboardingCompleted = user?.profile?.onboardingCompleted;
+  if (!onboardingCompleted && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

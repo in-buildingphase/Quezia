@@ -1,8 +1,9 @@
 import { useMemo, useEffect, useState } from 'react'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import Placeholder from '../components/common/Placeholder'
 import { useParams, useNavigate } from 'react-router-dom'
-import { CaretLeft } from '@phosphor-icons/react'
-import { MockDatabase } from '../services/mockDatabase'
+import { CaretLeft, Warning, Hourglass } from '@phosphor-icons/react'
+import { testEngineService, type AttemptReviewResponse, type ReviewQuestion } from '../services/test-engine/test-engine.service'
 
 // New Redesigned Components
 import CompactHeaderSummary from '../components/test-analytics/CompactHeaderSummary'
@@ -17,79 +18,86 @@ import TopicWeaknessCard from '../components/test-analytics/TopicWeaknessCard'
 import ImprovementComparisonCard from '../components/test-analytics/ImprovementComparisonCard'
 
 const TestAnalyticsPage = () => {
-    const { testId } = useParams<{ testId: string }>()
+    const { attemptId } = useParams<{ attemptId: string }>()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [reviewData, setReviewData] = useState<AttemptReviewResponse | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
     // -------------------------------------------------------------------------
-    // Data Fetching & Orchestration
+    // Data Fetching — single endpoint
     // -------------------------------------------------------------------------
-    const attempt = useMemo(() => {
-        if (!testId) return null
-        const attempts = MockDatabase.getAttemptsForTest(testId)
-        return attempts.sort((a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )[0]
-    }, [testId])
-
-    const test = useMemo(() => {
-        return testId ? MockDatabase.getTest(testId) : null
-    }, [testId])
-
-    const prevAttempt = useMemo(() => {
-        if (!attempt) return null
-        const allAttempts = MockDatabase.getAllAttempts()
-        return allAttempts
-            .filter(a => new Date(a.createdAt) < new Date(attempt.createdAt))
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-    }, [attempt])
-
     useEffect(() => {
-        if (attempt && test) {
-            setTimeout(() => setLoading(false), 500)
+        const loadReview = async () => {
+            if (!attemptId) return
+            try {
+                setLoading(true)
+                const data = await testEngineService.getAttemptReview(attemptId)
+                setReviewData(data)
+            } catch (err: any) {
+                console.error('Failed to load attempt review:', err)
+                const status = err?.response?.status
+                if (status === 404) setError('Attempt not found.')
+                else if (status === 403) setError('You do not have access to this attempt.')
+                else if (status === 400) setError('This attempt has not been completed yet.')
+                else setError('Failed to load analytics data.')
+            } finally {
+                setLoading(false)
+            }
         }
-    }, [attempt, test])
+
+        loadReview()
+    }, [attemptId])
+
+    // Aliases for convenience
+    const attempt = reviewData?.attempt ?? null
+    const summary = reviewData?.summary ?? null
+    const reviewQuestions = reviewData?.questions ?? []
 
     // -------------------------------------------------------------------------
     // Derived Analytics Data
     // -------------------------------------------------------------------------
 
-    // 1. Expanded Question Data for Review Section
+    // 1. Map backend ReviewQuestion[] → QuestionReviewData[] for UI components
     const detailedQuestions = useMemo((): QuestionReviewData[] => {
-        if (!attempt || !test) return []
-        return attempt.questionAttempts.map(qa => {
-            const qDef = test.questions.find(q => q.id === qa.questionId)
+        return reviewQuestions.map((rq: ReviewQuestion, idx: number) => {
+            const payload = rq.contentPayload || {} as any
+            const diffLower = (rq.difficulty || 'medium').toLowerCase() as 'easy' | 'medium' | 'hard'
+            const statusLower = (rq.status || 'UNATTEMPTED').toLowerCase() as 'correct' | 'incorrect' | 'unattempted'
+
             return {
-                id: qa.questionId,
-                section: qDef?.section || 'N/A',
-                subject: qDef?.section ? qDef.section.charAt(0).toUpperCase() + qDef.section.slice(1) : 'General',
-                topic: qDef?.topic || 'General',
-                difficulty: qDef?.difficulty || 'medium',
-                status: qa.status,
-                marks: qa.status === 'correct' ? (test.marking?.correct || 4) :
-                    qa.status === 'incorrect' ? (test.marking?.incorrect || -1) : 0,
-                time: qa.timeSpentSeconds,
-                text: qDef?.text || 'Question text not found',
-                options: qDef?.type === 'mcq' ? qDef.options : undefined,
-                userAnswer: qa.userAnswer,
-                correctAnswer: qDef?.correctAnswer,
-                explanation: qDef?.explanation || `This question tests concepts of ${qDef?.topic}. Detailed solution coming soon.`
+                id: idx + 1,
+                section: 'General',
+                subject: rq.subject ? rq.subject.charAt(0).toUpperCase() + rq.subject.slice(1) : 'General',
+                topic: rq.topic || 'General',
+                difficulty: diffLower,
+                status: statusLower,
+                marks: rq.marksAwarded ?? (statusLower === 'unattempted' ? 0 : statusLower === 'correct' ? rq.marks : -rq.negativeMarkValue),
+                time: rq.timeSpentSeconds || 0,
+                text: payload.question || 'Question text not available',
+                options: rq.questionType === 'MCQ' && payload.options
+                    ? payload.options.map((o: any) => typeof o === 'string' ? o : o.text)
+                    : undefined,
+                userAnswer: rq.selectedAnswer,
+                correctAnswer: rq.correctAnswer,
+                explanation: rq.explanation || 'Detailed solution coming soon.',
             }
         })
-    }, [attempt, test])
+    }, [reviewQuestions])
 
     // 2. Tactical Insights
     const tacticalInsights = useMemo(() => {
-        if (!detailedQuestions.length) return []
+        if (!detailedQuestions.length || !summary) return []
         const list: any[] = []
 
-        const marksLost = detailedQuestions.filter(q => q.status === 'incorrect').length * 1
+        const marksLost = summary.incorrect * 1
         if (marksLost > 10) {
             list.push({ type: 'critical', text: `Negative Marking (-${marksLost}m) is your biggest leak.` })
         }
 
-        const avgTime = attempt!.timeTakenMinutes * 60 / detailedQuestions.length
-        if (avgTime < 150) {
+        const timeSeconds = attempt?.timeSpentSeconds || 0
+        const avgTime = detailedQuestions.length > 0 ? timeSeconds / detailedQuestions.length : 0
+        if (avgTime > 0 && avgTime < 150) {
             list.push({ type: 'success', text: `Excellent Speed: ${Math.round(avgTime)}s per question.` })
         }
 
@@ -99,7 +107,7 @@ const TestAnalyticsPage = () => {
         }
 
         return list
-    }, [detailedQuestions, attempt])
+    }, [detailedQuestions, summary, attempt])
 
     // 3. Subject Performance
     const subjectsData = useMemo(() => {
@@ -134,7 +142,7 @@ const TestAnalyticsPage = () => {
             avgTimeEasy: diffTime('easy'),
             avgTimeMedium: diffTime('medium'),
             avgTimeHard: diffTime('hard'),
-            totalTimeSpent: attempt?.timeTakenMinutes ? attempt.timeTakenMinutes * 60 : 0,
+            totalTimeSpent: attempt?.timeSpentSeconds || 0,
             slowestQuestions: [...detailedQuestions].sort((a, b) => b.time - a.time).slice(0, 4)
         }
     }, [detailedQuestions, attempt])
@@ -190,24 +198,41 @@ const TestAnalyticsPage = () => {
 
     // 7. Deltas
     const deltas = useMemo(() => {
-        if (!attempt || !prevAttempt) return []
-        const dScore = attempt.score - prevAttempt.score
-        const dAcc = attempt.accuracy - prevAttempt.accuracy
-        const dTime = attempt.timeTakenMinutes - prevAttempt.timeTakenMinutes
-
         return [
-            { label: 'Score', value: dScore, direction: (dScore > 0 ? 'up' : dScore < 0 ? 'down' : 'neutral') as any, isGood: dScore >= 0 },
-            { label: 'Accuracy', value: dAcc, direction: (dAcc > 0 ? 'up' : dAcc < 0 ? 'down' : 'neutral') as any, isGood: dAcc >= 0 },
-            { label: 'Time', value: dTime, direction: (dTime > 0 ? 'up' : dTime < 0 ? 'down' : 'neutral') as any, isGood: dTime <= 0 },
+            { label: 'Score', value: 0, direction: 'neutral' as any, isGood: true },
+            { label: 'Accuracy', value: 0, direction: 'neutral' as any, isGood: true },
+            { label: 'Time', value: 0, direction: 'neutral' as any, isGood: true },
             { label: 'Efficiency', value: 12, direction: 'up' as any, isGood: true }
         ]
-    }, [attempt, prevAttempt])
+    }, [])
 
-    if (!testId || !attempt || !test) return null
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#050505] p-6">
+                <Placeholder
+                    icon={Warning}
+                    variant="error"
+                    title="Analysis Unavailable"
+                    description={error}
+                    action={{
+                        label: 'Back to Analytics',
+                        onClick: () => navigate('/dashboard/analytics')
+                    }}
+                />
+            </div>
+        )
+    }
 
     if (loading) return (
         <LoadingSpinner fullScreen size="lg" message="Analyzing Performance..." />
     )
+
+    if (!attemptId || !attempt || !summary) return null
+
+    const timeTakenMinutes = Math.round((attempt.timeSpentSeconds || 0) / 60)
+    const attemptRate = summary.totalQuestions > 0
+        ? Math.round((summary.attempted / summary.totalQuestions) * 100)
+        : 0
 
     return (
         <div className="min-h-screen bg-[#050505] text-neutral-400 font-sans selection:bg-blue-500/10">
@@ -223,7 +248,7 @@ const TestAnalyticsPage = () => {
                     </button>
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => navigate(`/dashboard/tests/thread/${testId}/preview`, { state: { testConfig: test } })}
+                            onClick={() => navigate(`/dashboard/tests/thread/${attempt.threadId || attempt.testId}`)}
                             className="px-5 py-2.5 bg-white rounded-xl text-[10px] font-black uppercase tracking-widest text-black hover:bg-neutral-200 transition-all flex items-center gap-2"
                         >
                             Retake Test
@@ -237,18 +262,26 @@ const TestAnalyticsPage = () => {
                 {/* Layer 1: Results & Immediate Review */}
                 <div className="space-y-8">
                     <CompactHeaderSummary
-                        title={test.title}
-                        date={new Date(attempt.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                        score={attempt.score}
-                        totalMarks={attempt.totalMarks}
-                        accuracy={attempt.accuracy}
-                        attemptRate={Math.round((attempt.questionAttempts.filter(q => q.status !== 'unattempted').length / test.questions.length) * 100)}
-                        timeTakenMinutes={attempt.timeTakenMinutes}
-                        riskRatio={attempt.questionAttempts.filter(q => q.status === 'incorrect').length / attempt.questionAttempts.length}
+                        title={`Attempt ${attempt.id.substring(0, 8)}`}
+                        date={new Date(attempt.completedAt || attempt.startedAt || new Date()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        score={Number(summary.totalScore) || 0}
+                        totalMarks={Number(summary.maxScore) || 300}
+                        accuracy={Number(attempt.accuracy) || 0}
+                        attemptRate={attemptRate}
+                        timeTakenMinutes={timeTakenMinutes}
+                        riskRatio={Number(attempt.riskRatio) || 0}
                     />
 
                     <QuestionReviewSection questions={detailedQuestions} />
                 </div>
+
+                {/* Coming Soon Placeholder for Advanced Analytics */}
+                <Placeholder
+                    icon={Hourglass}
+                    variant="coming-soon"
+                    title="Advanced Analytics Coming Soon"
+                    description="Our intelligence engine is currently being calibrated to provide deeper tactical insights and performance trends."
+                />
 
                 {/* Layer 2: Tactical Insights */}
                 <div className="py-2">

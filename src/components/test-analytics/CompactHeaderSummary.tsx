@@ -36,9 +36,9 @@ const CompactHeaderSummary: React.FC<Props> = ({
                 <Metric label="Time" value={`${timeTakenMinutes}m`} icon={<Clock size={16} />} />
                 <Metric
                     label="Risk Ratio"
-                    value={riskRatio.toFixed(2)}
+                    value={(Number(riskRatio) || 0).toFixed(2)}
                     icon={<Gauge size={16} />}
-                    color={riskRatio > 0.4 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-secondary)]'}
+                    color={(Number(riskRatio) || 0) > 0.4 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-secondary)]'}
                 />
             </div>
         </div>

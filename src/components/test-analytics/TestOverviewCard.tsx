@@ -77,7 +77,7 @@ const TestOverviewCard: React.FC<Props> = ({
                     />
                     <MetricBlock
                         label="Efficiency"
-                        value={efficiency.toFixed(2)}
+                        value={(Number(efficiency) || 0).toFixed(2)}
                         icon={<ChartBar size={20} className="text-[var(--color-accent)]" />}
                         subValue="Marks per minute"
                     />
@@ -87,10 +87,10 @@ const TestOverviewCard: React.FC<Props> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-[var(--color-bg-surface)] rounded-2xl border border-[var(--color-border-default)] shadow-[var(--shadow-sm)]">
                     <BehavioralMetric
                         label="Risk Ratio"
-                        value={riskRatio.toFixed(2)}
+                        value={(Number(riskRatio) || 0).toFixed(2)}
                         icon={<ShieldCheck size={18} />}
                         desc="Incorrect per attempted Q"
-                        color={riskRatio > 0.4 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-secondary)]'}
+                        color={(Number(riskRatio) || 0) > 0.4 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-secondary)]'}
                     />
                     <div className="w-px h-full bg-[var(--color-border-default)] hidden md:block" />
                     <BehavioralMetric

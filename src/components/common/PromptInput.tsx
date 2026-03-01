@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { BookOpen, Gauge, PaperPlane } from '@phosphor-icons/react'
 import { PillDropdown, type DropdownOption } from './Dropdown'
+import LoadingSpinner from './LoadingSpinner'
 
 const subjectOptions: DropdownOption[] = [
   { value: 'physics', label: 'Physics' },
@@ -25,6 +26,8 @@ interface PromptInputProps {
   setIsDifficultyOpen: (open: boolean) => void
   openUp?: boolean
   placeholder?: string
+  onSubmit?: (prompt: string) => void
+  isLoading?: boolean
 }
 
 const PromptInput: React.FC<PromptInputProps> = ({
@@ -38,6 +41,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
   setIsDifficultyOpen,
   openUp = false,
   placeholder = 'What would you like to practice today?',
+  onSubmit,
+  isLoading = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -48,16 +53,30 @@ const PromptInput: React.FC<PromptInputProps> = ({
     }
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (onSubmit && textareaRef.current?.value.trim()) {
+      onSubmit(textareaRef.current.value.trim())
+    }
+  }
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       {/* Chat / prompt */}
       <div className="mb-3 rounded-xl bg-[var(--color-bg-subtle)] px-5 py-3">
         <textarea
           ref={textareaRef}
           placeholder={placeholder}
-          className="w-full resize-none bg-transparent text-[var(--color-text-secondary)] placeholder-[var(--color-text-disabled)] outline-none max-h-32"
+          disabled={isLoading}
+          className="w-full resize-none bg-transparent text-[var(--color-text-secondary)] placeholder-[var(--color-text-disabled)] outline-none max-h-32 disabled:opacity-50"
           onInput={handleTextareaInput}
           rows={1}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSubmit(e)
+            }
+          }}
         />
       </div>
 
@@ -96,12 +115,21 @@ const PromptInput: React.FC<PromptInputProps> = ({
           />
         </div>
         {/* Send button */}
-        <button className="group flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-accent-subtle)] hover:text-[var(--color-accent)] focus:outline-none">
-          <PaperPlane className="h-4 w-4 rotate-90 transition-transform" />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="group flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-accent-subtle)] hover:text-[var(--color-accent)] focus:outline-none disabled:opacity-50"
+        >
+          {isLoading ? (
+            <LoadingSpinner size="sm" />
+          ) : (
+            <PaperPlane className="h-4 w-4 rotate-90 transition-transform" />
+          )}
         </button>
       </div>
-    </>
+    </form>
   )
 }
+
 
 export default PromptInput

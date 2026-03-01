@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { type SessionQuestion } from '../QuestionWorkspace'
 import { type QuestionStatus } from '../../navigation/QuestionLegend'
 
@@ -29,14 +29,21 @@ type UseTestSessionReturn = {
 
 export function useTestSession(questions: SessionQuestion[]): UseTestSessionReturn {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [questionStates, setQuestionStates] = useState<QuestionState[]>(() =>
-    questions.map((q) => ({
-      id: q.id,
-      selectedAnswer: null,
-      numericAnswer: '',
-      isMarkedForReview: false,
-    }))
-  )
+  const [questionStates, setQuestionStates] = useState<QuestionState[]>([])
+
+  // Sync states when questions are loaded
+  useEffect(() => {
+    if (questions.length > 0) {
+      setQuestionStates(
+        questions.map((q) => ({
+          id: q.id,
+          selectedAnswer: null,
+          numericAnswer: '',
+          isMarkedForReview: false,
+        }))
+      )
+    }
+  }, [questions])
 
   const currentQuestion = questions[currentIndex]
   const currentState = questionStates[currentIndex]
@@ -65,8 +72,8 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   const selectAnswer = useCallback((answerIndex: number) => {
     setQuestionStates((prev) =>
       prev.map((state, i) =>
-        i === currentIndex 
-          ? { ...state, selectedAnswer: state.selectedAnswer === answerIndex ? null : answerIndex } 
+        i === currentIndex
+          ? { ...state, selectedAnswer: state.selectedAnswer === answerIndex ? null : answerIndex }
           : state
       )
     )
@@ -99,10 +106,12 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   const paletteStates = useMemo(() => {
     return questionStates.map((state, index) => {
       const question = questions[index]
-      const hasAnswer = question.type === 'mcq' 
-        ? state.selectedAnswer !== null 
+      if (!question) return { id: state.id, status: 'unattempted' as QuestionStatus }
+
+      const hasAnswer = question.type === 'mcq'
+        ? state.selectedAnswer !== null
         : state.numericAnswer !== ''
-      
+
       let status: QuestionStatus = 'unattempted'
       if (state.isMarkedForReview) {
         status = 'marked'
@@ -116,9 +125,9 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   return {
     currentIndex,
     currentQuestion,
-    selectedAnswer: currentState.selectedAnswer,
-    numericAnswer: currentState.numericAnswer,
-    isMarkedForReview: currentState.isMarkedForReview,
+    selectedAnswer: currentState?.selectedAnswer ?? null,
+    numericAnswer: currentState?.numericAnswer ?? '',
+    isMarkedForReview: currentState?.isMarkedForReview ?? false,
     questionStates: paletteStates,
     canGoPrevious,
     canGoNext,
