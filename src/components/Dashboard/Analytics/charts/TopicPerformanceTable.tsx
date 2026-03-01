@@ -10,10 +10,12 @@ import {
     Minus,
     Funnel,
     SortAscending,
-    Target
+    Target,
+    ListChecks
 } from '@phosphor-icons/react'
 import type { TopicHealth } from '../types'
 import { BlockDropdown } from '../../../common/Dropdown'
+import Placeholder from '../../../common/Placeholder'
 
 interface Props {
     data: TopicHealth[]
@@ -295,9 +297,12 @@ const TopicPerformanceTable: React.FC<Props> = ({ data }) => {
                         )
                     })
                 ) : (
-                    <div className="text-center py-12 text-[var(--color-text-disabled)]">
-                        No topics found matching your criteria.
-                    </div>
+                    <Placeholder
+                        icon={ListChecks}
+                        title="No Topic Data"
+                        description="Try adjusting your filters or search query to find specific topic performance data."
+                        className="border-none bg-transparent py-12"
+                    />
                 )}
             </div>
         </div>

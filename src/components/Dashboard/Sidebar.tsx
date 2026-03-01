@@ -7,6 +7,7 @@ import {
   ChartBar,
   User,
   Gear,
+  CreditCard,
   CaretLeft,
   CaretRight,
   CaretDown,
@@ -14,7 +15,9 @@ import {
   Trash,
 } from '@phosphor-icons/react'
 import ConfirmModal from '../common/ConfirmModal'
-import { MockDatabase } from '../../services/mockDatabase'
+import { useTests } from '../../hooks/useTests'
+import { useAuth } from '../../hooks/useAuth'
+import { testEngineService, type TestThread } from '../../services/test-engine/test-engine.service'
 
 interface NavItem {
   label: string
@@ -25,6 +28,7 @@ interface NavItem {
 const topNav: NavItem[] = [
   { label: 'Home', href: '/dashboard/home', icon: House },
   { label: 'Tests', href: '/dashboard/tests', icon: ClipboardText },
+  { label: 'Subscription', href: '/dashboard/subscription', icon: CreditCard },
   { label: 'Discover', href: '/dashboard/discover', icon: Compass },
   { label: 'Analytics', href: '/dashboard/analytics', icon: ChartBar },
 ]
@@ -38,48 +42,44 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { threads, refreshThreads } = useTests()
+  const { user } = useAuth()
 
   const isTestsRoute = location.pathname.startsWith('/dashboard/tests')
   const [testsOpen, setTestsOpen] = useState(isTestsRoute)
 
-  // Use useMemo to get the most recent 10 tests from MockDatabase
-  const recentTests = React.useMemo(() => {
-    const allTests = MockDatabase.getAllTests()
-    const allAttempts = MockDatabase.getAllAttempts()
-
-    // Sort tests by their most recent interaction (attempt) date, or creation order if no attempt
-    const sorted = [...allTests].sort((a, b) => {
-      const attemptA = allAttempts.find(att => att.testId === a.id)
-      const attemptB = allAttempts.find(att => att.testId === b.id)
-
-      if (attemptA && attemptB) {
-        return new Date(attemptB.createdAt).getTime() - new Date(attemptA.createdAt).getTime()
-      }
-      if (attemptA) return -1
-      if (attemptB) return 1
-
-      // Fallback: reverse order of creation (test-100 first)
-      return parseInt(b.id.split('-')[1]) - parseInt(a.id.split('-')[1])
-    })
-
-    return sorted.slice(0, 10).map(t => ({
-      id: t.id,
-      name: t.title
-    }))
-  }, [])
-
-  const [tests, setTests] = useState(recentTests)
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; test: { id: string; name: string } | null }>({
     open: false,
     test: null,
   })
 
-  const handleDeleteTest = () => {
+  // Map threads from context to sidebar format
+  // Learner: only see threads they created. Hide SYSTEM threads.
+  // Admin: see everything.
+  const sidebarTests = threads
+    .filter((t: TestThread) => {
+      if (user?.role === 'ADMIN') return true
+      return t.createdByUserId === user?.id && t.originType !== 'SYSTEM'
+    })
+    .map((t: TestThread) => ({
+      id: t.id,
+      name: t.title,
+      originType: t.originType,
+      createdByUserId: t.createdByUserId,
+    }))
+
+  const handleDeleteTest = async () => {
     if (deleteModal.test) {
-      setTests((prev) => prev.filter((t) => t.id !== deleteModal.test!.id))
-      // Navigate away if we're on the deleted test's page
-      if (location.pathname === `/dashboard/tests/thread/${deleteModal.test.id}`) {
-        navigate('/dashboard/tests')
+      try {
+        await testEngineService.deleteThread(deleteModal.test.id)
+        await refreshThreads()
+
+        if (location.pathname.includes(`/thread/${deleteModal.test.id}`)) {
+          navigate('/dashboard/tests')
+        }
+      } catch (error) {
+        console.error('Failed to delete thread:', error)
+        alert('Failed to delete thread. Please try again.')
       }
     }
     setDeleteModal({ open: false, test: null })
@@ -174,7 +174,7 @@ const Sidebar: React.FC = () => {
                     {!collapsed && testsOpen && (
                       <div className="mt-1 ml-8 pr-2">
                         <div className="max-h-[320px] overflow-y-auto space-y-0.5 scrollbar-thin scrollbar-thumb-white/10">
-                          {tests.map((test) => {
+                          {sidebarTests.map((test) => {
                             const testActive =
                               location.pathname ===
                               `/dashboard/tests/thread/${test.id}`
@@ -193,16 +193,18 @@ const Sidebar: React.FC = () => {
                                 >
                                   {test.name}
                                 </NavLink>
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault()
-                                    e.stopPropagation()
-                                    setDeleteModal({ open: true, test })
-                                  }}
-                                  className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-[var(--color-text-disabled)] hover:text-[var(--color-error)] hover:bg-[var(--color-bg-muted)] transition-all"
-                                >
-                                  <Trash size={14} />
-                                </button>
+                                {test.originType === 'GENERATED' && test.createdByUserId === user?.id && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      e.stopPropagation()
+                                      setDeleteModal({ open: true, test })
+                                    }}
+                                    className="opacity-0 group-hover/test:opacity-100 p-1.5 mr-1 rounded text-[var(--color-text-disabled)] hover:text-[var(--color-error)] hover:bg-[var(--color-bg-muted)] transition-all"
+                                  >
+                                    <Trash size={14} />
+                                  </button>
+                                )}
                               </div>
                             )
                           })}

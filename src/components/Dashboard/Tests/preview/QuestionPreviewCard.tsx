@@ -5,7 +5,7 @@ export type Question = {
   id: number
   text: string
   marks: number
-  options?: string[]
+  options?: (string | { key: string; text: string })[]
 }
 
 type Props = {
@@ -38,14 +38,17 @@ const QuestionPreviewCard: React.FC<Props> = ({ question, onRegenerate }) => {
 
       {question.options && question.options.length > 0 ? (
         <div className="space-y-2 pl-6">
-          {question.options.map((opt, i) => (
-            <div
-              key={i}
-              className="rounded-lg border border-white/5 bg-white/[0.03] px-4 py-2 text-sm text-neutral-300"
-            >
-              {String.fromCharCode(97 + i)}) {opt}
-            </div>
-          ))}
+          {question.options.map((opt, i) => {
+            const displayOption = typeof opt === 'string' ? opt : opt.text
+            return (
+              <div
+                key={i}
+                className="rounded-lg border border-white/5 bg-white/[0.03] px-4 py-2 text-sm text-neutral-300"
+              >
+                {String.fromCharCode(97 + i)}) {displayOption}
+              </div>
+            )
+          })}
         </div>
       ) : (
         <div className="pl-6">

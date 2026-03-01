@@ -3,7 +3,9 @@ import { MagnifyingGlass, SortAscending, SortDescending, Funnel, CaretLeft, Care
 import SectionStrip from '../../../common/SectionStrip'
 import { BlockDropdown, type DropdownOption } from '../../../common/Dropdown'
 import TestListCard, { type TestCardData, type TestStatus } from './TestListCard'
-import { MockDatabase } from '../../../../services/mockDatabase'
+import { useTests } from '../../../../hooks/useTests'
+import { useAuth } from '../../../../hooks/useAuth'
+import LoadingSpinner from '../../../common/LoadingSpinner'
 
 type SortOption = 'date-desc' | 'date-asc' | 'marks-desc' | 'marks-asc'
 type FilterOption = 'all' | 'completed' | 'in-progress' | 'not-started'
@@ -18,34 +20,44 @@ const YourTestsSection: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [isSortOpen, setIsSortOpen] = useState(false)
 
-  // Fetch and format data from MockDatabase
+  const { threads, attempts, isLoading } = useTests()
+  const auth = useAuth()
+
   const testCardData: TestCardData[] = useMemo(() => {
-    const allTests = MockDatabase.getAllTests()
-    const allAttempts = MockDatabase.getAllAttempts()
+    const { user } = auth || {}
 
-    return allTests.map(test => {
-      const attempt = allAttempts.find(a => a.testId === test.id)
+    return threads
+      .filter((thread) => {
+        if (user?.role === 'ADMIN') return true
+        return thread.createdByUserId === user?.id && thread.originType !== 'SYSTEM'
+      })
+      .map((thread) => {
+        // Find the most recent attempt for this thread
+        const threadAttempts = attempts.filter((a) => a.testId.startsWith(thread.id))
+        const latestAttempt = [...threadAttempts].sort(
+          (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
+        )[0]
 
-      let status: TestStatus = 'GENERATED'
-      if (attempt) {
-        // @ts-ignore - using the isSubmitted flag we added in mockDatabase
-        status = attempt.isSubmitted ? 'COMPLETED' : 'IN_PROGRESS'
-      }
+        let status: TestStatus = 'GENERATED'
+        if (latestAttempt) {
+          status = latestAttempt.status === 'COMPLETED' ? 'COMPLETED' : 'IN_PROGRESS'
+        }
 
-      return {
-        id: test.id,
-        title: test.title,
-        subject: test.subject || 'General',
-        status,
-        totalQuestions: test.questions.length,
-        attemptedQuestions: attempt ? attempt.questionAttempts.length : 0,
-        score: attempt?.score,
-        totalMarks: test.questions.reduce((sum, q) => sum + (q.marks || 4), 0),
-        createdAt: attempt?.createdAt || new Date().toISOString(), // Fallback to now if no attempt
-        lastInteractedAt: attempt?.createdAt || new Date().toISOString()
-      }
-    })
-  }, [])
+        return {
+          id: thread.id,
+          title: thread.title,
+          subject:
+            (thread.baseGenerationConfig as { subjects?: string[] }).subjects?.[0] || 'General',
+          status,
+          totalQuestions: 0,
+          attemptedQuestions: 0,
+          score: latestAttempt?.totalScore ?? undefined,
+          totalMarks: 0,
+          createdAt: thread.createdAt,
+          lastInteractedAt: latestAttempt?.startedAt || thread.createdAt,
+        }
+      })
+  }, [threads, attempts, auth])
 
   // Filter and sort tests
   const filteredTests = useMemo(() => {
@@ -92,7 +104,7 @@ const YourTestsSection: React.FC = () => {
     })
 
     return result
-  }, [searchQuery, sortBy, filterBy])
+  }, [testCardData, searchQuery, sortBy, filterBy])
 
   // Pagination
   const totalPages = Math.ceil(filteredTests.length / ITEMS_PER_PAGE)
@@ -189,7 +201,11 @@ const YourTestsSection: React.FC = () => {
 
       {/* Tests list */}
       <div className="space-y-2">
-        {paginatedTests.length > 0 ? (
+        {isLoading ? (
+          <div className="py-20 flex items-center justify-center">
+            <LoadingSpinner message="Loading your tests..." />
+          </div>
+        ) : paginatedTests.length > 0 ? (
           paginatedTests.map((test) => <TestListCard key={test.id} test={test} />)
         ) : (
           <div className="py-12 text-center">

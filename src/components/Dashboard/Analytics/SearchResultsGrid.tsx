@@ -16,11 +16,9 @@ import {
     Star,
     Trophy
 } from '@phosphor-icons/react'
-import type { TestAttempt } from '../../../services/mockDatabase'
-import { MockDatabase } from '../../../services/mockDatabase'
 
 interface Props {
-    attempts: TestAttempt[]
+    attempts: any[]
     searchQuery: string
     onExit: () => void
 }
@@ -49,36 +47,15 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
     // -------------------------------------------------------------------------
     // Relevance Scoring Logic
     // -------------------------------------------------------------------------
-    const calculateRelevance = (attempt: TestAttempt, query: string): number => {
+    const calculateRelevance = (attempt: any, query: string): number => {
         if (!query) return 0
-        const test = MockDatabase.getTest(attempt.testId)
-        if (!test) return 0
-
         const q = query.toLowerCase()
-        const title = test.title.toLowerCase()
-        const subject = test.subject?.toLowerCase() || ''
-        const tokens = q.split(' ').filter(t => t.length > 0)
+        const title = (attempt.title || '').toLowerCase()
+        const subject = (attempt.subject || '').toLowerCase()
 
         let score = 0
-
-        // Exact Name Match
-        if (title === q) score += 10
-        // Partial Name Match
-        else if (title.includes(q)) score += 6
-
-        tokens.forEach(token => {
-            // Type Match
-            if (token === 'full' && test.isMock) score += 5
-            if (token === 'chapter' && title.includes('chapter')) score += 5
-
-            // Subject Match
-            if (subject.includes(token)) score += 4
-
-            // Month Match (simple check)
-            const dateStr = new Date(attempt.createdAt).toLocaleString('default', { month: 'short' }).toLowerCase()
-            if (dateStr.includes(token)) score += 3
-        })
-
+        if (title.includes(q)) score += 6
+        if (subject.includes(q)) score += 4
         return score
     }
 
@@ -89,20 +66,9 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
         let filtered = [...attempts]
 
         // 1. Apply Filters
-        if (filterType !== 'all') {
-            filtered = filtered.filter(a => {
-                const test = MockDatabase.getTest(a.testId)
-                if (filterType === 'full') return test?.isMock
-                if (filterType === 'chapter') return test?.title.toLowerCase().includes('chapter')
-                if (filterType === 'subject') return test?.subject && !test.isMock && !test.title.toLowerCase().includes('chapter')
-                return true
-            })
-        }
-
         if (filterSubject !== 'all') {
             filtered = filtered.filter(a => {
-                const test = MockDatabase.getTest(a.testId)
-                return test?.subject?.toLowerCase().includes(filterSubject === 'maths' ? 'mathematics' : filterSubject)
+                return (a.subject || '').toLowerCase().includes(filterSubject === 'maths' ? 'mathematics' : filterSubject)
             })
         }
 
@@ -140,7 +106,7 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
         })
 
         return itemsWithScore.map(i => i.attempt)
-    }, [attempts, searchQuery, filterType, filterSubject, sortConfig])
+    }, [attempts, searchQuery, filterSubject, sortConfig])
 
     // Pagination
     const paginatedData = useMemo(() => {
@@ -334,7 +300,7 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
                         <AttemptCard
                             key={attempt.id}
                             attempt={attempt}
-                            isFullSyllabus={MockDatabase.getTest(attempt.testId)?.isMock || false}
+                            isFullSyllabus={false}
                         />
                     ))}
                 </div>
@@ -386,35 +352,36 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
     )
 }
 
-const ListItem: React.FC<{ attempt: TestAttempt }> = ({ attempt }) => {
+const ListItem: React.FC<{ attempt: any }> = ({ attempt }) => {
     const navigate = useNavigate()
-    const test = MockDatabase.getTest(attempt.testId)
+    const title = attempt.title || `Attempt ${attempt.id.substring(0, 8)}`
     const date = new Date(attempt.createdAt).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric'
     })
 
-    const attemptedCount = attempt.questionAttempts.filter(qa => qa.status !== 'unattempted').length
-    const totalQuestions = MockDatabase.getTest(attempt.testId)?.questions.length || 0
 
     const scoreColor = attempt.accuracy >= 80 ? 'text-blue-400' :
         attempt.accuracy >= 65 ? 'text-green-400' :
             attempt.accuracy >= 45 ? 'text-yellow-400' : 'text-red-400'
 
-    const trend = Math.random() > 0.5 ? { val: 12, pos: true } : { val: 8, pos: false }
+    const trend = useMemo(() => {
+        const hash = (attempt.id || '').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)
+        return hash % 2 === 0 ? { val: 12, pos: true } : { val: 8, pos: false }
+    }, [attempt.id])
 
     return (
         <tr
-            onClick={() => navigate(`/dashboard/analytics/${attempt.testId}`)}
+            onClick={() => navigate(`/dashboard/analytics/attempt/${attempt.id}`)}
             className="hover:bg-white/[0.03] transition-colors group cursor-pointer"
         >
             <td className="px-6 py-4 text-xs text-neutral-500 font-medium">{date}</td>
             <td className="px-6 py-4">
-                <div className="text-sm font-semibold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">{test?.title}</div>
+                <div className="text-sm font-semibold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">{title}</div>
             </td>
             <td className="px-6 py-4">
                 <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-white/5 text-neutral-500">
-                    {test?.isMock ? 'Full' : test?.subject?.split(',')[0]}
+                    {attempt.subject || 'Test'}
                 </span>
             </td>
             <td className={`px-6 py-4 font-bold text-sm ${scoreColor}`}>
@@ -427,7 +394,7 @@ const ListItem: React.FC<{ attempt: TestAttempt }> = ({ attempt }) => {
             </td>
             <td className="px-6 py-4 text-sm font-medium text-neutral-300">{attempt.accuracy}%</td>
             <td className="px-6 py-4 text-sm font-medium text-neutral-300">{attempt.timeTakenMinutes}m</td>
-            <td className="px-6 py-4 text-xs text-neutral-400 font-bold">{attemptedCount}/{totalQuestions}</td>
+            <td className="px-6 py-4 text-xs text-neutral-400 font-bold">Done</td>
             <td className="px-6 py-4 text-right">
                 <ArrowRight size={14} className="text-neutral-700 group-hover:text-blue-400 transition-all group-hover:translate-x-1" />
             </td>
@@ -435,18 +402,15 @@ const ListItem: React.FC<{ attempt: TestAttempt }> = ({ attempt }) => {
     )
 }
 
-const AttemptCard: React.FC<{ attempt: TestAttempt; isFullSyllabus: boolean }> = ({ attempt, isFullSyllabus }) => {
+const AttemptCard: React.FC<{ attempt: any; isFullSyllabus: boolean }> = ({ attempt, isFullSyllabus }) => {
     const navigate = useNavigate()
-    const test = MockDatabase.getTest(attempt.testId)
-    const title = test?.title || 'Unknown Test'
+    const title = attempt.title || `Attempt ${attempt.id.substring(0, 8)}`
     const date = new Date(attempt.createdAt).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric'
     })
 
-    const attemptedCount = attempt.questionAttempts.filter(qa => qa.status !== 'unattempted').length
-    const totalQuestions = MockDatabase.getTest(attempt.testId)?.questions.length || 0
 
     // Performance Color Logic (Percentage based)
     const getPerformanceColor = (accuracy: number) => {
@@ -473,11 +437,14 @@ const AttemptCard: React.FC<{ attempt: TestAttempt; isFullSyllabus: boolean }> =
     }
 
     const colors = getPerformanceColor(attempt.accuracy)
-    const trend = Math.random() > 0.5 ? { value: 12, type: 'up' } : { value: 8, type: 'down' }
+    const trend = useMemo(() => {
+        const hash = (attempt.id || '').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)
+        return hash % 2 === 0 ? { value: 12, type: 'up' } : { value: 8, type: 'down' }
+    }, [attempt.id])
 
     return (
         <div
-            onClick={() => navigate(`/dashboard/analytics/${attempt.testId}`)}
+            onClick={() => navigate(`/dashboard/analytics/attempt/${attempt.id}`)}
             className={`group relative flex flex-col justify-between p-6 bg-white/5 border ${isFullSyllabus ? 'border-white/20 p-7' : 'border-white/10'} rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/40 cursor-pointer overflow-hidden`}
         >
             {/* Background Accent */}
@@ -495,7 +462,7 @@ const AttemptCard: React.FC<{ attempt: TestAttempt; isFullSyllabus: boolean }> =
                                 <span>{date}</span>
                             </div>
                             <span>•</span>
-                            <span className="font-medium">{test?.subject?.includes(',') ? 'Full Test' : test?.subject}</span>
+                            <span className="font-medium">{attempt.subject || 'Test'}</span>
                         </div>
                     </div>
 
@@ -524,8 +491,8 @@ const AttemptCard: React.FC<{ attempt: TestAttempt; isFullSyllabus: boolean }> =
                     </div>
                     <div className="w-px h-8 bg-white/10"></div>
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Attempted</span>
-                        <span className="text-sm font-medium text-white">{attemptedCount}/{totalQuestions}</span>
+                        <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Status</span>
+                        <span className="text-sm font-medium text-white">Done</span>
                     </div>
                 </div>
             </div>

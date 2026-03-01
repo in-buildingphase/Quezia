@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Eye, 
-  EyeSlash, 
-  Check, 
-  WarningCircle,
-  Spinner
+import {
+  ArrowLeft,
+  Eye,
+  EyeSlash,
+  Check,
+  WarningCircle
 } from '@phosphor-icons/react';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useAuth } from '../../hooks/useAuth';
 
 interface AuthPageProps {
@@ -17,48 +17,68 @@ interface AuthPageProps {
 const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register, loading, error, clearError } = useAuth();
-  
-  const [isRegister, setIsRegister] = useState(defaultView === 'register');
+  const { login, register, loading, error, clearError, isAuthenticated } = useAuth();
+
+  const [isRegister, setIsRegister] = useState(() => {
+    // Priority: location.state > URL params > defaultView
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode');
+    if (mode === 'login') return false;
+    if (mode === 'register') return true;
+    return defaultView === 'register';
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  
+
+  // Navigate on successful auth
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard/home');
+    }
+  }, [isAuthenticated, navigate]);
+
   // Form fields
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [identifier, setIdentifier] = useState(''); // For login (email or username)
   const [password, setPassword] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong'>('weak');
 
   // Check URL params or navigation state for view mode
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const mode = params.get('mode');
-    if (mode === 'login') setIsRegister(false);
-    if (mode === 'register') setIsRegister(true);
-    
-    if (location.state?.view === 'login') setIsRegister(false);
-    if (location.state?.view === 'register') setIsRegister(true);
-  }, [location]);
+    const stateView = location.state?.view;
 
-  // Password strength checker
-  useEffect(() => {
-    if (!isRegister) return;
-    
+    // Defer to avoid synchronous setState warning
+    setTimeout(() => {
+      if (mode === 'login' || stateView === 'login') {
+        setIsRegister(false);
+      } else if (mode === 'register' || stateView === 'register') {
+        setIsRegister(true);
+      }
+    }, 0);
+  }, [location.search, location.state]);
+
+  // Derive password strength
+  const getPasswordStrength = (pwd: string): 'weak' | 'medium' | 'strong' => {
+    if (!isRegister || !pwd) return 'weak';
+
     let strength: 'weak' | 'medium' | 'strong' = 'weak';
-    if (password.length >= 8) {
-      const hasUpper = /[A-Z]/.test(password);
-      const hasLower = /[a-z]/.test(password);
-      const hasNumber = /\d/.test(password);
-      const hasSpecial = /[^A-Za-z0-9]/.test(password);
-      
+    if (pwd.length >= 8) {
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasNumber = /\d/.test(pwd);
+      const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+
       const passed = [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
-      
-      if (passed >= 3 && password.length >= 10) strength = 'strong';
+
+      if (passed >= 3 && pwd.length >= 10) strength = 'strong';
       else if (passed >= 2) strength = 'medium';
     }
-    setPasswordStrength(strength);
-  }, [password, isRegister]);
+    return strength;
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   const handleBack = () => {
     navigate(-1);
@@ -72,7 +92,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
     setEmail('');
     setIdentifier('');
     setPassword('');
-    
+
     const newUrl = `/auth?mode=${view}`;
     window.history.replaceState(null, '', newUrl);
   };
@@ -110,7 +130,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
       <div className="w-full lg:w-[45%] flex flex-col relative z-10 bg-white">
         {/* Header Navigation */}
         <div className="flex items-center justify-between p-6 lg:p-8">
-          <button 
+          <button
             onClick={handleBack}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
@@ -134,21 +154,19 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
           <div className="bg-gray-100 p-1 rounded-full flex mb-8 max-w-xs mx-auto w-full">
             <button
               onClick={() => toggleView('register')}
-              className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all duration-200 ${
-                isRegister 
-                  ? 'bg-[#EC2801] text-white shadow-md' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all duration-200 ${isRegister
+                ? 'bg-[#EC2801] text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Register
             </button>
             <button
               onClick={() => toggleView('login')}
-              className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all duration-200 ${
-                !isRegister 
-                  ? 'bg-[#EC2801] text-white shadow-md' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all duration-200 ${!isRegister
+                ? 'bg-[#EC2801] text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Login
             </button>
@@ -164,31 +182,31 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
 
           {/* Social Login */}
           <div className="flex justify-center gap-4 mb-6">
-            <button 
+            <button
               type="button"
               onClick={() => alert('Google OAuth integration coming soon')}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all group"
             >
               <svg className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => alert('Apple OAuth integration coming soon')}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#000000] hover:bg-[#00000011] transition-all group"
             >
               <svg className="w-5 h-5 text-[#000000] group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
               </svg>
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => alert('Google OAuth integration coming soon')}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-red-500 hover:bg-red-50 transition-all group"
             >
               <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/>
+                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
               </svg>
             </button>
           </div>
@@ -218,7 +236,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
                 />
               </div>
             )}
-            
+
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">
                 {isRegister ? 'Email' : 'Email or Username'}
@@ -280,7 +298,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
               </div>
             ) : (
               <div className="flex justify-end">
-                <button 
+                <button
                   type="button"
                   onClick={() => alert('Password reset flow coming soon')}
                   className="text-sm text-gray-600 hover:text-[#EC2801] font-medium"
@@ -295,7 +313,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
               disabled={loading}
               className="w-full bg-[#EC2801] text-white py-3.5 rounded-xl font-medium hover:bg-red-700 active:scale-[0.98] transition-all mt-6 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading && <Spinner className="w-4 h-4 animate-spin" />}
+              {loading && <LoadingSpinner size="sm" />}
               {isRegister ? 'Start your preparation' : 'Sign In'}
             </button>
           </form>
@@ -318,7 +336,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
         <div className="absolute inset-0 bg-[#EC2801] rounded-l-[40px] overflow-hidden shadow-2xl">
           {/* Top Bezel Curve Decoration */}
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-[#EC2801] rounded-full opacity-50 blur-3xl"></div>
-          
+
           {/* Content Area - Placeholder */}
           <div className="h-full flex flex-col items-center justify-center text-white p-12 relative z-10">
             <div className="text-center space-y-4">

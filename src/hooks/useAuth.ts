@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from './useAuthContext';
 import { AxiosError } from 'axios';
-import { authApi, type RegisterDto, type LoginDto, type AuthResponse } from '../services/authApi';
+import { type RegisterDto, type LoginDto, type User } from '../services/auth/auth.service';
 
 interface ErrorResponse {
   message?: string;
@@ -12,59 +12,71 @@ interface UseAuthReturn {
   error: string | null;
   login: (identifier: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (username: string, email: string, password: string, rememberMe: boolean) => Promise<void>;
+  logout: () => Promise<void>;
   clearError: () => void;
+  user: User | null;
+  isAuthenticated: boolean;
+  updateUser: (user: User) => void;
 }
 
 export const useAuth = (): UseAuthReturn => {
+  const {
+    login: contextLogin,
+    register: contextRegister,
+    logout: contextLogout,
+    user,
+    isAuthenticated,
+    loading: contextLoading,
+    updateUser: contextUpdateUser
+  } = useAuthContext();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  const handleAuthSuccess = useCallback((data: AuthResponse, rememberMe: boolean) => {
-    authApi.setAuthData(data, rememberMe);
-    // Redirect to dashboard or home
-    navigate('/dashboard', { replace: true });
-  }, [navigate]);
 
   const handleError = useCallback((err: AxiosError<ErrorResponse>) => {
     let message = 'An unexpected error occurred';
-    
+
     if (err.response?.data?.message) {
-      message = err.response.data.message;
+      if (Array.isArray(err.response.data.message)) {
+        message = err.response.data.message[0];
+      } else {
+        message = err.response.data.message;
+      }
     } else if (err.message) {
       message = err.message;
     }
-    
+
     setError(message);
     setLoading(false);
   }, []);
 
   const login = useCallback(async (
-    identifier: string, 
-    password: string, 
+    identifier: string,
+    password: string,
     rememberMe: boolean
   ) => {
     setLoading(true);
     setError(null);
 
     try {
-      // Determine if identifier is email or username
       const isEmail = identifier.includes('@');
-      const loginData: LoginDto = isEmail 
+      const loginData: LoginDto = isEmail
         ? { email: identifier, password }
         : { username: identifier, password };
 
-      const response = await authApi.login(loginData);
-      await handleAuthSuccess(response, rememberMe);
+      await contextLogin(loginData, rememberMe);
     } catch (err) {
       handleError(err as AxiosError<ErrorResponse>);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }, [handleAuthSuccess, handleError]);
+  }, [contextLogin, handleError]);
 
   const register = useCallback(async (
     username: string,
-    email: string, 
-    password: string, 
+    email: string,
+    password: string,
     rememberMe: boolean
   ) => {
     setLoading(true);
@@ -77,22 +89,39 @@ export const useAuth = (): UseAuthReturn => {
         password,
       };
 
-      const response = await authApi.register(registerData);
-      await handleAuthSuccess(response, rememberMe);
+      await contextRegister(registerData, rememberMe);
     } catch (err) {
       handleError(err as AxiosError<ErrorResponse>);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }, [handleAuthSuccess, handleError]);
+  }, [contextRegister, handleError]);
+
+  const logout = useCallback(async () => {
+    setLoading(true);
+    try {
+      await contextLogout();
+    } catch (err) {
+      handleError(err as AxiosError<ErrorResponse>);
+    } finally {
+      setLoading(false);
+    }
+  }, [contextLogout, handleError]);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
   return {
-    loading,
+    loading: loading || contextLoading,
     error,
     login,
     register,
+    logout,
     clearError,
+    user,
+    isAuthenticated,
+    updateUser: contextUpdateUser,
   };
 };
