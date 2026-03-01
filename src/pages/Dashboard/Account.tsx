@@ -1,20 +1,63 @@
-import React from 'react'
-import { UserCircle } from '@phosphor-icons/react'
+import React, { useState } from 'react'
+import ProfileHeader from '../../components/Dashboard/Profile/ProfileHeader'
+import AcademicContext from '../../components/Dashboard/Profile/AcademicContext'
+
+import SubscriptionCard from '../../components/Dashboard/Profile/SubscriptionCard'
 
 const Account: React.FC = () => {
+  // Mock profile state
+  const [profile, setProfile] = useState({
+    displayName: 'Shubham Mahanwar',
+    email: 'shubham@quezia.io',
+    username: 'shubham_m',
+    avatarUrl: null as string | null,
+    accountTier: 'FREE',
+    targetExam: 'JEE',
+    targetExamYear: 2026,
+    preparationStage: 'Intermediate',
+    studyGoal: 'Rank under 5000',
+
+  })
+
+  const update = (fields: Partial<typeof profile>) => {
+    setProfile((prev) => ({ ...prev, ...fields }))
+  }
+
   return (
-    <div className="min-h-screen bg-[var(--color-bg-base)] px-6 py-12 flex items-center justify-center">
-      <div className="text-center space-y-4 max-w-sm">
-        <div className="mx-auto w-12 h-12 rounded-2xl bg-[var(--color-bg-subtle)] border border-[var(--color-border-default)] flex items-center justify-center">
-          <UserCircle size={22} className="text-[var(--color-text-disabled)]" />
+    <div className="min-h-screen bg-[var(--color-bg-base)] px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto space-y-5">
+        {/* Page title */}
+        <div className="mb-2">
+          <h1 className="text-2xl font-semibold text-[var(--color-text-primary)]">Profile</h1>
+          <p className="text-sm text-[var(--color-text-tertiary)] mt-1">
+            Manage your identity, academic preferences, and subscription.
+          </p>
         </div>
-        <h1 className="text-lg font-semibold text-[var(--color-text-primary)]">Account</h1>
-        <p className="text-sm text-[var(--color-text-disabled)] leading-relaxed">
-          Manage your profile, exam preferences, and subscription — coming soon.
-        </p>
-        <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-disabled)] border border-[var(--color-border-default)] rounded-full px-4 py-1.5">
-          Coming Soon
-        </span>
+
+        <ProfileHeader
+          displayName={profile.displayName}
+          email={profile.email}
+          username={profile.username}
+          avatarUrl={profile.avatarUrl}
+          accountTier={profile.accountTier}
+          onUpdate={(fields) => update(fields)}
+        />
+
+        <AcademicContext
+          targetExam={profile.targetExam}
+          targetExamYear={profile.targetExamYear}
+          preparationStage={profile.preparationStage}
+          studyGoal={profile.studyGoal}
+
+          onUpdate={(fields) => update(fields as Partial<typeof profile>)}
+        />
+
+        <SubscriptionCard
+          planName="Free Tier"
+          status="ACTIVE"
+          expiresAt="Mar 15, 2026"
+          daysRemaining={20}
+        />
       </div>
     </div>
   )
