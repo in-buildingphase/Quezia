@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
+import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { userApi, type User } from '../../services/userApi'
 import GlassCard from '../../components/Dashboard/GlassCard'
 import PromptInput from '../../components/common/PromptInput'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import AnalyticsStrip from '../../components/Dashboard/Home/AnalyticsStrip'
 import PastTestsStrip from '../../components/Dashboard/Home/PastTestsStrip'
+import { Exam } from '@phosphor-icons/react'
 
 const Home: React.FC = () => {
   const { user, loading } = useAuth()
@@ -22,6 +24,15 @@ const Home: React.FC = () => {
       <GlassCard
         title={`Hello ${user?.username || 'User'}`}
         subtitle="Prepare smarter with Quezia."
+        headerAction={
+          <Link
+            to="/dashboard/tests"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-[var(--color-text-primary)] border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] backdrop-blur-md hover:border-[var(--color-border-hover)] transition-colors"
+          >
+            <Exam size={16} weight="bold" />
+            Full Mock Test
+          </Link>
+        }
       >
         <PromptInput
           selectedSubject={selectedSubject}
