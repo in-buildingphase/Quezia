@@ -1,5 +1,6 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
+import LoadingSpinner from './LoadingSpinner'
 
 type ButtonVariant = 'danger' | 'primary' | 'secondary'
 
@@ -7,6 +8,7 @@ type ModalButton = {
   label: string
   onClick: () => void
   variant?: ButtonVariant
+  loading?: boolean
 }
 
 type Props = {
@@ -54,8 +56,11 @@ const ConfirmModal: React.FC<Props> = ({
           {cancelButton && (
             <button
               onClick={cancelButton.onClick}
+              disabled={confirmButton.loading}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                variantStyles[cancelButton.variant ?? 'secondary']
+                confirmButton.loading 
+                  ? 'opacity-50 cursor-not-allowed ' + variantStyles[cancelButton.variant ?? 'secondary']
+                  : variantStyles[cancelButton.variant ?? 'secondary']
               }`}
             >
               {cancelButton.label}
@@ -63,10 +68,14 @@ const ConfirmModal: React.FC<Props> = ({
           )}
           <button
             onClick={confirmButton.onClick}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              variantStyles[confirmButton.variant ?? 'primary']
+            disabled={confirmButton.loading}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
+              confirmButton.loading
+                ? 'opacity-75 cursor-not-allowed ' + variantStyles[confirmButton.variant ?? 'primary']
+                : variantStyles[confirmButton.variant ?? 'primary']
             }`}
           >
+            {confirmButton.loading && <LoadingSpinner size="sm" />}
             {confirmButton.label}
           </button>
         </div>

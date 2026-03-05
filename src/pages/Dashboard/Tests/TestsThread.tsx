@@ -27,6 +27,10 @@ const TestsThread: React.FC = () => {
 
   // Deletion state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeletingThread, setIsDeletingThread] = useState(false)
+
+  // Prompt submission state
+  const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false)
 
   // PromptInput state
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
@@ -54,7 +58,7 @@ const TestsThread: React.FC = () => {
       const fetchedAttempts = await testEngineService.getAttempts(threadId)
       setAttempts(fetchedAttempts)
     } catch (error) {
-      console.error('Failed to load thread data:', error)
+      // Failed to load thread data - handle silently or show error state
     } finally {
       setIsLoading(false)
     }
@@ -66,7 +70,6 @@ const TestsThread: React.FC = () => {
 
   const handleStartTest = async () => {
     if (!currentTest || currentTest.status !== 'PUBLISHED') {
-      alert('This test is not published yet.')
       return
     }
 
@@ -81,10 +84,8 @@ const TestsThread: React.FC = () => {
     try {
       await testEngineService.publishTest(currentTest.id)
       await loadData()
-      alert('Test published successfully!')
     } catch (error) {
-      console.error('Failed to publish test:', error)
-      alert('Failed to publish test.')
+      // Failed to publish test - handle silently
     }
   }
 
@@ -138,24 +139,45 @@ const TestsThread: React.FC = () => {
         questions: dummyQuestions
       })
       await loadData()
-      alert('Dummy questions injected successfully!')
     } catch (error) {
-      console.error('Failed to inject questions:', error)
-      alert('Failed to inject questions.')
+      // Failed to inject questions - handle silently
     }
   }
 
   const handleThreadDelete = async () => {
     if (!threadId) return
+    setIsDeletingThread(true)
     try {
       await testEngineService.deleteThread(threadId)
       await refreshThreads()
       navigate('/dashboard/tests')
     } catch (error) {
-      console.error('Failed to delete thread:', error)
-      alert('Failed to delete thread. Please try again.')
+      // Failed to delete thread - handle silently
     } finally {
+      setIsDeletingThread(false)
       setShowDeleteModal(false)
+    }
+  }
+
+  const handlePromptSubmit = async (prompt: string) => {
+    if (!threadId) {
+      return
+    }
+
+    setIsSubmittingPrompt(true)
+    try {
+      // Generate new version with the prompt
+      await testEngineService.generateVersion(threadId, {
+        prompt,
+        followsBlueprint: false, // Override blueprint when prompt is provided
+      })
+
+      // Reload the test data to show the updated version
+      await loadData()
+    } catch (error) {
+      // Failed to update test - handle silently
+    } finally {
+      setIsSubmittingPrompt(false)
     }
   }
 
@@ -241,19 +263,22 @@ const TestsThread: React.FC = () => {
           setIsDifficultyOpen={setIsDifficultyOpen}
           openUp
           placeholder="Refine or customize this test..."
+          onSubmit={handlePromptSubmit}
+          isLoading={isSubmittingPrompt}
         />
       </div>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        onClose={() => !isDeletingThread && setShowDeleteModal(false)}
         title="Delete Test Thread"
         description={`Are you sure you want to delete "${thread?.title || 'this thread'}"? This will permanently remove all tests and attempts associated with it.`}
         confirmButton={{
-          label: 'Delete',
+          label: isDeletingThread ? 'Deleting...' : 'Delete',
           onClick: handleThreadDelete,
           variant: 'danger',
+          loading: isDeletingThread,
         }}
         cancelButton={{
           label: 'Cancel',

@@ -80,20 +80,12 @@ const QuestionWorkspace: React.FC<Props> = ({
                 onSelect={onSelectAnswer}
               />
             ) : (
-              <div className="space-y-4">
-                <AnswerInput
-                  type="numeric"
-                  value={numericAnswer}
-                  onChange={onNumericChange}
-                  hint={(question as NumericQuestion).hint}
-                />
-                <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
-                  {numericAnswer ? (
-                    <p className="font-mono text-lg text-[var(--color-text-primary)]">{numericAnswer}</p>
-                  ) : (
-                    <p className="font-mono text-lg text-[var(--color-text-tertiary)]">—</p>
-                  )}
-                </div>
+              <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+                {numericAnswer ? (
+                  <p className="font-mono text-lg text-[var(--color-text-primary)]">{numericAnswer}</p>
+                ) : (
+                  <p className="font-mono text-lg text-[var(--color-text-tertiary)]">—</p>
+                )}
               </div>
             )}
 

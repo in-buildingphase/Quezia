@@ -41,7 +41,7 @@ const OnboardingPage: React.FC = () => {
                 const data = await examSetupService.getExams();
                 setExams(data.filter(e => e.isActive));
             } catch (err) {
-                console.error('Failed to fetch exams', err);
+                // Failed to fetch exams - handle silently
             }
         };
         fetchExams();
@@ -68,7 +68,7 @@ const OnboardingPage: React.FC = () => {
             updateUser(updatedUser);
             navigate('/dashboard/home');
         } catch (err) {
-            console.error('Onboarding update failed', err);
+            // Onboarding update failed - handle silently
         } finally {
             setLoading(false);
         }

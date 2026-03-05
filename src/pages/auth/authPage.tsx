@@ -184,7 +184,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
           <div className="flex justify-center gap-4 mb-6">
             <button
               type="button"
-              onClick={() => alert('Google OAuth integration coming soon')}
+              onClick={() => {/* TODO: Google OAuth */}}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all group"
             >
               <svg className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
             </button>
             <button
               type="button"
-              onClick={() => alert('Apple OAuth integration coming soon')}
+              onClick={() => {/* TODO: Implement Apple OAuth */}}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#000000] hover:bg-[#00000011] transition-all group"
             >
               <svg className="w-5 h-5 text-[#000000] group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
@@ -202,7 +202,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
             </button>
             <button
               type="button"
-              onClick={() => alert('Google OAuth integration coming soon')}
+              onClick={() => {/* TODO: Google OAuth */}}
               className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:border-red-500 hover:bg-red-50 transition-all group"
             >
               <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultView = 'register' }) => {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => alert('Password reset flow coming soon')}
+                  onClick={() => {/* TODO: Implement password reset */}}
                   className="text-sm text-gray-600 hover:text-[#EC2801] font-medium"
                 >
                   Forgot password?
