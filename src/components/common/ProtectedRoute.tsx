@@ -14,7 +14,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  const isAuthenticated = authApi.getAccessToken() && authApi.getUser();
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/auth?mode=login" replace />;

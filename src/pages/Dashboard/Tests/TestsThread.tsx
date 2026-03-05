@@ -42,23 +42,36 @@ const TestsThread: React.FC = () => {
     if (!threadId) return
     setIsLoading(true)
     try {
-      const [fetchedThread, fetchedTest] = await Promise.all([
-        testEngineService.getThread(threadId),
-        testEngineService.getLatestVersion(threadId)
-      ])
-
+      // Always fetch the thread info first
+      const fetchedThread = await testEngineService.getThread(threadId)
       setThread(fetchedThread)
-      setCurrentTest(fetchedTest)
 
-      // Fetch questions for the current test
-      const fetchedQuestions = await testEngineService.getTestQuestions(fetchedTest.id)
-      setQuestions(fetchedQuestions)
+      // Try to fetch the latest version, but handle 404 gracefully
+      try {
+        const fetchedTest = await testEngineService.getLatestVersion(threadId)
+        setCurrentTest(fetchedTest)
+
+        // Only fetch questions if we have a test
+        if (fetchedTest) {
+          const fetchedQuestions = await testEngineService.getTestQuestions(fetchedTest.id)
+          setQuestions(fetchedQuestions)
+        }
+      } catch (versionError: any) {
+        if (versionError?.response?.status === 404) {
+          // No latest version exists yet - this is normal for new threads
+          setCurrentTest(null)
+          setQuestions([])
+        } else {
+          throw versionError // Re-throw non-404 errors
+        }
+      }
 
       // Fetch real attempts for this thread
       const fetchedAttempts = await testEngineService.getAttempts(threadId)
       setAttempts(fetchedAttempts)
     } catch (error) {
       // Failed to load thread data - handle silently or show error state
+      console.error('Failed to load thread data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -221,12 +234,12 @@ const TestsThread: React.FC = () => {
           testId={threadId || ''}
         />
 
-        {previewQuestions.length === 0 && !isLoading && (
+        {(!currentTest || previewQuestions.length === 0) && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-base)]/50 backdrop-blur-sm z-10">
             <Placeholder
               icon={ClipboardText}
-              title="No Questions Yet"
-              description="This test thread doesn't have any questions. Use the prompt below to generate some or refine the test."
+              title={!currentTest ? "No Test Version Yet" : "No Questions Yet"}
+              description={!currentTest ? "This thread doesn't have any test versions. Use the prompt below to generate a test." : "This test thread doesn't have any questions. Use the prompt below to generate some or refine the test."}
               variant="default"
             />
           </div>
