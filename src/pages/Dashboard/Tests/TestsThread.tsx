@@ -27,6 +27,10 @@ const TestsThread: React.FC = () => {
 
   // Deletion state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeletingThread, setIsDeletingThread] = useState(false)
+
+  // Prompt submission state
+  const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false)
 
   // PromptInput state
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
@@ -38,22 +42,35 @@ const TestsThread: React.FC = () => {
     if (!threadId) return
     setIsLoading(true)
     try {
-      const [fetchedThread, fetchedTest] = await Promise.all([
-        testEngineService.getThread(threadId),
-        testEngineService.getLatestVersion(threadId)
-      ])
-
+      // Always fetch the thread info first
+      const fetchedThread = await testEngineService.getThread(threadId)
       setThread(fetchedThread)
-      setCurrentTest(fetchedTest)
 
-      // Fetch questions for the current test
-      const fetchedQuestions = await testEngineService.getTestQuestions(fetchedTest.id)
-      setQuestions(fetchedQuestions)
+      // Try to fetch the latest version, but handle 404 gracefully
+      try {
+        const fetchedTest = await testEngineService.getLatestVersion(threadId)
+        setCurrentTest(fetchedTest)
+
+        // Only fetch questions if we have a test
+        if (fetchedTest) {
+          const fetchedQuestions = await testEngineService.getTestQuestions(fetchedTest.id)
+          setQuestions(fetchedQuestions)
+        }
+      } catch (versionError: any) {
+        if (versionError?.response?.status === 404) {
+          // No latest version exists yet - this is normal for new threads
+          setCurrentTest(null)
+          setQuestions([])
+        } else {
+          throw versionError // Re-throw non-404 errors
+        }
+      }
 
       // Fetch real attempts for this thread
       const fetchedAttempts = await testEngineService.getAttempts(threadId)
       setAttempts(fetchedAttempts)
     } catch (error) {
+      // Failed to load thread data - handle silently or show error state
       console.error('Failed to load thread data:', error)
     } finally {
       setIsLoading(false)
@@ -66,7 +83,6 @@ const TestsThread: React.FC = () => {
 
   const handleStartTest = async () => {
     if (!currentTest || currentTest.status !== 'PUBLISHED') {
-      alert('This test is not published yet.')
       return
     }
 
@@ -81,10 +97,8 @@ const TestsThread: React.FC = () => {
     try {
       await testEngineService.publishTest(currentTest.id)
       await loadData()
-      alert('Test published successfully!')
     } catch (error) {
-      console.error('Failed to publish test:', error)
-      alert('Failed to publish test.')
+      // Failed to publish test - handle silently
     }
   }
 
@@ -138,24 +152,45 @@ const TestsThread: React.FC = () => {
         questions: dummyQuestions
       })
       await loadData()
-      alert('Dummy questions injected successfully!')
     } catch (error) {
-      console.error('Failed to inject questions:', error)
-      alert('Failed to inject questions.')
+      // Failed to inject questions - handle silently
     }
   }
 
   const handleThreadDelete = async () => {
     if (!threadId) return
+    setIsDeletingThread(true)
     try {
       await testEngineService.deleteThread(threadId)
       await refreshThreads()
       navigate('/dashboard/tests')
     } catch (error) {
-      console.error('Failed to delete thread:', error)
-      alert('Failed to delete thread. Please try again.')
+      // Failed to delete thread - handle silently
     } finally {
+      setIsDeletingThread(false)
       setShowDeleteModal(false)
+    }
+  }
+
+  const handlePromptSubmit = async (prompt: string) => {
+    if (!threadId) {
+      return
+    }
+
+    setIsSubmittingPrompt(true)
+    try {
+      // Generate new version with the prompt
+      await testEngineService.generateVersion(threadId, {
+        prompt,
+        followsBlueprint: false, // Override blueprint when prompt is provided
+      })
+
+      // Reload the test data to show the updated version
+      await loadData()
+    } catch (error) {
+      // Failed to update test - handle silently
+    } finally {
+      setIsSubmittingPrompt(false)
     }
   }
 
@@ -199,12 +234,12 @@ const TestsThread: React.FC = () => {
           testId={threadId || ''}
         />
 
-        {previewQuestions.length === 0 && !isLoading && (
+        {(!currentTest || previewQuestions.length === 0) && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-base)]/50 backdrop-blur-sm z-10">
             <Placeholder
               icon={ClipboardText}
-              title="No Questions Yet"
-              description="This test thread doesn't have any questions. Use the prompt below to generate some or refine the test."
+              title={!currentTest ? "No Test Version Yet" : "No Questions Yet"}
+              description={!currentTest ? "This thread doesn't have any test versions. Use the prompt below to generate a test." : "This test thread doesn't have any questions. Use the prompt below to generate some or refine the test."}
               variant="default"
             />
           </div>
@@ -241,19 +276,22 @@ const TestsThread: React.FC = () => {
           setIsDifficultyOpen={setIsDifficultyOpen}
           openUp
           placeholder="Refine or customize this test..."
+          onSubmit={handlePromptSubmit}
+          isLoading={isSubmittingPrompt}
         />
       </div>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        onClose={() => !isDeletingThread && setShowDeleteModal(false)}
         title="Delete Test Thread"
         description={`Are you sure you want to delete "${thread?.title || 'this thread'}"? This will permanently remove all tests and attempts associated with it.`}
         confirmButton={{
-          label: 'Delete',
+          label: isDeletingThread ? 'Deleting...' : 'Delete',
           onClick: handleThreadDelete,
           variant: 'danger',
+          loading: isDeletingThread,
         }}
         cancelButton={{
           label: 'Cancel',

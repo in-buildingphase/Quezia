@@ -1,19 +1,61 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { userApi, type User } from '../../services/userApi'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
+import { useTests } from '../../hooks/useTests'
 import GlassCard from '../../components/Dashboard/GlassCard'
 import PromptInput from '../../components/common/PromptInput'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import AnalyticsStrip from '../../components/Dashboard/Home/AnalyticsStrip'
 import PastTestsStrip from '../../components/Dashboard/Home/PastTestsStrip'
 import { Exam } from '@phosphor-icons/react'
+import { testEngineService } from '../../services/test-engine/test-engine.service'
 
 const Home: React.FC = () => {
+  const navigate = useNavigate()
   const { user, loading } = useAuth()
+  const { refreshThreads } = useTests()
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('')
   const [isSubjectOpen, setIsSubjectOpen] = useState(false)
   const [isDifficultyOpen, setIsDifficultyOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handlePromptSubmit = async (prompt: string) => {
+    if (!user?.profile?.targetExamId) {
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // 1. Create Thread
+      const thread = await testEngineService.createThread({
+        examId: user.profile.targetExamId,
+        originType: user.role === 'ADMIN' ? 'SYSTEM' : 'GENERATED',
+        title: prompt,
+        baseGenerationConfig: {
+          subjects: selectedSubject,
+          difficulty: selectedDifficulty,
+        },
+      })
+
+      // 2. Generate Version (DRAFT)
+      await testEngineService.generateVersion(thread.id, {
+        prompt,
+        followsBlueprint: false, // Override blueprint when prompt is provided
+      })
+
+      // Refresh global threads to update sidebar
+      await refreshThreads()
+
+      // 3. Navigate to thread page
+      navigate(`/dashboard/tests/thread/${thread.id}`)
+    } catch (error) {
+      // Failed to create test - handle silently
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   if (loading) {
     return <LoadingSpinner fullScreen message="Preparing your dashboard..." />
@@ -43,6 +85,8 @@ const Home: React.FC = () => {
           setIsSubjectOpen={setIsSubjectOpen}
           isDifficultyOpen={isDifficultyOpen}
           setIsDifficultyOpen={setIsDifficultyOpen}
+          onSubmit={handlePromptSubmit}
+          isLoading={isSubmitting}
         />
       </GlassCard>
       <AnalyticsStrip />

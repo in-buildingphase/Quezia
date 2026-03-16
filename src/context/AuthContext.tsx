@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     const storage = localStorage.getItem(USER_KEY) ? localStorage : sessionStorage;
                     storage.setItem(USER_KEY, JSON.stringify(freshUser));
                 } catch (error) {
-                    console.error('Failed to restore session', error);
+                    // Failed to restore session
                     clearAuthData();
                 }
             }
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const fullUser = await authService.getMe();
             updateUser(fullUser);
         } catch (e) {
-            console.warn('Post-login profile fetch failed', e);
+            // Profile fetch failed - continue
         }
     };
 
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const fullUser = await authService.getMe();
             updateUser(fullUser);
         } catch (e) {
-            console.warn('Post-register profile fetch failed', e);
+            // Profile fetch failed - continue
         }
     };
 
@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             try {
                 await authService.logout(refreshToken);
             } catch (error) {
-                console.error('Logout failed on backend', error);
+                // Logout failed on backend - continue with local logout
             }
         }
         clearAuthData();

@@ -4,6 +4,7 @@ import { ArrowLeft } from '@phosphor-icons/react'
 import TestPreviewRulesCard, { type TestInstructionsPreset } from '../../../components/Dashboard/Tests/preview/TestPreviewRulesCard'
 import { formatDuration } from '../../../types/test'
 import { type TestConfig } from '../../../types/test'
+import { testEngineService } from '../../../services/test-engine/test-engine.service'
 
 const TestPreviewRules: React.FC = () => {
   const { threadId } = useParams<{ threadId: string }>()
@@ -60,24 +61,20 @@ const TestPreviewRules: React.FC = () => {
     }
   }, [testConfig, durationMinutes])
 
-  const handleStart = () => {
-    // Build updated config with potentially modified duration
-    const configToPass: TestConfig = testConfig ?? {
-      id: threadId || 'test-1',
-      title: 'Test Session',
-      questions: [],
-      durationMinutes,
-      isMock: true,
+  const handleStart = async () => {
+    if (!testConfig?.id) {
+      return
     }
 
-    navigate(`/test/${threadId}`, {
-      state: {
-        testConfig: {
-          ...configToPass,
-          durationMinutes,
-        },
-      },
-    })
+    try {
+      // Start a new attempt
+      const attempt = await testEngineService.startAttempt(testConfig.id)
+      
+      // Navigate to the test session with the new attempt ID
+      navigate(`/dashboard/tests/thread/${threadId}/attempt/${attempt.id}`)
+    } catch (error) {
+      // Failed to start test attempt - handle silently
+    }
   }
 
   const handleDurationChange = (minutes: number) => {

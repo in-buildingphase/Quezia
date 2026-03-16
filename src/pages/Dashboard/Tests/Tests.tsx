@@ -19,7 +19,6 @@ const Tests: React.FC = () => {
 
   const handlePromptSubmit = async (prompt: string) => {
     if (!user?.profile?.targetExamId) {
-      alert('Please select a target exam in your profile first.')
       return
     }
 
@@ -48,8 +47,7 @@ const Tests: React.FC = () => {
       // 3. Navigate to thread page
       navigate(`/dashboard/tests/thread/${thread.id}`)
     } catch (error) {
-      console.error('Failed to create test:', error)
-      alert('Failed to create test. Please try again.')
+      // Failed to create test - handle silently
     } finally {
       setIsSubmitting(false)
     }

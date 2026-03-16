@@ -35,7 +35,7 @@ const TestAnalyticsPage = () => {
                 const data = await testEngineService.getAttemptReview(attemptId)
                 setReviewData(data)
             } catch (err: any) {
-                console.error('Failed to load attempt review:', err)
+                // Failed to load attempt review
                 const status = err?.response?.status
                 if (status === 404) setError('Attempt not found.')
                 else if (status === 403) setError('You do not have access to this attempt.')

@@ -82,8 +82,7 @@ const TestSession: React.FC = () => {
         const duration = test?.ruleSnapshot?.totalTimeSeconds ?? 180 * 60
         setTimeRemaining(duration)
       } catch (error) {
-        console.error('Failed to load attempt questions:', error)
-        alert('Failed to load questions. Please try again.')
+        // Failed to load questions - handle silently
         navigate(`/dashboard/tests/thread/${threadId}`)
       } finally {
         setIsLoading(false)
@@ -135,14 +134,13 @@ const TestSession: React.FC = () => {
 
       if (answer !== undefined && answer !== null && answer !== '' && currentQuestion.questionId) {
         try {
-          // console.log(`Syncing answer for ${currentQuestion.questionId}:`, answer);
           await testEngineService.submitAnswer(attemptId, {
             questionId: currentQuestion.questionId,
             answer: String(answer),
             timeSpentSeconds: 0
           })
         } catch (error) {
-          console.error('Failed to sync answer:', error)
+          // Answer syncing failed silently
         }
       }
     }
@@ -161,8 +159,7 @@ const TestSession: React.FC = () => {
         state: { result, test }
       })
     } catch (error) {
-      console.error('Failed to submit test:', error)
-      alert('Failed to submit test. Please try again.')
+      // Failed to submit test
       setIsSubmitting(false)
     }
   }

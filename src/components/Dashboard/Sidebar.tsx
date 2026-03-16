@@ -52,6 +52,7 @@ const Sidebar: React.FC = () => {
     open: false,
     test: null,
   })
+  const [isDeletingThread, setIsDeletingThread] = useState(false)
 
   // Map threads from context to sidebar format
   // Learner: only see threads they created. Hide SYSTEM threads.
@@ -70,6 +71,7 @@ const Sidebar: React.FC = () => {
 
   const handleDeleteTest = async () => {
     if (deleteModal.test) {
+      setIsDeletingThread(true)
       try {
         await testEngineService.deleteThread(deleteModal.test.id)
         await refreshThreads()
@@ -78,8 +80,9 @@ const Sidebar: React.FC = () => {
           navigate('/dashboard/tests')
         }
       } catch (error) {
-        console.error('Failed to delete thread:', error)
-        alert('Failed to delete thread. Please try again.')
+        // Failed to delete thread - handle silently
+      } finally {
+        setIsDeletingThread(false)
       }
     }
     setDeleteModal({ open: false, test: null })
@@ -297,7 +300,7 @@ const Sidebar: React.FC = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModal.open}
-        onClose={() => setDeleteModal({ open: false, test: null })}
+        onClose={() => !isDeletingThread && setDeleteModal({ open: false, test: null })}
         title="Delete Test"
         description={`Are you sure you want to delete "${deleteModal.test?.name}"? This action cannot be undone.`}
         cancelButton={{
@@ -305,9 +308,10 @@ const Sidebar: React.FC = () => {
           onClick: () => setDeleteModal({ open: false, test: null }),
         }}
         confirmButton={{
-          label: 'Delete',
+          label: isDeletingThread ? 'Deleting...' : 'Delete',
           onClick: handleDeleteTest,
           variant: 'danger',
+          loading: isDeletingThread,
         }}
       />
     </>

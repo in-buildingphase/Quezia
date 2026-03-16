@@ -57,7 +57,7 @@ const Analytics = () => {
         const dashboardData = await analyticsService.fetchAnalyticsDashboardData(filters)
         setData(dashboardData)
       } catch (error) {
-        console.error("Failed to load analytics data", error)
+        // Failed to load analytics data - handle silently
       } finally {
         setLoading(false)
       }

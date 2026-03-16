@@ -36,20 +36,19 @@ const ReportIssueModal: React.FC<Props> = ({
   const handleSubmit = () => {
     if (!selectedIssue) return
 
-    // Capture context automatically
-    const report = {
+    const reportData = {
       issueType: selectedIssue,
-      additionalInfo: additionalInfo.trim() || undefined,
+      additionalInfo: additionalInfo.trim(),
       questionId,
       questionNumber,
       testId,
       section,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     }
 
-    // TODO: Send to backend
-    console.log('Issue report:', report)
-
+    // TODO: Send report to backend with reportData
+    console.log('Report data:', reportData)
+    
     setIsSubmitted(true)
 
     // Close after brief confirmation

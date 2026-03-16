@@ -14,7 +14,7 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const fetchedThreads = await testEngineService.getThreads();
             setThreads(fetchedThreads);
         } catch (error) {
-            console.error('Failed to fetch threads:', error);
+            // Failed to fetch threads - handle silently
         }
     }, []);
 
@@ -23,7 +23,7 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const fetchedAttempts = await testEngineService.getAttempts(threadId);
             setAttempts(fetchedAttempts);
         } catch (error) {
-            console.error('Failed to fetch attempts:', error);
+            // Failed to fetch attempts - handle silently
         }
     }, []);
 
