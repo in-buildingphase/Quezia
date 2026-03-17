@@ -14,7 +14,8 @@ import {
     ArrowDown,
     ChartLineUp,
     Star,
-    Trophy
+    Trophy,
+    MagnifyingGlass
 } from '@phosphor-icons/react'
 
 interface Props {
@@ -138,7 +139,7 @@ const SearchResultsGrid: React.FC<Props> = ({ attempts, searchQuery, onExit }) =
     if (attempts.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
-                <div className="text-4xl mb-4">🔍</div>
+                <MagnifyingGlass size={48} weight="duotone" className="mb-4 text-neutral-600" />
                 <h3 className="text-lg font-medium text-white">No attempts recorded yet</h3>
                 <p>Start a test to see your analytics here.</p>
             </div>

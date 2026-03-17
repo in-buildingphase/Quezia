@@ -30,6 +30,7 @@ export interface UserProfile {
     country: string | null;
     timezone: string | null;
     targetExamId: string | null;
+    targetExam?: { id: string; name: string } | null;
     targetExamYear: number | null;
     preparationStage: PreparationStage | null;
     studyGoal: string | null;

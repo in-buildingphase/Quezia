@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import ProfileHeader from '../../components/Dashboard/Profile/ProfileHeader'
 import AcademicContext from '../../components/Dashboard/Profile/AcademicContext'
-import SubscriptionCard from '../../components/Dashboard/Profile/SubscriptionCard'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { authService, type UpdateProfileDto } from '../../services/auth/auth.service'
@@ -58,18 +57,11 @@ const Account: React.FC = () => {
         />
 
         <AcademicContext
-          targetExam={p?.targetExamId ?? ''}
+          targetExam={p?.targetExam?.name ?? p?.targetExamId ?? 'Not Set'}
           targetExamYear={p?.targetExamYear ?? new Date().getFullYear()}
           preparationStage={p?.preparationStage ? toTitleCase(p.preparationStage) : ''}
           studyGoal={p?.studyGoal ?? ''}
           onUpdate={handleContextUpdate}
-        />
-
-        <SubscriptionCard
-          planName="Free Tier"
-          status="ACTIVE"
-          expiresAt="Mar 15, 2026"
-          daysRemaining={20}
         />
       </div>
     </div>

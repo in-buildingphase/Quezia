@@ -15,7 +15,6 @@ const TestPreviewRules: React.FC = () => {
   const testContext = useContext(TestContext)
 
   const [showActiveAttemptModal, setShowActiveAttemptModal] = useState(false)
-  const [attemptToResume, setAttemptToResume] = useState<string | null>(null)
 
   // Get testConfig from route state (passed from TestsThread or TestAnalyticsPage)
   const routeState = location.state as { testConfig?: TestConfig } | null
@@ -74,7 +73,6 @@ const TestPreviewRules: React.FC = () => {
 
     // Check for existing active attempt before starting a new one
     if (testContext?.activeAttempt) {
-      setAttemptToResume(testContext.activeAttempt.id)
       setShowActiveAttemptModal(true)
       return
     }
