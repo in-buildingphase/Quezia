@@ -10,12 +10,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const setAuthData = useCallback((data: AuthResponse, rememberMe: boolean) => {
+    const setAuthData = useCallback((data: AuthResponse, rememberMe: boolean, persistUser = true) => {
         const storage = rememberMe ? localStorage : sessionStorage;
         storage.setItem(TOKEN_KEY, data.accessToken);
         storage.setItem(REFRESH_KEY, data.refreshToken);
-        storage.setItem(USER_KEY, JSON.stringify(data.user));
-        setUser(data.user);
+        if (persistUser) {
+            storage.setItem(USER_KEY, JSON.stringify(data.user));
+            setUser(data.user);
+        }
     }, []);
 
     const clearAuthData = useCallback(() => {
@@ -52,28 +54,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [clearAuthData]);
 
     const login = async (data: LoginDto, rememberMe: boolean) => {
-        const response = await authService.login(data);
-        setAuthData(response, rememberMe);
-
-        // Proactively fetch full profile to ensure onboarding state is accurate
+        setLoading(true);
         try {
-            const fullUser = await authService.getMe();
-            updateUser(fullUser);
-        } catch (e) {
-            // Profile fetch failed - continue
+            const response = await authService.login(data);
+            setAuthData(response, rememberMe, false);
+
+            // Fetch full profile before considering auth flow complete
+            try {
+                const fullUser = await authService.getMe();
+                updateUser(fullUser);
+            } catch (e) {
+                // Fallback to login payload if profile refresh fails
+                updateUser(response.user);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     const register = async (data: RegisterDto, rememberMe: boolean) => {
-        const response = await authService.register(data);
-        setAuthData(response, rememberMe);
-
-        // Proactively fetch full profile
+        setLoading(true);
         try {
-            const fullUser = await authService.getMe();
-            updateUser(fullUser);
-        } catch (e) {
-            // Profile fetch failed - continue
+            const response = await authService.register(data);
+            setAuthData(response, rememberMe, false);
+
+            // Fetch full profile before considering auth flow complete
+            try {
+                const fullUser = await authService.getMe();
+                updateUser(fullUser);
+            } catch (e) {
+                // Fallback to register payload if profile refresh fails
+                updateUser(response.user);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -91,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const updateUser = (newUser: User) => {
         setUser(newUser);
-        const storage = localStorage.getItem(USER_KEY) ? localStorage : sessionStorage;
+        const storage = localStorage.getItem(TOKEN_KEY) ? localStorage : sessionStorage;
         storage.setItem(USER_KEY, JSON.stringify(newUser));
     };
 

@@ -60,10 +60,32 @@ const TestAnalyticsPage = () => {
 
     // 1. Map backend ReviewQuestion[] → QuestionReviewData[] for UI components
     const detailedQuestions = useMemo((): QuestionReviewData[] => {
+        const normalizeStatus = (rq: ReviewQuestion): 'correct' | 'incorrect' | 'unattempted' => {
+            const rawStatus = String(rq.status || '').trim().toUpperCase()
+
+            if (rawStatus === 'CORRECT') return 'correct'
+            if (rawStatus === 'INCORRECT' || rawStatus === 'WRONG') return 'incorrect'
+            if (rawStatus === 'UNATTEMPTED' || rawStatus === 'UNANSWERED' || rawStatus === 'SKIPPED') return 'unattempted'
+
+            if (rq.isCorrect === true) return 'correct'
+            if (rq.isCorrect === false) return 'incorrect'
+
+            const hasAttempt = rq.selectedAnswer !== null && rq.selectedAnswer !== undefined && String(rq.selectedAnswer).trim() !== ''
+            if (!hasAttempt) return 'unattempted'
+
+            if (typeof rq.marksAwarded === 'number') {
+                if (rq.marksAwarded > 0) return 'correct'
+                if (rq.marksAwarded < 0) return 'incorrect'
+            }
+
+            return 'incorrect'
+        }
+
         return reviewQuestions.map((rq: ReviewQuestion, idx: number) => {
             const payload = rq.contentPayload || {} as any
             const diffLower = (rq.difficulty || 'medium').toLowerCase() as 'easy' | 'medium' | 'hard'
-            const statusLower = (rq.status || 'UNATTEMPTED').toLowerCase() as 'correct' | 'incorrect' | 'unattempted'
+            const statusLower = normalizeStatus(rq)
+            const negativeMarkValue = Number(rq.negativeMarkValue ?? 0)
 
             return {
                 id: idx + 1,
@@ -72,7 +94,7 @@ const TestAnalyticsPage = () => {
                 topic: rq.topic || 'General',
                 difficulty: diffLower,
                 status: statusLower,
-                marks: rq.marksAwarded ?? (statusLower === 'unattempted' ? 0 : statusLower === 'correct' ? rq.marks : -rq.negativeMarkValue),
+                marks: rq.marksAwarded ?? (statusLower === 'unattempted' ? 0 : statusLower === 'correct' ? rq.marks : -negativeMarkValue),
                 time: rq.timeSpentSeconds || 0,
                 text: payload.question || 'Question text not available',
                 options: rq.questionType === 'MCQ' && payload.options

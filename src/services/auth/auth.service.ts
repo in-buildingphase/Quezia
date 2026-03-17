@@ -68,8 +68,7 @@ export interface RegisterDto {
 }
 
 export interface LoginDto {
-    email?: string;
-    username?: string;
+    identifier: string;
     password: string;
 }
 
@@ -84,7 +83,11 @@ export const authService = {
     },
 
     login: async (data: LoginDto): Promise<AuthResponse> => {
-        const response = await apiClient.post<AuthResponse>('/auth/login', data);
+        const payload: LoginDto = {
+            identifier: data.identifier,
+            password: data.password,
+        };
+        const response = await apiClient.post<AuthResponse>('/auth/login', payload);
         return response.data;
     },
 

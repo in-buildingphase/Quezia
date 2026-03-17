@@ -1,27 +1,41 @@
-import React, { useState } from 'react'
+import React, { useCallback } from 'react'
 import ProfileHeader from '../../components/Dashboard/Profile/ProfileHeader'
 import AcademicContext from '../../components/Dashboard/Profile/AcademicContext'
-
 import SubscriptionCard from '../../components/Dashboard/Profile/SubscriptionCard'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
+import { useAuthContext } from '../../hooks/useAuthContext'
+import { authService, type UpdateProfileDto } from '../../services/auth/auth.service'
+
+const toTitleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 
 const Account: React.FC = () => {
-  // Mock profile state
-  const [profile, setProfile] = useState({
-    displayName: 'Shubham Mahanwar',
-    email: 'shubham@quezia.io',
-    username: 'shubham_m',
-    avatarUrl: null as string | null,
-    accountTier: 'FREE',
-    targetExam: 'JEE',
-    targetExamYear: 2026,
-    preparationStage: 'Intermediate',
-    studyGoal: 'Rank under 5000',
+  const { user, updateUser, loading } = useAuthContext()
 
-  })
+  const handleProfileUpdate = useCallback(
+    async (fields: { displayName: string }) => {
+      const updated = await authService.updateProfile(fields)
+      updateUser(updated)
+    },
+    [updateUser],
+  )
 
-  const update = (fields: Partial<typeof profile>) => {
-    setProfile((prev) => ({ ...prev, ...fields }))
-  }
+  const handleContextUpdate = useCallback(
+    async (fields: Partial<{ targetExam: string; targetExamYear: number; preparationStage: string; studyGoal: string }>) => {
+      const payload: UpdateProfileDto = {}
+      if (fields.targetExam !== undefined) payload.targetExamId = fields.targetExam
+      if (fields.targetExamYear !== undefined) payload.targetExamYear = fields.targetExamYear
+      if (fields.preparationStage !== undefined) payload.preparationStage = fields.preparationStage.toUpperCase() as UpdateProfileDto['preparationStage']
+      if (fields.studyGoal !== undefined) payload.studyGoal = fields.studyGoal
+      const updated = await authService.updateProfile(payload)
+      updateUser(updated)
+    },
+    [updateUser],
+  )
+
+  if (loading) return <LoadingSpinner fullScreen />
+  if (!user) return null
+
+  const p = user.profile
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-base)] px-4 sm:px-6 py-8">
@@ -35,21 +49,20 @@ const Account: React.FC = () => {
         </div>
 
         <ProfileHeader
-          displayName={profile.displayName}
-          email={profile.email}
-          username={profile.username}
-          avatarUrl={profile.avatarUrl}
-          accountTier={profile.accountTier}
-          onUpdate={(fields) => update(fields)}
+          displayName={p?.displayName ?? user.username}
+          email={user.email}
+          username={user.username}
+          avatarUrl={p?.avatarUrl ?? null}
+          accountTier={user.role}
+          onUpdate={handleProfileUpdate}
         />
 
         <AcademicContext
-          targetExam={profile.targetExam}
-          targetExamYear={profile.targetExamYear}
-          preparationStage={profile.preparationStage}
-          studyGoal={profile.studyGoal}
-
-          onUpdate={(fields) => update(fields as Partial<typeof profile>)}
+          targetExam={p?.targetExamId ?? ''}
+          targetExamYear={p?.targetExamYear ?? new Date().getFullYear()}
+          preparationStage={p?.preparationStage ? toTitleCase(p.preparationStage) : ''}
+          studyGoal={p?.studyGoal ?? ''}
+          onUpdate={handleContextUpdate}
         />
 
         <SubscriptionCard

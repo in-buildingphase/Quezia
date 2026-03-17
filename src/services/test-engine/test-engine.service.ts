@@ -46,6 +46,7 @@ export interface Test {
 export interface Attempt {
     id: string;
     testId: string;
+    threadId?: string;
     userId: string;
     status: 'ACTIVE' | 'COMPLETED' | 'ABANDONED';
     startedAt: string;

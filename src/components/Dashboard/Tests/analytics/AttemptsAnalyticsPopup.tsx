@@ -13,14 +13,12 @@ export interface Attempt {
 }
 
 interface Props {
-    testId: string
     attempts: Attempt[]
     onStartTest: () => void
     onClose: () => void
 }
 
 const AttemptsAnalyticsPopup: React.FC<Props> = ({
-    testId,
     attempts,
     onStartTest,
     onClose,
@@ -142,7 +140,7 @@ const AttemptsAnalyticsPopup: React.FC<Props> = ({
                 <button
                     onClick={() => {
                         onClose()
-                        navigate(`/dashboard/analytics/${testId}`)
+                        navigate(`/dashboard/analytics/attempt/${latest.id}`)
                     }}
                     className="text-xs font-medium text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] transition flex items-center gap-1 group"
                 >

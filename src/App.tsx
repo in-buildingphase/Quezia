@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import LandingPage from './pages/landingPage';
 import AuthPage from './pages/auth/authPage';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -16,6 +16,12 @@ import Settings from './pages/Dashboard/Settings';
 import SubscriptionPage from './pages/Dashboard/Subscription';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import OnboardingPage from './pages/auth/OnboardingPage';
+
+function LegacyAnalyticsRedirect() {
+  const { attemptId } = useParams<{ attemptId: string }>();
+
+  return <Navigate to={attemptId ? `/dashboard/analytics/attempt/${attemptId}` : '/dashboard/analytics'} replace />;
+}
 
 function App() {
   return (
@@ -49,6 +55,7 @@ function App() {
         <Route path="tests/thread/:threadId/result/:attemptId" element={<TestResultPage />} />
         <Route path="discover" element={<Discover />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="analytics/:attemptId" element={<LegacyAnalyticsRedirect />} />
         <Route path="analytics/attempt/:attemptId" element={<TestAnalyticsPage />} />
         <Route path="account" element={<Account />} />
         <Route path="settings" element={<Settings />} />

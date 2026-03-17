@@ -10,7 +10,7 @@ import { useTests } from '../../../hooks/useTests'
 import LoadingSpinner from '../../../components/common/LoadingSpinner'
 import Placeholder from '../../../components/common/Placeholder'
 import ConfirmModal from '../../../components/common/ConfirmModal'
-import { ClipboardText } from '@phosphor-icons/react'
+import { ClipboardText, Hourglass } from '@phosphor-icons/react'
 
 const TestsThread: React.FC = () => {
   const { threadId } = useParams<{ threadId: string }>()
@@ -31,6 +31,7 @@ const TestsThread: React.FC = () => {
 
   // Prompt submission state
   const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false)
+  const isRefinementWip = true
 
   // PromptInput state
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
@@ -264,7 +265,7 @@ const TestsThread: React.FC = () => {
       </div>
 
       {/* PROMPT INPUT */}
-      <div className="rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+      <div className="relative rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4 overflow-hidden">
         <PromptInput
           selectedSubject={selectedSubject}
           setSelectedSubject={setSelectedSubject}
@@ -276,9 +277,19 @@ const TestsThread: React.FC = () => {
           setIsDifficultyOpen={setIsDifficultyOpen}
           openUp
           placeholder="Refine or customize this test..."
-          onSubmit={handlePromptSubmit}
+          onSubmit={isRefinementWip ? undefined : handlePromptSubmit}
           isLoading={isSubmittingPrompt}
         />
+
+        {isRefinementWip && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-[var(--color-bg-base)]/60 backdrop-blur-[2px] border border-white/5">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)]/20 border border-[var(--color-accent-subtle)]/30 text-[10px] uppercase tracking-wider font-bold text-[var(--color-accent-subtle)] mb-2">
+              <Hourglass size={12} />
+              Work in Progress
+            </div>
+            <p className="text-xs text-[var(--color-text-tertiary)] font-medium">Test refinement and customization are currently under development.</p>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}
