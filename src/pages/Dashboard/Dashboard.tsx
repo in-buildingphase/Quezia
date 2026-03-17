@@ -1,6 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../../components/Dashboard/Sidebar'
+import ActiveTestNotification from '../../components/Dashboard/Tests/ActiveTestNotification'
 
 const Dashboard: React.FC = () => {
   return (
@@ -12,6 +13,9 @@ const Dashboard: React.FC = () => {
       <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">
         <Outlet />
       </main>
+
+      {/* Global In-Test Popup */}
+      <ActiveTestNotification />
     </div>
   )
 }

@@ -56,9 +56,11 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     )}
                 </div>
 
-                <button className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] transition-colors cursor-pointer">
-                    Upgrade Plan <ArrowRight size={14} />
-                </button>
+                {(planName === 'Free Tier' || status !== 'ACTIVE') && (
+                    <button className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] transition-colors cursor-pointer">
+                        Upgrade Plan <ArrowRight size={14} />
+                    </button>
+                )}
             </div>
         </div>
     )

@@ -21,6 +21,8 @@ export type MCQQuestion = {
   difficulty?: Difficulty
   correctAnswer?: number
   explanation?: string
+  initialSelectedAnswer?: number | null
+  initialMarked?: boolean
 }
 
 export type NumericRules = {
@@ -43,6 +45,8 @@ export type NumericQuestion = {
   difficulty?: Difficulty
   correctAnswer?: number | string
   explanation?: string
+  initialNumericAnswer?: string
+  initialMarked?: boolean
 }
 
 export type Question = MCQQuestion | NumericQuestion

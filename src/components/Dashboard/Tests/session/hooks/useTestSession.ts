@@ -35,12 +35,24 @@ export function useTestSession(questions: SessionQuestion[]): UseTestSessionRetu
   useEffect(() => {
     if (questions.length > 0) {
       setQuestionStates(
-        questions.map((q) => ({
-          id: q.id,
-          selectedAnswer: null,
-          numericAnswer: '',
-          isMarkedForReview: false,
-        }))
+        questions.map((q) => {
+          if (q.type === 'mcq') {
+            return {
+              id: q.id,
+              selectedAnswer: q.initialSelectedAnswer ?? null,
+              numericAnswer: '',
+              isMarkedForReview: q.initialMarked ?? false,
+            }
+          } else {
+            return {
+              id: q.id,
+              selectedAnswer: null,
+              numericAnswer: q.initialNumericAnswer ?? '',
+              // Convert boolean | undefined to proper boolean
+              isMarkedForReview: q.initialMarked ?? false,
+            }
+          }
+        })
       )
     }
   }, [questions])

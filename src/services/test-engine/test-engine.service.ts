@@ -1,6 +1,20 @@
 import { apiClient } from '../api';
 import type { Section, Rule } from '../exam-setup/exam-setup.service';
 
+export interface DailyLimitErrorResponse {
+    statusCode: number;
+    message: string;
+    error: string;
+    limit: number;
+    resetAt: string;
+    retryAfter: {
+        hours: number;
+        minutes: number;
+        seconds: number;
+    };
+}
+
+
 export interface TestThread {
     id: string;
     examId: string;
@@ -32,6 +46,11 @@ export interface TestQuestion {
     sequence: number;
 }
 
+export interface AttemptQuestion extends TestQuestion {
+    selectedAnswer?: string | null;
+    isMarked?: boolean;
+}
+
 export interface Test {
     id: string;
     threadId: string;
@@ -46,6 +65,7 @@ export interface Test {
 export interface Attempt {
     id: string;
     testId: string;
+    threadId?: string;
     userId: string;
     status: 'ACTIVE' | 'COMPLETED' | 'ABANDONED';
     startedAt: string;
@@ -56,6 +76,10 @@ export interface Attempt {
     riskRatio?: number;
     percentile?: number;
     userRank?: number;
+    // Server-side timing anchors
+    serverTime?: string;
+    timeRemainingSeconds?: number;
+    questionsAnswered?: number;
 }
 
 // ---------- Attempt Review Types ----------
@@ -174,13 +198,19 @@ export const testEngineService = {
         return response.data;
     },
 
-    getAttemptQuestions: async (attemptId: string): Promise<TestQuestion[]> => {
-        const response = await apiClient.get<TestQuestion[]>(`/attempts/${attemptId}/questions`);
+    getAttemptQuestions: async (attemptId: string): Promise<AttemptQuestion[]> => {
+        const response = await apiClient.get<AttemptQuestion[]>(`/attempts/${attemptId}/questions`);
         return response.data;
     },
 
-    submitAnswer: async (attemptId: string, data: { questionId: string; answer: string; timeSpentSeconds?: number }): Promise<void> => {
-        await apiClient.post(`/attempts/${attemptId}/submit`, data);
+    submitAnswer: async (attemptId: string, data: { questionId: string; answer: string }): Promise<Attempt> => {
+        const response = await apiClient.post<Attempt>(`/attempts/${attemptId}/submit`, data);
+        return response.data;
+    },
+
+    updateQuestionTime: async (attemptId: string, data: { questionId: string; deltaTime: number; isNewVisit?: boolean }): Promise<{ questionTime: number; visitCount: number; totalAttemptTime: number }> => {
+        const response = await apiClient.post<{ questionTime: number; visitCount: number; totalAttemptTime: number }>(`/attempts/${attemptId}/time`, data);
+        return response.data;
     },
 
     submitTest: async (attemptId: string): Promise<Attempt> => {

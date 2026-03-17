@@ -69,7 +69,6 @@ const ThreadHeader: React.FC<Props> = ({
 
         {isAnalyticsOpen && (
           <AttemptsAnalyticsPopup
-            testId={threadId}
             attempts={attempts}
             onStartTest={onStartTest}
             onClose={() => setIsAnalyticsOpen(false)}

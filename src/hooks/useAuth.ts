@@ -59,10 +59,7 @@ export const useAuth = (): UseAuthReturn => {
     setError(null);
 
     try {
-      const isEmail = identifier.includes('@');
-      const loginData: LoginDto = isEmail
-        ? { email: identifier, password }
-        : { username: identifier, password };
+      const loginData: LoginDto = { identifier, password };
 
       await contextLogin(loginData, rememberMe);
     } catch (err) {

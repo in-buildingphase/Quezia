@@ -564,6 +564,30 @@ DRAFT → PUBLISHED → ARCHIVED
 
 ---
 
+### GET `/test-threads`
+- **Guard:** `JwtAuthGuard`
+- **Response:** `200 OK`
+- **Response body:**
+  ```json
+  [
+    {
+      "id": "uuid",
+      "examId": "uuid",
+      "originType": "SYSTEM|GENERATED",
+      "createdByUserId": "uuid|null",
+      "title": "string",
+      "baseGenerationConfig": {
+        "subjects": ["string"],
+        "difficulty": "string"
+      },
+      "createdAt": "ISO date"
+    }
+  ]
+  ```
+- **Contract note (Home/Past tests):** `baseGenerationConfig.subjects` and `baseGenerationConfig.difficulty` should be present when available, so cards can render subject + difficulty without fallbacks.
+
+---
+
 ### GET `/test-threads/:id`
 - **Guard:** `JwtAuthGuard`
 - **Response:** `200 OK`
@@ -698,6 +722,38 @@ DRAFT → PUBLISHED → ARCHIVED
 - **Idempotency:** If an `ACTIVE` attempt already exists for this user+test, it is returned. Uses a `SERIALIZABLE` transaction to prevent race-condition duplicates.
 - **Response body:** `{ "id": "uuid", "status": "ACTIVE" }`
 - **Errors:** `400` — test not `PUBLISHED`. `403` — no active subscription (SYSTEM test).
+
+---
+
+### GET `/attempts`
+- **Guard:** `JwtAuthGuard` (owner scope)
+- **Response:** `200 OK`
+- **Query params:**
+  - `threadId` (optional) — if provided, returns attempts only for that thread.
+- **Response body:**
+  ```json
+  [
+    {
+      "id": "uuid",
+      "testId": "uuid",
+      "threadId": "uuid",
+      "userId": "uuid",
+      "status": "ACTIVE|COMPLETED|ABANDONED",
+      "startedAt": "ISO date",
+      "completedAt": "ISO date|null",
+      "totalScore": "number|null",
+      "accuracy": "number|null",
+      "percentile": "number|null",
+      "userRank": "number|null",
+      "timeSpentSeconds": "number|null",
+      "riskRatio": "number|null"
+    }
+  ]
+  ```
+- **Contract notes (Home/Past tests):**
+  - `threadId` should be non-null for all attempt rows to allow reliable thread grouping.
+  - For `status: "COMPLETED"`, `totalScore` and `accuracy` should be non-null.
+  - Keep enum casing exactly `ACTIVE|COMPLETED|ABANDONED`.
 
 ---
 

@@ -5,6 +5,10 @@ import { CheckCircle, Timer, Target, Trophy } from '@phosphor-icons/react'
 
 import { type Attempt, type Test } from '../../../services/test-engine/test-engine.service'
 
+const getDetailedAnalyticsPath = (attemptId?: string) => {
+    return attemptId ? `/dashboard/analytics/attempt/${attemptId}` : '/dashboard/analytics'
+}
+
 const TestResultPage: React.FC = () => {
     const { threadId } = useParams<{ threadId: string }>()
     const location = useLocation()
@@ -78,7 +82,7 @@ const TestResultPage: React.FC = () => {
 
                         <div className="pt-4 border-t border-[var(--color-border-default)] flex gap-4">
                             <button
-                                onClick={() => navigate(`/dashboard/analytics/${test?.id}`)}
+                                onClick={() => navigate(getDetailedAnalyticsPath(result?.id))}
                                 className="bg-[var(--color-accent)] text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition"
                             >
                                 View Detailed Analytics

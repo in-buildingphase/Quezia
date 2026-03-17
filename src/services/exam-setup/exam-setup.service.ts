@@ -59,6 +59,8 @@ export interface Subscription {
     startedAt: string;
     expiresAt: string;
     pack: {
+        id: string;
+        name: string;
         exam: { id: string; name: string };
     };
 }

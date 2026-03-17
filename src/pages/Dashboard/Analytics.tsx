@@ -89,24 +89,42 @@ const Analytics = () => {
               />
             ) : (
               <>
-                {/* Top Row: Metrics & Compare Toggle */}
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h2 className="text-lg font-medium text-white">Overview</h2>
-                    <CompareModeToggle mode={compareMode} onChange={setCompareMode} />
+                {/* UNDER CONSTRUCTION MESSAGE - Remove this block when analytics are ready */}
+                <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-[var(--color-border)] rounded-xl bg-[var(--color-bg-sub)]/20 animate-in fade-in zoom-in-95 duration-500">
+                  <div className="w-16 h-16 bg-[var(--color-primary)]/10 rounded-full flex items-center justify-center mb-6">
+                    <span className="text-3xl">🚧</span>
                   </div>
-                  <MetricsRow metrics={data.metrics} />
+                  <h3 className="text-xl font-semibold text-white mb-2">Performance Analytics Dashboard</h3>
+                  <p className="text-[var(--color-text-tertiary)] max-w-md mx-auto mb-6">
+                    This comprehensive analytics dashboard is currently under construction. 
+                    We're building powerful tools to help you visualize your progress.
+                  </p>
+                  <div className="px-4 py-2 bg-[var(--color-bg-sub)] rounded-lg text-sm text-[var(--color-text-secondary)] border border-[var(--color-border)]">
+                    Coming Soon
+                  </div>
                 </div>
 
-                {/* Charts Grid */}
-                <AnalyticsGrid
-                  performanceData={data.performanceData}
-                  rankData={data.rankData}
-                  subjectData={data.subjectData}
-                  timeData={data.timeData}
-                  topicData={data.topicData}
-                  insights={data.insights}
-                />
+                {/* HIDDEN CONTENTS - Remove className="hidden" to restore */}
+                <div className="hidden">
+                  {/* Top Row: Metrics & Compare Toggle */}
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <h2 className="text-lg font-medium text-white">Overview</h2>
+                      <CompareModeToggle mode={compareMode} onChange={setCompareMode} />
+                    </div>
+                    <MetricsRow metrics={data.metrics} />
+                  </div>
+
+                  {/* Charts Grid */}
+                  <AnalyticsGrid
+                    performanceData={data.performanceData}
+                    rankData={data.rankData}
+                    subjectData={data.subjectData}
+                    timeData={data.timeData}
+                    topicData={data.topicData}
+                    insights={data.insights}
+                  />
+                </div>
               </>
             )}
           </div>

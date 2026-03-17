@@ -3,20 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom'
 import ThreadHeader from '../../../components/Dashboard/Tests/thread/ThreadHeader'
 import TestPreviewCanvas from '../../../components/Dashboard/Tests/preview/TestPreviewCanvas'
 import PromptInput from '../../../components/common/PromptInput'
+import DailyLimitModal from '../../../components/common/DailyLimitModal'
 import { testEngineService, type Test, type TestThread, type Attempt, type TestQuestion } from '../../../services/test-engine/test-engine.service'
 import { type Attempt as UIAttempt } from '../../../components/Dashboard/Tests/analytics/AttemptsAnalyticsPopup'
 import { useAuth } from '../../../hooks/useAuth'
 import { useTests } from '../../../hooks/useTests'
+import { useDailyLimit } from '../../../hooks/useDailyLimit'
 import LoadingSpinner from '../../../components/common/LoadingSpinner'
 import Placeholder from '../../../components/common/Placeholder'
 import ConfirmModal from '../../../components/common/ConfirmModal'
-import { ClipboardText } from '@phosphor-icons/react'
+import { ClipboardText, Hourglass } from '@phosphor-icons/react'
 
 const TestsThread: React.FC = () => {
   const { threadId } = useParams<{ threadId: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { refreshThreads } = useTests()
+  const { isLimitModalOpen, closeLimitModal, handleApiError, limitData } = useDailyLimit()
 
   // Data State
   const [thread, setThread] = useState<TestThread | null>(null)
@@ -31,6 +34,7 @@ const TestsThread: React.FC = () => {
 
   // Prompt submission state
   const [isSubmittingPrompt, setIsSubmittingPrompt] = useState(false)
+  const isRefinementWip = true
 
   // PromptInput state
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
@@ -188,6 +192,10 @@ const TestsThread: React.FC = () => {
       // Reload the test data to show the updated version
       await loadData()
     } catch (error) {
+      if (handleApiError(error)) {
+        setIsSubmittingPrompt(false)
+        return
+      }
       // Failed to update test - handle silently
     } finally {
       setIsSubmittingPrompt(false)
@@ -264,7 +272,7 @@ const TestsThread: React.FC = () => {
       </div>
 
       {/* PROMPT INPUT */}
-      <div className="rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+      <div className="relative rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4 overflow-hidden">
         <PromptInput
           selectedSubject={selectedSubject}
           setSelectedSubject={setSelectedSubject}
@@ -276,9 +284,19 @@ const TestsThread: React.FC = () => {
           setIsDifficultyOpen={setIsDifficultyOpen}
           openUp
           placeholder="Refine or customize this test..."
-          onSubmit={handlePromptSubmit}
+          onSubmit={isRefinementWip ? undefined : handlePromptSubmit}
           isLoading={isSubmittingPrompt}
         />
+
+        {isRefinementWip && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-[var(--color-bg-base)]/60 backdrop-blur-[2px] border border-white/5">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)]/20 border border-[var(--color-accent-subtle)]/30 text-[10px] uppercase tracking-wider font-bold text-[var(--color-accent-subtle)] mb-2">
+              <Hourglass size={12} />
+              Work in Progress
+            </div>
+            <p className="text-xs text-[var(--color-text-tertiary)] font-medium">Test refinement and customization are currently under development.</p>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -297,6 +315,12 @@ const TestsThread: React.FC = () => {
           label: 'Cancel',
           onClick: () => setShowDeleteModal(false),
         }}
+      />
+
+      <DailyLimitModal
+        isOpen={isLimitModalOpen}
+        onClose={closeLimitModal}
+        limitData={limitData}
       />
     </div>
   )
