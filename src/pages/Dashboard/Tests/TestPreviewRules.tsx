@@ -1,15 +1,21 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useContext } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft } from '@phosphor-icons/react'
 import TestPreviewRulesCard, { type TestInstructionsPreset } from '../../../components/Dashboard/Tests/preview/TestPreviewRulesCard'
 import { formatDuration } from '../../../types/test'
 import { type TestConfig } from '../../../types/test'
 import { testEngineService } from '../../../services/test-engine/test-engine.service'
+import { TestContext } from '../../../context/TestContextDefinition'
+import ConfirmModal from '../../../components/common/ConfirmModal'
 
 const TestPreviewRules: React.FC = () => {
   const { threadId } = useParams<{ threadId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
+  const testContext = useContext(TestContext)
+
+  const [showActiveAttemptModal, setShowActiveAttemptModal] = useState(false)
+  const [attemptToResume, setAttemptToResume] = useState<string | null>(null)
 
   // Get testConfig from route state (passed from TestsThread or TestAnalyticsPage)
   const routeState = location.state as { testConfig?: TestConfig } | null
@@ -66,15 +72,33 @@ const TestPreviewRules: React.FC = () => {
       return
     }
 
+    // Check for existing active attempt before starting a new one
+    if (testContext?.activeAttempt) {
+      setAttemptToResume(testContext.activeAttempt.id)
+      setShowActiveAttemptModal(true)
+      return
+    }
+
     try {
       // Start a new attempt
       const attempt = await testEngineService.startAttempt(testConfig.id)
       
-      // Navigate to the test session with the new attempt ID
+      // Navigate immediately - don't wait for global refresh
       navigate(`/dashboard/tests/thread/${threadId}/attempt/${attempt.id}`)
+      
+      // Fire-and-forget background refresh to sync "Active Test" notification state
+      testContext?.refreshAttempts()
     } catch (error) {
       // Failed to start test attempt - handle silently
     }
+  }
+
+  const handleResumeActive = () => {
+      if (testContext?.activeAttempt) {
+          const { activeAttempt } = testContext
+          navigate(`/dashboard/tests/thread/${activeAttempt.threadId || 'unknown'}/attempt/${activeAttempt.id}`)
+      }
+      setShowActiveAttemptModal(false)
   }
 
   const handleDurationChange = (minutes: number) => {
@@ -98,6 +122,28 @@ const TestPreviewRules: React.FC = () => {
         onStart={handleStart}
         onDurationChange={handleDurationChange}
         mock={true}
+      />
+
+      <ConfirmModal 
+        isOpen={showActiveAttemptModal}
+        title="Test In Progress"
+        description={
+            <div className="text-[var(--color-text-secondary)]">
+                <p>You already have a test session active. Quezia allows only one test at a time.</p>
+                <p className="mt-2 text-sm text-[var(--color-text-tertiary)]">Please finish your current test before starting a new one.</p>
+            </div>
+        }
+        confirmButton={{
+            label: "Resume Test",
+            onClick: handleResumeActive,
+            variant: "primary"
+        }}
+        cancelButton={{
+            label: "Cancel",
+            onClick: () => setShowActiveAttemptModal(false),
+            variant: "secondary"
+        }}
+        onClose={() => setShowActiveAttemptModal(false)}
       />
     </div>
   )

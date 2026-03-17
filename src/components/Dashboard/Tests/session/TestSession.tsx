@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { GridFour, Check, Flag, Circle } from '@phosphor-icons/react'
 import TestSessionHeader from './TestSessionHeader'
@@ -7,14 +7,17 @@ import QuestionWorkspace from './QuestionWorkspace'
 import QuestionPalette from '../navigation/QuestionPalette'
 import ReportIssueModal from '../../../common/ReportIssueModal'
 import { useTestSession } from './hooks/useTestSession'
+import { useQuestionTimer } from './hooks/useQuestionTimer'
 import { testEngineService, type Test } from '../../../../services/test-engine/test-engine.service'
 import LoadingSpinner from '../../../common/LoadingSpinner'
 import { type Question } from '../../../../types/test'
+import { TestContext } from '../../../../context/TestContextDefinition'
 
 const TestSession: React.FC = () => {
   const { threadId, attemptId } = useParams<{ threadId: string; attemptId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
+  const testContext = useContext(TestContext)
 
   // Get test from route state (passed from TestsThread)
   const routeState = location.state as { test?: Test } | null
@@ -46,11 +49,93 @@ const TestSession: React.FC = () => {
     clearResponse,
   } = useTestSession(questions)
 
+  const { flush: flushQuestionTimer } = useQuestionTimer({
+    attemptId,
+    questionId: currentQuestion?.questionId,
+    isSubmitted
+  });
+
+  // Keep track of the latest answer state for the *current* question
+  // Used for saving on navigation/unmount
+  const latestAnswerRef = useRef<{ qId: string, answer: string } | null>(null);
+
   useEffect(() => {
-    const loadQuestions = async () => {
+    if (!currentQuestion?.questionId) return;
+
+    let ans: string | undefined;
+    if (currentQuestion.type === 'mcq') {
+      const mcq = currentQuestion as any;
+      const opt = mcq.options?.[selectedAnswer as number];
+      if (opt) {
+          ans = typeof opt === 'string' 
+            ? String.fromCharCode(65 + (selectedAnswer as number)) 
+            : opt.key;
+      }
+    } else {
+      ans = numericAnswer;
+    }
+
+    if (ans !== undefined && ans !== null) {
+        latestAnswerRef.current = { qId: currentQuestion.questionId, answer: ans };
+    }
+  }, [selectedAnswer, numericAnswer, currentQuestion]);
+
+  // 1. Navigation Save: Force save the *previous* question when question ID changes
+  useEffect(() => {
+      return () => {
+          // This cleanup runs when currentQuestion changes (or unmount)
+          // At this point, latestAnswerRef.current hopefully still holds the *previous* question's answer
+          // because new effects haven't run yet.
+          const pending = latestAnswerRef.current;
+          if (pending && attemptId && !isSubmitted) {
+             testEngineService.submitAnswer(attemptId, {
+                questionId: pending.qId,
+                answer: pending.answer
+             }).then(() => {
+                 testContext?.refreshAttempts(threadId)
+             }).catch(() => {});
+          }
+      };
+  }, [currentQuestion?.questionId, attemptId, isSubmitted]);
+
+  // 2. Debounced Auto-Save (0.5s) for typing
+  useEffect(() => {
+    if (!attemptId || !currentQuestion || isSubmitted) return
+    if (!latestAnswerRef.current) return;
+    
+    // Only save if the ref matches current question (sanity check)
+    if (latestAnswerRef.current.qId !== currentQuestion.questionId) return;
+
+    const answerToSubmit = latestAnswerRef.current.answer;
+    const qId = currentQuestion.questionId;
+
+    const timer = setTimeout(async () => {
+        try {
+          // Send answer to backend
+          await testEngineService.submitAnswer(attemptId, {
+            questionId: qId,
+            answer: answerToSubmit
+          })
+          
+          // Fire-and-forget sync to update the notification widget
+          testContext?.refreshAttempts(threadId)
+        } catch (error) {
+          // handled silently
+        }
+    }, 500) // Reduced to 500ms
+
+    return () => clearTimeout(timer);
+  }, [selectedAnswer, numericAnswer, attemptId, currentQuestion, isSubmitted]);
+
+  useEffect(() => {
+    const loadSessionData = async () => {
       if (!attemptId) return
       try {
-        const fetchedQuestions = await testEngineService.getAttemptQuestions(attemptId)
+        const [fetchedQuestions, attemptData] = await Promise.all([
+          testEngineService.getAttemptQuestions(attemptId),
+          testEngineService.getAttempt(attemptId)
+        ])
+
         const mappedQuestions: Question[] = fetchedQuestions.map(q => {
           const type = q.questionType.toLowerCase() as 'mcq' | 'numeric';
           const base = {
@@ -63,24 +148,50 @@ const TestSession: React.FC = () => {
           };
 
           if (type === 'mcq') {
+            const options = q.contentPayload.options || [];
+            let initialSelectedAnswer: number | null = null;
+            
+            if (q.selectedAnswer) {
+              const idx = options.findIndex(opt => opt.key === q.selectedAnswer || opt.text === q.selectedAnswer);
+              if (idx !== -1) initialSelectedAnswer = idx;
+              // If backend sends text/key that doesn't match, maybe handle it? But assume key matches.
+              // Fallback just in case backend sends "A", "B" etc corresponding to index?
+              if (idx === -1 && q.selectedAnswer.length === 1) {
+                  const charCode = q.selectedAnswer.charCodeAt(0);
+                  if (charCode >= 65 && charCode <= 90) { // A-Z
+                      const letterIndex = charCode - 65;
+                      if (letterIndex < options.length) initialSelectedAnswer = letterIndex;
+                  }
+              }
+            }
+
             return {
               ...base,
               type: 'mcq',
-              options: q.contentPayload.options || [],
+              options,
+              initialSelectedAnswer,
+              initialMarked: q.isMarked
             } as Question;
           } else {
             return {
               ...base,
               type: 'numeric',
+              initialNumericAnswer: q.selectedAnswer || undefined,
+              initialMarked: q.isMarked
             } as Question;
           }
         });
 
         setQuestions(mappedQuestions);
 
-        // Use duration from test rules if available
-        const duration = test?.ruleSnapshot?.totalTimeSeconds ?? 180 * 60
-        setTimeRemaining(duration)
+        // Initialize timer from server anchor
+        if (attemptData.timeRemainingSeconds !== undefined && attemptData.timeRemainingSeconds !== null) {
+          setTimeRemaining(attemptData.timeRemainingSeconds)
+        } else {
+          // Fallback if server doesn't provide time (should rely on backend)
+          const duration = test?.ruleSnapshot?.totalTimeSeconds ?? 180 * 60
+          setTimeRemaining(duration)
+        }
       } catch (error) {
         // Failed to load questions - handle silently
         navigate(`/dashboard/tests/thread/${threadId}`)
@@ -88,8 +199,45 @@ const TestSession: React.FC = () => {
         setIsLoading(false)
       }
     }
-    loadQuestions()
+    loadSessionData()
   }, [attemptId, threadId, test])
+
+  // Periodic Resync Strategy: 
+  // Poll backend every 30s to correct local timer drift
+  useEffect(() => {
+    if (!attemptId || isSubmitted || isLoading) return
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const attempt = await testEngineService.getAttempt(attemptId)
+        if (attempt.timeRemainingSeconds !== undefined && attempt.timeRemainingSeconds !== null) {
+          setTimeRemaining(attempt.timeRemainingSeconds)
+          
+          // Update global attempt context to keep notifications live
+          testContext?.updateActiveAttempt(attempt);
+
+          if (attempt.timeRemainingSeconds <= 0) {
+            handleAutoSubmit()
+          }
+        }
+        
+        // Also check status - if EXPIRED/COMPLETED, force finish
+        if (attempt.status === 'COMPLETED' || attempt.status === 'ABANDONED') { // EXPIRED might be mapped to COMPLETED?
+             // If status became completed externally (e.g. backend forced submission), finish locally
+             if (!isSubmitted) {
+                setIsSubmitted(true)
+                navigate(`/dashboard/tests/thread/${threadId}/result/${attemptId}`, {
+                    state: { result: attempt, test }
+                })
+             }
+        }
+      } catch (error) {
+        console.error('Timer sync failed', error)
+      }
+    }, 30000) 
+
+    return () => clearInterval(syncInterval)
+  }, [attemptId, isSubmitted, isLoading, threadId])
 
   // Timer countdown
   useEffect(() => {
@@ -97,7 +245,7 @@ const TestSession: React.FC = () => {
 
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
-        if (prev <= 1) {
+        if (prev <= 0) {
           clearInterval(interval)
           handleAutoSubmit()
           return 0
@@ -115,46 +263,24 @@ const TestSession: React.FC = () => {
     await handleSubmit()
   }
 
-  // Handle individual answer submission (sync with backend)
-  useEffect(() => {
-    if (!attemptId || !currentQuestion || isSubmitted) return
-
-    const submitAnswer = async () => {
-      let answer: string | undefined
-
-      if (currentQuestion.type === 'mcq') {
-        const mcq = currentQuestion as any // Cast to access options
-        const selectedOption = mcq.options?.[selectedAnswer as number]
-        answer = typeof selectedOption === 'string'
-          ? String.fromCharCode(65 + (selectedAnswer as number))
-          : selectedOption?.key
-      } else {
-        answer = numericAnswer
-      }
-
-      if (answer !== undefined && answer !== null && answer !== '' && currentQuestion.questionId) {
-        try {
-          await testEngineService.submitAnswer(attemptId, {
-            questionId: currentQuestion.questionId,
-            answer: String(answer),
-            timeSpentSeconds: 0
-          })
-        } catch (error) {
-          // Answer syncing failed silently
-        }
-      }
-    }
-
-    const timer = setTimeout(submitAnswer, 1000) // Debounce
-    return () => clearTimeout(timer)
-  }, [selectedAnswer, numericAnswer, attemptId, currentQuestion, isSubmitted, questions, currentIndex])
-
   const handleSubmit = async () => {
     if (!attemptId || isSubmitting) return
     setIsSubmitting(true)
+
+    // Flush the last active question timer immediately. 
+    // We do NOT await this, so the submission starts instantly.
+    // The backend should handle these requests even if they arrive close together.
+    flushQuestionTimer();
+
     try {
       const result = await testEngineService.submitTest(attemptId)
       setIsSubmitted(true)
+      
+      // Update global context so ActiveTestNotification disappears
+      if (testContext?.refreshAttempts) {
+          testContext.refreshAttempts()
+      }
+
       navigate(`/dashboard/tests/thread/${threadId}/result/${attemptId}`, {
         state: { result, test }
       })

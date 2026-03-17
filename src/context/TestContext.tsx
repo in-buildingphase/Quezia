@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback, useContext, useMemo } from 'react';
 import { testEngineService, type TestThread, type Attempt } from '../services/test-engine/test-engine.service';
 import { TestContext } from './TestContextDefinition';
 import { AuthContext } from './AuthContextDefinition';
@@ -8,6 +8,10 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [threads, setThreads] = useState<TestThread[]>([]);
     const [attempts, setAttempts] = useState<Attempt[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const activeAttempt = useMemo(() => {
+        return attempts.find(a => a.status === 'ACTIVE');
+    }, [attempts]);
 
     const refreshThreads = useCallback(async () => {
         try {
@@ -25,6 +29,23 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch (error) {
             // Failed to fetch attempts - handle silently
         }
+    }, []);
+
+    const updateActiveAttempt = useCallback((updatedAttempt: Attempt) => {
+        setAttempts(prev => {
+            const index = prev.findIndex(a => a.id === updatedAttempt.id);
+            if (index === -1) {
+                 // If attempt is new or not found, maybe append it? 
+                 // But for active attempt update usually it exists.
+                 // Let's just prepend it if strictly needed, or do nothing.
+                 if (updatedAttempt.status === 'ACTIVE') return [updatedAttempt, ...prev];
+                 return prev;
+            }
+            
+            const newAttempts = [...prev];
+            newAttempts[index] = updatedAttempt;
+            return newAttempts;
+        });
     }, []);
 
     const loadInitialData = useCallback(async () => {
@@ -50,7 +71,7 @@ export const TestProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [auth?.loading, auth?.isAuthenticated, loadInitialData]);
 
     return (
-        <TestContext.Provider value={{ threads, attempts, isLoading, refreshThreads, refreshAttempts }}>
+        <TestContext.Provider value={{ threads, attempts, activeAttempt, isLoading, refreshThreads, refreshAttempts, updateActiveAttempt }}>
             {children}
         </TestContext.Provider>
     );

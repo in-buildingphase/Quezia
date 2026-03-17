@@ -4,9 +4,11 @@ import { type TestThread, type Attempt } from '../services/test-engine/test-engi
 export interface TestContextType {
     threads: TestThread[];
     attempts: Attempt[];
+    activeAttempt: Attempt | undefined;
     isLoading: boolean;
     refreshThreads: () => Promise<void>;
     refreshAttempts: (threadId?: string) => Promise<void>;
+    updateActiveAttempt: (attempt: Attempt) => void;
 }
 
 export const TestContext = createContext<TestContextType | undefined>(undefined);
