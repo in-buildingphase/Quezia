@@ -3,14 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import GlassCard from '../../../components/Dashboard/GlassCard'
 import PromptInput from '../../../components/common/PromptInput'
 import YourTestsSection from '../../../components/Dashboard/Tests/list/YourTestsSection'
-import { testEngineService } from '../../../services/test-engine/test-engine.service'
+import DailyLimitModal from '../../../components/common/DailyLimitModal'
+import { testEngineService, type TestThread } from '../../../services/test-engine/test-engine.service'
 import { useAuth } from '../../../hooks/useAuth'
 import { useTests } from '../../../hooks/useTests'
+import { useDailyLimit } from '../../../hooks/useDailyLimit'
 
 const Tests: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { refreshThreads } = useTests()
+  const { isLimitModalOpen, closeLimitModal, handleApiError, limitData } = useDailyLimit()
+
   const [selectedSubject, setSelectedSubject] = useState<string[]>([])
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('')
   const [isSubjectOpen, setIsSubjectOpen] = useState(false)
@@ -21,11 +25,13 @@ const Tests: React.FC = () => {
     if (!user?.profile?.targetExamId) {
       return
     }
-
+    
     setIsSubmitting(true)
+    let thread: TestThread | null = null
+
     try {
       // 1. Create Thread
-      const thread = await testEngineService.createThread({
+      thread = await testEngineService.createThread({
         examId: user.profile.targetExamId,
         originType: user.role === 'ADMIN' ? 'SYSTEM' : 'GENERATED',
         title: prompt,
@@ -47,6 +53,19 @@ const Tests: React.FC = () => {
       // 3. Navigate to thread page
       navigate(`/dashboard/tests/thread/${thread.id}`)
     } catch (error) {
+      if (handleApiError(error)) {
+        // If limit reached, delete the thread we just created so we don't leave empty threads
+        if (thread) {
+          try {
+            await testEngineService.deleteThread((thread as TestThread).id)
+            await refreshThreads()
+          } catch (cleanupError) {
+             // Failed to cleanup, not much we can do
+          }
+        }
+        setIsSubmitting(false)
+        return
+      }
       // Failed to create test - handle silently
     } finally {
       setIsSubmitting(false)
@@ -80,6 +99,12 @@ const Tests: React.FC = () => {
       <div className="w-full px-2 lg:px-3 mt-10">
         <YourTestsSection />
       </div>
+
+      <DailyLimitModal 
+        isOpen={isLimitModalOpen} 
+        onClose={closeLimitModal}
+        limitData={limitData} 
+      />
     </div>
   )
 }

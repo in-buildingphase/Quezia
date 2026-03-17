@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom'
 import ThreadHeader from '../../../components/Dashboard/Tests/thread/ThreadHeader'
 import TestPreviewCanvas from '../../../components/Dashboard/Tests/preview/TestPreviewCanvas'
 import PromptInput from '../../../components/common/PromptInput'
+import DailyLimitModal from '../../../components/common/DailyLimitModal'
 import { testEngineService, type Test, type TestThread, type Attempt, type TestQuestion } from '../../../services/test-engine/test-engine.service'
 import { type Attempt as UIAttempt } from '../../../components/Dashboard/Tests/analytics/AttemptsAnalyticsPopup'
 import { useAuth } from '../../../hooks/useAuth'
 import { useTests } from '../../../hooks/useTests'
+import { useDailyLimit } from '../../../hooks/useDailyLimit'
 import LoadingSpinner from '../../../components/common/LoadingSpinner'
 import Placeholder from '../../../components/common/Placeholder'
 import ConfirmModal from '../../../components/common/ConfirmModal'
@@ -17,6 +19,7 @@ const TestsThread: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { refreshThreads } = useTests()
+  const { isLimitModalOpen, closeLimitModal, handleApiError, limitData } = useDailyLimit()
 
   // Data State
   const [thread, setThread] = useState<TestThread | null>(null)
@@ -189,6 +192,10 @@ const TestsThread: React.FC = () => {
       // Reload the test data to show the updated version
       await loadData()
     } catch (error) {
+      if (handleApiError(error)) {
+        setIsSubmittingPrompt(false)
+        return
+      }
       // Failed to update test - handle silently
     } finally {
       setIsSubmittingPrompt(false)
@@ -308,6 +315,12 @@ const TestsThread: React.FC = () => {
           label: 'Cancel',
           onClick: () => setShowDeleteModal(false),
         }}
+      />
+
+      <DailyLimitModal
+        isOpen={isLimitModalOpen}
+        onClose={closeLimitModal}
+        limitData={limitData}
       />
     </div>
   )

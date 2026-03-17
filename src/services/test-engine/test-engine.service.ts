@@ -1,6 +1,20 @@
 import { apiClient } from '../api';
 import type { Section, Rule } from '../exam-setup/exam-setup.service';
 
+export interface DailyLimitErrorResponse {
+    statusCode: number;
+    message: string;
+    error: string;
+    limit: number;
+    resetAt: string;
+    retryAfter: {
+        hours: number;
+        minutes: number;
+        seconds: number;
+    };
+}
+
+
 export interface TestThread {
     id: string;
     examId: string;
